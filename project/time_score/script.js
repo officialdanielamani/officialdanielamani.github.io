@@ -192,13 +192,13 @@ function exportToJSON() {
   document.body.removeChild(link);
 }
 
-/*
+
 
 const fetchJSONButton = document.getElementById('fetchJSON');
 fetchJSONButton.addEventListener('click', fetchJSON);
 
 function fetchJSON() {
-  const presetURL = 'C:\Users\PC\Downloads\Simple_Score_ByTime - Copy\data\ranking.json'; 
+  const presetURL = 'https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/time_score/data/ranking.json'; 
   fetch(presetURL)
     .then(response => response.json())
     .then(data => {
@@ -211,4 +211,3 @@ function fetchJSON() {
       console.error('Fetch Error:', error);
     });
 }
-*/
