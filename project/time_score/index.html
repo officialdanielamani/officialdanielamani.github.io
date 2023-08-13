@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Ranking Score</title>
+</head>
+<body>
+    <table style="width:98%; border: 3px solid #2146ad;" class="center">
+      <tr>
+        <th style="width:75%;"><h1>Score Rank</h1></th>
+        <th style="width:30%;"><h1>Submit Time</h1></th>
+        </tr>
+      <tr>
+        <td>
+          <p style="text-align: center;"><strong>The lowest time, the higher rank</strong></p>
+          <div id="topRankings" >
+            <div class="top-ranking" id="firstPlace" style="background-color: #FFD700; font-size:large;"></div>
+            <div class="top-ranking" id="secondPlace" style="background-color: #C0C0C0;font-size:large;"></div>
+            <div class="top-ranking" id="thirdPlace" style="background-color: #CD7F32; font-size:large;"></div>
+          </div>
+          <p style="text-align: center;"><strong>All Rank List</strong></p>
+          <div style="font-size:large;" id="rankingList" class="center_box"></div>    
+        </td>
+        <td>
+          <form id="rankingForm" class="form">
+            <label for="name" accesskey="N"  >Name:</label>
+              <input type="text" id="name" required>
+            <label for="group" accesskey="G">Group:</label>
+              <input type="text" id="group" required>
+            <label for="minutes"  accesskey="M">Minutes:</label>
+              <input type="number" id="minutes" placeholder="0" min="0">
+            <label for="seconds" accesskey="S">Seconds:</label>
+              <input type="number" id="seconds"  placeholder="0" min="0" max="59">
+            <label for="milliseconds" accesskey="W">Milliseconds:</label>
+              <input type="number" id="milliseconds"  placeholder="0" min="0" max="999">
+            <label for="time">Total Time (seconds):</label>
+              <input type="number" id="time" placeholder="0" step="0.01" >
+
+            <button type="button" id="calculateTime" accesskey="C">Calculate Time</button>
+            <br/>
+            <button type="submit" accesskey="A">Submit Data</button>
+            <input accesskey="X" type="reset" value="Clear Input">
+          </form>
+          
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="center_box">
+            <p>Choose option to load previous save data</p>
+            <button id="loadCSV">Load CSV</button>
+            <button id="loadJSON">Load JSON</button>    
+            <input type="file" id="fileInput">
+           <!---<button id="fetchJSON">Fetch JSON</button>---> 
+          </div>
+        </td>
+        <td>
+          <div id="exportButtons" class="center_box">
+            <p>To save data, click button below</p>
+              <button id="exportCSV">Export to .CSV (Excel)</button>
+              <button id="exportJSON">Export as JSON</button>
+              <p><i>Please save the file before refreshing page, it will clear all data as it run locally on the browser.</i></p>
+            </div>          
+        </td>
+      </tr>
+    </table>
+      <p style="text-align: center;">Code by: DanielAmani.com</p>
+      <p style="text-align: center;">Shortcut key: <b>Name</b> Alt+ N | <b>Group</b> Alt+ G | <b>Minute</b> Alt+ M | <b>Second</b> Alt+ S | <b>Millis</b> Alt+ W | <b>Calc</b> Alt+ C | <b>Submit</b> Alt+ A | <b>Reset</b> Alt+ X </p>
+
+      <script src="script.js"></script>
+</body>
+</html>
