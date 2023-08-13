@@ -143,19 +143,6 @@ function parseCSV(content) {
   return data;
 }
 
-function parseCSV(content) {
-  const rows = content.split('\n');
-  const data = [];
-
-  for (let i = 1; i < rows.length; i++) {
-    const [name, group, time] = rows[i].split(',');
-    if (name && group && time) {
-      data.push({ name, group, time: parseFloat(time) });
-    }
-  }
-  return data;
-}
-
 exportCSVButton.addEventListener('click', exportToCSV); 
 exportJSONButton.addEventListener('click', exportToJSON);
   
@@ -192,14 +179,16 @@ function exportToJSON() {
   document.body.removeChild(link);
 }
 
-
-
+const jsonURLInput = document.getElementById('jsonURL');
 const fetchJSONButton = document.getElementById('fetchJSON');
 fetchJSONButton.addEventListener('click', fetchJSON);
 
 function fetchJSON() {
-  const presetURL = 'https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/time_score/data/ranking.json'; 
-  fetch(presetURL)
+  const userJSONURL = jsonURLInput.value.trim();
+  const placeholderURL = 'https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/time_score/data/ranking.json'; // Replace with your actual placeholder URL
+
+  const fetchURL = userJSONURL || placeholderURL; 
+  fetch(fetchURL)
     .then(response => response.json())
     .then(data => {
       rankingData = data;
@@ -210,4 +199,18 @@ function fetchJSON() {
       alert('Error fetching JSON data.');
       console.error('Fetch Error:', error);
     });
+}
+
+const toggleRankingSelect = document.getElementById('toggleRanking');
+
+toggleRankingSelect.addEventListener('change', toggleRanking);
+
+
+function toggleRanking() {
+  const sortBy = toggleRankingSelect.value;
+
+  rankingData.sort((a, b) => (sortBy === 'lowest' ? a.time - b.time : b.time - a.time));
+
+  displayRanking();
+  displayTopScore();
 }

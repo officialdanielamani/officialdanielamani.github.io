@@ -14,7 +14,6 @@
         </tr>
       <tr>
         <td>
-          <p style="text-align: center;"><strong>The lowest time, the higher rank</strong></p>
           <div id="topRankings" >
             <div class="top-ranking" id="firstPlace" style="background-color: #FFD700; font-size:large;"></div>
             <div class="top-ranking" id="secondPlace" style="background-color: #C0C0C0;font-size:large;"></div>
@@ -43,7 +42,14 @@
             <button type="submit" accesskey="A">Submit Data</button>
             <input accesskey="X" type="reset" value="Clear Input">
           </form>
-          
+          <br>
+          <div class="center_box">
+          <label for="toggleRanking">Rank by:</label>
+          <select id="toggleRanking">
+            <option value="lowest">Lowest Time</option>
+            <option value="highest">Highest Time</option>
+          </select>
+          </div>
         </td>
         <td>
         </td>
@@ -55,6 +61,9 @@
             <button id="loadCSV">Load CSV</button>
             <button id="loadJSON">Load JSON</button>    
             <input type="file" id="fileInput">
+            <br/>
+            <label for="jsonURL">JSON URL:</label>
+            <input type="text" id="jsonURL" placeholder="Enter JSON URL">
            <button id="fetchJSON">Fetch JSON</button>
           </div>
         </td>
