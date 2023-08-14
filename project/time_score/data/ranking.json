@@ -1,32 +1,82 @@
 [
   {
-    "name": "Amir",
-    "group": "Seputih",
-    "time": 57.88
-  },
-  {
     "name": "Daniel",
     "group": "GMI",
-    "time": 70.12
+    "totalPoint": 100,
+    "totalTime": 40.57,
+    "timePoint": 2.464875523786049,
+    "overallPoint": 102.46487552378605
   },
   {
-    "name": "Zaki",
-    "group": "MFI",
-    "time": 81.13
+    "name": "Layla",
+    "group": "Fast",
+    "totalPoint": 100,
+    "totalTime": 43.01,
+    "timePoint": 2.325040688212044,
+    "overallPoint": 102.32504068821204
   },
   {
-    "name": "Osman",
-    "group": "Kajang",
-    "time": 89.67
+    "name": "Zahran",
+    "group": "MFi",
+    "totalPoint": 100,
+    "totalTime": 53.32,
+    "timePoint": 1.8754688672168043,
+    "overallPoint": 101.87546886721681
   },
   {
-    "name": "Harith",
-    "group": "Iskandar",
-    "time": 131.02
+    "name": "Keqing",
+    "group": "Genshin",
+    "totalPoint": 100,
+    "totalTime": 60.99,
+    "timePoint": 1.6396130513198885,
+    "overallPoint": 101.63961305131988
   },
   {
-    "name": "Zainudin",
-    "group": "Iskandar",
-    "time": 138.67
+    "name": "Afif",
+    "group": "Kembar",
+    "totalPoint": 100,
+    "totalTime": 61.1,
+    "timePoint": 1.6366612111292962,
+    "overallPoint": 101.6366612111293
+  },
+  {
+    "name": "Arif",
+    "group": "Kembar",
+    "totalPoint": 100,
+    "totalTime": 61.2,
+    "timePoint": 1.6339869281045751,
+    "overallPoint": 101.63398692810458
+  },
+  {
+    "name": "Emir",
+    "group": "Eng",
+    "totalPoint": 100,
+    "totalTime": 72,
+    "timePoint": 1.3888888888888888,
+    "overallPoint": 101.38888888888889
+  },
+  {
+    "name": "Raja",
+    "group": "Fly",
+    "totalPoint": 100,
+    "totalTime": 72.54,
+    "timePoint": 1.3785497656465397,
+    "overallPoint": 101.37854976564654
+  },
+  {
+    "name": "Rusa",
+    "group": "Haiwan",
+    "totalPoint": 90,
+    "totalTime": 57.32,
+    "timePoint": 1.7445917655268668,
+    "overallPoint": 91.74459176552686
+  },
+  {
+    "name": "Brono",
+    "group": "Art",
+    "totalPoint": 30,
+    "totalTime": 30,
+    "timePoint": 3.3333333333333335,
+    "overallPoint": 33.333333333333336
   }
 ]
