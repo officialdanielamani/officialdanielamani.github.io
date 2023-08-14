@@ -35,7 +35,6 @@ rankingForm.addEventListener('submit', (e) => {
   rankingData.sort((a, b) => a.time - b.time);
 
   displayRanking();
-  displayTopScore();
   rankingForm.reset();
   document.getElementById('time').value = '';
   document.getElementById('minutes').value = '';
@@ -110,7 +109,6 @@ function handleFileSelect(event) {
           if (Array.isArray(jsonData)) {
             rankingData = jsonData;
             displayRanking();
-            displayTopScore();
           } else {
             alert('JSON data is not in expected format (Array).');
           }
@@ -121,7 +119,6 @@ function handleFileSelect(event) {
       } else if (file.type === 'text/csv') {
         rankingData = parseCSV(content);
         displayRanking();
-        displayTopScore();
       } else {
         alert('Unsupported file type.');
       }
@@ -184,22 +181,50 @@ const fetchJSONButton = document.getElementById('fetchJSON');
 fetchJSONButton.addEventListener('click', fetchJSON);
 
 function fetchJSON() {
-  const userJSONURL = jsonURLInput.value.trim();
+  const userJSONURL = jsonURLInput.value.trim(); // Get user input URL and remove leading/trailing spaces
   const placeholderURL = 'https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/time_score/data/ranking.json'; // Replace with your actual placeholder URL
 
-  const fetchURL = userJSONURL || placeholderURL; 
+  const fetchURL = userJSONURL || placeholderURL; // Use user input URL or placeholder if none provided
+
   fetch(fetchURL)
-    .then(response => response.json())
-    .then(data => {
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Network response was not ok (${response.status} ${response.statusText})`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (Array.isArray(data)) {
       rankingData = data;
       displayRanking();
-      displayTopScore();
-    })
-    .catch(error => {
-      alert('Error fetching JSON data.');
-      console.error('Fetch Error:', error);
-    });
+    } else {
+      throw new Error('Invalid JSON data format');
+    }
+  })
+  .catch(error => {
+    const errorMessage = error.message || 'An unexpected error occurred while fetching JSON data.';
+    alert(`Error: ${errorMessage}`);
+    console.error('Fetch Error:', error);
+  });
 }
+
+const enableRefreshCheckbox = document.getElementById('enableRefresh'); 
+
+fetchJSONButton.addEventListener('click', fetchJSON);
+
+let refreshIntervalId = null;
+
+enableRefreshCheckbox.addEventListener('change', () => {
+  if (enableRefreshCheckbox.checked) {
+    // Enable refresh background
+    refreshIntervalId = setInterval(fetchJSON, 60000); // Call fetchJSON every 5 minutes
+  } else {
+    // Disable refresh background
+    clearInterval(refreshIntervalId); // Clear the interval
+    refreshIntervalId = null; // Reset interval ID
+  }
+});
+
 
 const toggleRankingSelect = document.getElementById('toggleRanking');
 
@@ -212,5 +237,4 @@ function toggleRanking() {
   rankingData.sort((a, b) => (sortBy === 'lowest' ? a.time - b.time : b.time - a.time));
 
   displayRanking();
-  displayTopScore();
 }
