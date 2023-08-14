@@ -1,3 +1,43 @@
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("openInfo");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+const  container = document.querySelector(".containerL")
+
+  const expandContainerBtn = document.getElementById('expandContainerBtn');
+  
+  expandContainerBtn.addEventListener('click', () => {
+
+    var x = document.getElementById("rightbox");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+      container.classList.toggle('expanded');
+  });
+
 const userInputForm = document.getElementById('userInputForm');
 const dataList = document.getElementById('dataList');
 const sortTypeSelect = document.getElementById('sortType');
@@ -11,7 +51,7 @@ userInputForm.addEventListener('submit', function (e) {
     const group = document.getElementById('group').value;
     const totalPoint = parseFloat(document.getElementById('totalPoint').value);
     const totalTime = parseFloat(document.getElementById('totalTime').value);
-    const timePoint = 100 / totalTime;
+    const timePoint = 1000 / totalTime;
     const overallPoint = totalPoint + timePoint;
 
     if (isNaN(totalTime) || totalTime <= 0) {
@@ -56,11 +96,30 @@ function updateDataList() {
         data.sort((a, b) => b.totalPoint - a.totalPoint);
     } else if (sortType === 'lowestPoint') {
         data.sort((a, b) => a.totalPoint - b.totalPoint);
-    }
+    }else if (sortType === 'group') {
+        data.sort((a, b) => a.group.localeCompare(b.group));
+    } else if (sortType === 'name') {
+        data.sort((a, b) => a.name.localeCompare(b.name));
+    } 
 
 
     dataList.innerHTML = '';
- 
+
+if (sortType === 'group'|| sortType === 'name'){
+
+    data.forEach((item, index) => {
+        const rank = index + 1;
+        const itemElement = document.createElement('div');
+        itemElement.classList.add('data-item');
+        itemElement.innerHTML = `
+            <h2><strong>${item.name}</strong> (Group: ${item.group}) |
+            Total Point: ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2?
+        `;
+        dataList.appendChild(itemElement);
+    });
+
+}
+else{
     data.forEach((item, index) => {
         const rank = index + 1;
         const itemElement = document.createElement('div');
@@ -80,6 +139,8 @@ function updateDataList() {
           }
 */
     });
+}
+
 }
 // Time Point: ${item.timePoint.toFixed(2)} | Overall Point: ${item.overallPoint.toFixed(2)} hide from view
 function clearForm() {
