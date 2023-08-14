@@ -135,10 +135,6 @@ function exportToCsv() {
     URL.revokeObjectURL(url);
 }
 
-
-
-// ... (Existing code)
-
 const importCsvForm = document.getElementById('importCsvForm');
 
 importCsvForm.addEventListener('submit', function (e) {
@@ -210,8 +206,6 @@ function exportToJson() {
 
     URL.revokeObjectURL(url);
 }
-
-// ... (Existing code)
 
 const importJsonForm = document.getElementById('importJsonForm');
 
