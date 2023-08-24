@@ -265,7 +265,7 @@ function exportToJSON() {
 }
 
 function fetchJSONData() {
-    const url = "https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/score_sumo/data/team_data.json"; // Replace with the actual URL of your JSON data
+    const url = "https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/sumo_score/data/team_data.json"; // Replace with the actual URL of your JSON data
 
     fetch(url)
         .then(response => response.json())
