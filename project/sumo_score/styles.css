@@ -96,4 +96,7 @@ body {
     margin-bottom: 10px;
     background-color: #f9f9f9;
     text-align: center;
+}
+.invalid-input {
+  border-color: red;
 }  

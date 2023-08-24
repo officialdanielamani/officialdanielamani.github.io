@@ -22,18 +22,18 @@
               <table>
                 <tr>
                   <th>Team</th>
-                  <th>X</th>
-                  <th>Y</th>
+                  <th>A</th>
+                  <th>B</th>
                 </tr>
                 <tr>
                   <td>Name</td>
-                  <td><input type="text" id="teamXName" placeholder="Team X"></td>
-                  <td><input type="text" id="teamYName" placeholder="Team Y"></td>
+                  <td><input type="text" id="teamXName" placeholder="Team X" required></td>
+                  <td><input type="text" id="teamYName" placeholder="Team Y" required></td>
                 </tr>
                 <tr>
                   <td>Group</td>
-                  <td><input type="text" id="groupX" placeholder="Group Name"></td>
-                  <td><input type="text" id="groupY" placeholder="Group Name"></td>
+                  <td><input type="text" id="groupX" placeholder="Group Name" required></td>
+                  <td><input type="text" id="groupY" placeholder="Group Name" required></td>
                 </tr>
                 <tr>
                   <td>Inspection</td>
@@ -42,18 +42,18 @@
                 </tr>
                 <tr>
                   <td>Yukoh ONE</td>
-                  <td>P:<input type="number" id="pointXA" placeholder="Point A"><br/>T:<input type="number" id="timeXA" placeholder="Time A"></td>
-                  <td>P:<input type="number" id="pointYA" placeholder="Point A"><br/>T:<input type="number" id="timeYA" placeholder="Time A"></td>
+                  <td>P:<input type="number" id="pointXA" placeholder="Point A"><br/>T:<input type="number" id="timeXA" placeholder="Time A" step="0.01" min="0" max="100" required></td>
+                  <td>P:<input type="number" id="pointYA" placeholder="Point A"><br/>T:<input type="number" id="timeYA" placeholder="Time A" step="0.01" min="0" max="100" required></td>
                 </tr>
                 <tr>
                   <td>Yukoh TWO</td>
-                  <td>P:<input type="number" id="pointXB" placeholder="Point B"><br/>T:<input type="number" id="timeXB" placeholder="Time B"></td>
-                  <td>P:<input type="number" id="pointYB" placeholder="Point B"><br/>T:<input type="number" id="timeYB" placeholder="Time B"></td>
+                  <td>P:<input type="number" id="pointXB" placeholder="Point B"><br/>T:<input type="number" id="timeXB" placeholder="Time B" step="0.01" min="0" max="100" required></td>
+                  <td>P:<input type="number" id="pointYB" placeholder="Point B"><br/>T:<input type="number" id="timeYB" placeholder="Time B" step="0.01" min="0" max="100" required></td>
                 </tr>
                 <tr>
                   <td>Yukoh THREE</td>
-                  <td>P:<input type="number" id="pointXC" placeholder="Point C"><br/>T:<input type="number" id="timeXC" placeholder="Time C"></td>
-                  <td>P:<input type="number" id="pointYC" placeholder="Point C"><br/>T:<input type="number" id="timeYC" placeholder="Time C"></td>
+                  <td>P:<input type="number" id="pointXC" placeholder="Point C"><br/>T:<input type="number" id="timeXC" placeholder="Time C" step="0.01" min="0" max="100" required></td>
+                  <td>P:<input type="number" id="pointYC" placeholder="Point C"><br/>T:<input type="number" id="timeYC" placeholder="Time C" step="0.01" min="0" max="100" required></td>
                 </tr>
               </table>
               <br/>    
@@ -70,9 +70,13 @@
             <br/>
             <button onclick="exportToJSON()">Export to JSON</button>
             <br/><br/>
+            <button onclick="exportToCSV()">Export to CSV</button>
+            <br/><br/>
             <button onclick="importJSON()">Import from JSON</button><input type="file" id="importFileJSON" accept=".json">
             <br/>
-            <button onclick="fetchJSONData()">Fetch JSON Data</button>
+            <button onclick="fetchJSONData()">Fetch JSON Data</button><!--
+            <br/>
+            <button onclick="importFromCSV()">Import from CSV</button><input type="file" id="csvFileInput" accept=".csv">-->
             <p>Powered by: DanielAmani.com</p>
           </div>
         </div>
