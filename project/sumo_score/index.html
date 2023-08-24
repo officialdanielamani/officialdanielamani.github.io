@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Ranking System</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <body>
+        <div class="container-wrapper">
+          <div class="container" style="background-image: url('GMI.jpg'); background-size: auto;" >
+            <h2>Sumo Robot</h2>
+            <button id="toggleButton" style="width: 25%;">SideBar Toggle>>></button>
+            <br/><br/>
+            <div id="rankingDisplay">
+                <!-- Display submitted data here -->
+            </div>
+          </div>
+          <div class="container">
+            <p><strong>Submit Data</strong></p>
+            <form id="teamForm">
+              <table>
+                <tr>
+                  <th>Team</th>
+                  <th>X</th>
+                  <th>Y</th>
+                </tr>
+                <tr>
+                  <td>Name</td>
+                  <td><input type="text" id="teamXName" placeholder="Team X"></td>
+                  <td><input type="text" id="teamYName" placeholder="Team Y"></td>
+                </tr>
+                <tr>
+                  <td>Group</td>
+                  <td><input type="text" id="groupX" placeholder="Group Name"></td>
+                  <td><input type="text" id="groupY" placeholder="Group Name"></td>
+                </tr>
+                <tr>
+                  <td>Inspection</td>
+                  <td>Pass:<input type="checkbox" id="passTeamX" checked></td>
+                  <td>Pass:<input type="checkbox" id="passTeamY" checked></td>
+                </tr>
+                <tr>
+                  <td>Yukoh ONE</td>
+                  <td>P:<input type="number" id="pointXA" placeholder="Point A"><br/>T:<input type="number" id="timeXA" placeholder="Time A"></td>
+                  <td>P:<input type="number" id="pointYA" placeholder="Point A"><br/>T:<input type="number" id="timeYA" placeholder="Time A"></td>
+                </tr>
+                <tr>
+                  <td>Yukoh TWO</td>
+                  <td>P:<input type="number" id="pointXB" placeholder="Point B"><br/>T:<input type="number" id="timeXB" placeholder="Time B"></td>
+                  <td>P:<input type="number" id="pointYB" placeholder="Point B"><br/>T:<input type="number" id="timeYB" placeholder="Time B"></td>
+                </tr>
+                <tr>
+                  <td>Yukoh THREE</td>
+                  <td>P:<input type="number" id="pointXC" placeholder="Point C"><br/>T:<input type="number" id="timeXC" placeholder="Time C"></td>
+                  <td>P:<input type="number" id="pointYC" placeholder="Point C"><br/>T:<input type="number" id="timeYC" placeholder="Time C"></td>
+                </tr>
+              </table>
+              <br/>    
+                <button type="button" onclick="submitData()">Submit</button>
+            </form>
+            <br/>
+            <div class="sorting-options">
+              Sort by:
+              <select id="sortingSelect" onchange="displayRanking()">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+          </select></div>
+
+            <br/>
+            <button onclick="exportToJSON()">Export to JSON</button>
+            <br/><br/>
+            <button onclick="importJSON()">Import from JSON</button><input type="file" id="importFileJSON" accept=".json">
+            <br/>
+            <button onclick="fetchJSONData()">Fetch JSON Data</button>
+            <p>Powered by: DanielAmani.com</p>
+          </div>
+        </div>
+    <script src="script.js"></script>
+</body>
+</html>

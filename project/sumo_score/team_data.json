@@ -1,0 +1,380 @@
+[
+  {
+    "team": {
+      "teamName": "Aria",
+      "groupName": "G1",
+      "statusTeam": true,
+      "points": [
+        100,
+        80,
+        90
+      ],
+      "times": [
+        1,
+        1,
+        2
+      ],
+      "status": "Qualified",
+      "totalPoints": 270,
+      "totalTimes": 4,
+      "overallPoint": 520,
+      "totalOverall": 790
+    },
+    "totalPoints": 270,
+    "overallPoint": 520,
+    "totalOverall": 790,
+    "teamStatus": "Qualified",
+    "timestamp": 1692912918315
+  },
+  {
+    "team": {
+      "teamName": "Samba",
+      "groupName": "G2",
+      "statusTeam": true,
+      "points": [
+        90,
+        70,
+        90
+      ],
+      "times": [
+        2,
+        1,
+        1
+      ],
+      "status": "Qualified",
+      "totalPoints": 250,
+      "totalTimes": 4,
+      "overallPoint": 500,
+      "totalOverall": 750
+    },
+    "totalPoints": 250,
+    "overallPoint": 500,
+    "totalOverall": 750,
+    "teamStatus": "Qualified",
+    "timestamp": 1692912918315
+  },
+  {
+    "team": {
+      "teamName": "Samba",
+      "groupName": "G2",
+      "statusTeam": false,
+      "points": [
+        90,
+        70,
+        90
+      ],
+      "times": [
+        2,
+        1,
+        1
+      ],
+      "status": "Qualified",
+      "totalPoints": 250,
+      "totalTimes": 4,
+      "overallPoint": 500,
+      "totalOverall": 750
+    },
+    "totalPoints": 250,
+    "overallPoint": 500,
+    "totalOverall": 750,
+    "teamStatus": "Qualified",
+    "timestamp": 1692912928508
+  },
+  {
+    "team": {
+      "teamName": "Aria",
+      "groupName": "G1",
+      "statusTeam": false,
+      "points": [
+        100,
+        80,
+        90
+      ],
+      "times": [
+        1,
+        1,
+        2
+      ],
+      "status": "Disqualified",
+      "totalPoints": 270,
+      "totalTimes": 4,
+      "overallPoint": 520,
+      "totalOverall": 0
+    },
+    "totalPoints": 270,
+    "overallPoint": 520,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692912928508
+  },
+  {
+    "team": {
+      "teamName": "Samba",
+      "groupName": "G2",
+      "statusTeam": false,
+      "points": [
+        90,
+        70,
+        90
+      ],
+      "times": [
+        2,
+        1,
+        1
+      ],
+      "status": "Disqualified",
+      "totalPoints": 250,
+      "totalTimes": 4,
+      "overallPoint": 500,
+      "totalOverall": 0
+    },
+    "totalPoints": 250,
+    "overallPoint": 500,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692912949913
+  },
+  {
+    "team": {
+      "teamName": "Aria",
+      "groupName": "G1",
+      "statusTeam": false,
+      "points": [
+        100,
+        80,
+        90
+      ],
+      "times": [
+        1,
+        1,
+        2
+      ],
+      "status": "Disqualified",
+      "totalPoints": 270,
+      "totalTimes": 4,
+      "overallPoint": 520,
+      "totalOverall": 0
+    },
+    "totalPoints": 270,
+    "overallPoint": 520,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692912949913
+  },
+  {
+    "team": {
+      "teamName": "Tinggi",
+      "groupName": "G4",
+      "statusTeam": true,
+      "points": [
+        80,
+        95,
+        90
+      ],
+      "times": [
+        1,
+        0,
+        1
+      ],
+      "status": "Qualified",
+      "totalPoints": 265,
+      "totalTimes": 2,
+      "overallPoint": 765,
+      "totalOverall": 1030
+    },
+    "totalPoints": 265,
+    "overallPoint": 765,
+    "totalOverall": 1030,
+    "teamStatus": "Qualified",
+    "timestamp": 1692913531174
+  },
+  {
+    "team": {
+      "teamName": "Ombak",
+      "groupName": "G3",
+      "statusTeam": true,
+      "points": [
+        100,
+        80,
+        88
+      ],
+      "times": [
+        1,
+        1,
+        1
+      ],
+      "status": "Qualified",
+      "totalPoints": 268,
+      "totalTimes": 3,
+      "overallPoint": 601.3333333333333,
+      "totalOverall": 869.3333333333333
+    },
+    "totalPoints": 268,
+    "overallPoint": 601.3333333333333,
+    "totalOverall": 869.3333333333333,
+    "teamStatus": "Qualified",
+    "timestamp": 1692913531174
+  },
+  {
+    "team": {
+      "teamName": "Harapan",
+      "groupName": "G8",
+      "statusTeam": true,
+      "points": [
+        90,
+        90,
+        80
+      ],
+      "times": [
+        2,
+        2,
+        1
+      ],
+      "status": "Qualified",
+      "totalPoints": 260,
+      "totalTimes": 5,
+      "overallPoint": 460,
+      "totalOverall": 720
+    },
+    "totalPoints": 260,
+    "overallPoint": 460,
+    "totalOverall": 720,
+    "teamStatus": "Qualified",
+    "timestamp": 1692913960171
+  },
+  {
+    "team": {
+      "teamName": "Sinar",
+      "groupName": "G7",
+      "statusTeam": true,
+      "points": [
+        100,
+        50,
+        40
+      ],
+      "times": [
+        2,
+        3,
+        4
+      ],
+      "status": "Qualified",
+      "totalPoints": 190,
+      "totalTimes": 9,
+      "overallPoint": 301.1111111111111,
+      "totalOverall": 491.1111111111111
+    },
+    "totalPoints": 190,
+    "overallPoint": 301.1111111111111,
+    "totalOverall": 491.1111111111111,
+    "teamStatus": "Qualified",
+    "timestamp": 1692913960171
+  },
+  {
+    "team": {
+      "teamName": "Sinar",
+      "groupName": "G7",
+      "statusTeam": true,
+      "points": [
+        100,
+        50,
+        40
+      ],
+      "times": [
+        2,
+        3,
+        4
+      ],
+      "status": "Qualified",
+      "totalPoints": 190,
+      "totalTimes": 9,
+      "overallPoint": 301.1111111111111,
+      "totalOverall": 491.1111111111111
+    },
+    "totalPoints": 190,
+    "overallPoint": 301.1111111111111,
+    "totalOverall": 491.1111111111111,
+    "teamStatus": "Qualified",
+    "timestamp": 1692913972905
+  },
+  {
+    "team": {
+      "teamName": "Harapan",
+      "groupName": "G8",
+      "statusTeam": true,
+      "points": [
+        90,
+        90,
+        80
+      ],
+      "times": [
+        2,
+        2,
+        1
+      ],
+      "status": "Disqualified",
+      "totalPoints": 260,
+      "totalTimes": 5,
+      "overallPoint": 460,
+      "totalOverall": 0
+    },
+    "totalPoints": 260,
+    "overallPoint": 460,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692913972905
+  },
+  {
+    "team": {
+      "teamName": "Harapan",
+      "groupName": "G8",
+      "statusTeam": false,
+      "points": [
+        90,
+        90,
+        80
+      ],
+      "times": [
+        2,
+        2,
+        1
+      ],
+      "status": "Disqualified",
+      "totalPoints": 260,
+      "totalTimes": 5,
+      "overallPoint": 460,
+      "totalOverall": 0
+    },
+    "totalPoints": 260,
+    "overallPoint": 460,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692913988633
+  },
+  {
+    "team": {
+      "teamName": "Sinar",
+      "groupName": "G7",
+      "statusTeam": false,
+      "points": [
+        100,
+        50,
+        40
+      ],
+      "times": [
+        2,
+        3,
+        4
+      ],
+      "status": "Disqualified",
+      "totalPoints": 190,
+      "totalTimes": 9,
+      "overallPoint": 301.1111111111111,
+      "totalOverall": 0
+    },
+    "totalPoints": 190,
+    "overallPoint": 301.1111111111111,
+    "totalOverall": 0,
+    "teamStatus": "Disqualified",
+    "timestamp": 1692913988633
+  }
+]
