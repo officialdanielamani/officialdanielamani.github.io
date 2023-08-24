@@ -279,7 +279,7 @@ function fetchJSONData() {
         });
 }
 
-/*
+
 function exportToCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
 
@@ -301,6 +301,7 @@ function exportToCSV() {
     document.body.removeChild(link);
 }
 
+/*
 function importFromCSV() {
     const fileInput = document.getElementById("csvFileInput");
 
