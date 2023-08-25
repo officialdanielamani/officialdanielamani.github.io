@@ -1,42 +1,35 @@
-var modal = document.getElementById("myModal");
+const toggleButton = document.getElementById('toggleButton');
+const openModalButton = document.getElementById('openModalButton');
+const firstContainer = document.querySelector('.container:first-child');
+const secondContainer = document.querySelector('.container:last-child');
+const modal = document.getElementById('myModal');
+const closeModalButton = document.getElementById('closeModal');
 
-// Get the button that opens the modal
-var btn = document.getElementById("openInfo");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+toggleButton.addEventListener('click', () => {
+  if (secondContainer.style.display === 'none') {
+    secondContainer.style.display = 'block';
+    firstContainer.style.width = '70%';
+    toggleButton.textContent = 'Hide Submit Data';
+  } else {
+    secondContainer.style.display = 'none';
+    firstContainer.style.width = '100%';
+    toggleButton.textContent = 'Show Submit Data';
   }
-}
+});
 
-const  container = document.querySelector(".containerL")
+openModalButton.addEventListener('click', () => {
+  modal.style.display = 'flex';
+});
 
-  const expandContainerBtn = document.getElementById('expandContainerBtn');
-  
-  expandContainerBtn.addEventListener('click', () => {
+closeModalButton.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
 
-    var x = document.getElementById("rightbox");
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-    }
-      container.classList.toggle('expanded');
-  });
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
 
 const userInputForm = document.getElementById('userInputForm');
 const dataList = document.getElementById('dataList');
@@ -53,18 +46,21 @@ userInputForm.addEventListener('submit', function (e) {
     const totalTime = parseFloat(document.getElementById('totalTime').value);
     const timePoint = 1000 / totalTime;
     const overallPoint = totalPoint + timePoint;
+    
+    const timestamp = new Date().toISOString(); // Get current timestamp
 
     if (isNaN(totalTime) || totalTime <= 0) {
         alert('Total time must be a positive value. Please calculate the time.');
         return;
-      }
+    }
 
-      if (isNaN(totalPoint) || totalPoint <= 0) {
+    if (isNaN(totalPoint) || totalPoint <= 0) {
         alert('Total time must be a positive value. Please calculate the time.');
         return;
-      }
+    }
 
     const newData = {
+        timestamp, // Add timestamp to the data
         name,
         group,
         totalPoint,
@@ -77,7 +73,6 @@ userInputForm.addEventListener('submit', function (e) {
     updateDataList();
     clearForm();
 });
-
 sortTypeSelect.addEventListener('change', updateDataList);
 
 function updateDataList() {
@@ -92,57 +87,62 @@ function updateDataList() {
         data.sort((a, b) => a.totalTime - b.totalTime);
     } else if (sortType === 'highestTime') {
        data.sort((a, b) => b.totalTime - a.totalTime);
-    }else if (sortType === 'highestPoint') {
+    } else if (sortType === 'highestPoint') {
         data.sort((a, b) => b.totalPoint - a.totalPoint);
     } else if (sortType === 'lowestPoint') {
         data.sort((a, b) => a.totalPoint - b.totalPoint);
-    }else if (sortType === 'group') {
+    } else if (sortType === 'group') {
         data.sort((a, b) => a.group.localeCompare(b.group));
     } else if (sortType === 'name') {
         data.sort((a, b) => a.name.localeCompare(b.name));
-    } 
-
+    } else if (sortType === 'oldest') { // Sort by oldest timestamp
+        data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } else if (sortType === 'newest') { // Sort by newest timestamp
+        data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
 
     dataList.innerHTML = '';
 
-if (sortType === 'group'|| sortType === 'name'){
-
     data.forEach((item, index) => {
         const rank = index + 1;
         const itemElement = document.createElement('div');
         itemElement.classList.add('data-item');
+
+        if(sortType === 'group'|| sortType === 'name'|| sortType === 'oldest'|| sortType === 'newest'){
         itemElement.innerHTML = `
-            <h2><strong>${item.name}</strong> (Group: ${item.group}) |
-            Total Point: ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2?
-        `;
+        <table><tr><th><h2><strong>${item.name}</strong> (Group: ${item.group}) |
+            Total Point: ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2></th>
+            <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
+            </tr>
+        </table>    
+        `;            
+        }
+        else{
+        itemElement.innerHTML = `
+        <table><tr><th><h2><strong>Rank No${index + 1}. ${item.name}</strong> (Group: ${item.group}) |
+            Total Point : ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2></th>
+            <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
+            </tr>
+        </table>
+        `;            
+        }
+
         dataList.appendChild(itemElement);
     });
 
-}
-else{
-    data.forEach((item, index) => {
-        const rank = index + 1;
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('data-item');
-        itemElement.innerHTML = `
-            <h2><strong>Rank No${index + 1}. ${item.name}</strong> (Group: ${item.group}) |
-            Total Point: ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2?
-        `;
-        dataList.appendChild(itemElement);
-/*
-        if (rank === 1) {
-            firstPlace.innerHTML = `<strong>Rank ${rank}</strong><br>${item.name}<br>(Group: ${item.group})<br>Total Point: ${item.totalPoint}<br>Time: ${item.totalTime.toFixed(2)} s`;
-          } else if (rank === 2) {
-            secondPlace.innerHTML = `<strong>Rank ${rank}</strong><br>${item.name}<br>(Group: ${item.group})<br>Total Point: ${item.totalPoint}<br>Time: ${item.totalTime.toFixed(2)} s`;
-          } else if (rank === 3) {
-            thirdPlace.innerHTML = `<strong>Rank ${rank}</strong><br>${item.name}<br>(Group: ${item.group})<br>Total Point: ${item.totalPoint}<br>Time: ${item.totalTime.toFixed(2)} s`;
-          }
-*/
+    dataList.addEventListener('click', function (event) {
+        if (event.target.classList.contains('delete-button')) {
+            const timestampToDelete = event.target.getAttribute('data-timestamp');
+    
+            if (timestampToDelete) {
+                data = data.filter(item => item.timestamp !== timestampToDelete);
+                updateDataList();
+            }
+        }
     });
-}
 
 }
-// Time Point: ${item.timePoint.toFixed(2)} | Overall Point: ${item.overallPoint.toFixed(2)} hide from view
+
 function clearForm() {
     document.getElementById('name').value = '';
     document.getElementById('group').value = '';
@@ -171,10 +171,11 @@ const exportCsvBtn = document.getElementById('exportCsvBtn');
 exportCsvBtn.addEventListener('click', exportToCsv);
 
 function exportToCsv() {
-    const csvData = [['Name', 'Group', 'Total Point', 'Total Time', 'Time Point', 'Overall Point']];
+    const csvData = [['Timestamp', 'Name', 'Group', 'Total Point', 'Total Time', 'Time Point', 'Overall Point']];
 
     data.forEach(item => {
         csvData.push([
+            item.timestamp, // Add timestamp to CSV data
             item.name,
             item.group,
             item.totalPoint.toFixed(2),
@@ -195,6 +196,7 @@ function exportToCsv() {
 
     URL.revokeObjectURL(url);
 }
+
 
 const importCsvForm = document.getElementById('importCsvForm');
 
@@ -227,15 +229,17 @@ function parseCsv(csvText) {
     for (let i = 1; i < rows.length; i++) { // Skip the first row (header)
         const row = rows[i];
         const columns = row.split(',');
-        if (columns.length === 6) {
-            const name = columns[0];
-            const group = columns[1];
-            const totalPoint = parseFloat(columns[2]);
-            const totalTime = parseFloat(columns[3]);
-            const timePoint = parseFloat(columns[4]);
-            const overallPoint = parseFloat(columns[5]);
+        if (columns.length === 7) { // Update the length to 7 to accommodate the timestamp
+            const timestamp = columns[0]; // Extract timestamp
+            const name = columns[1];
+            const group = columns[2];
+            const totalPoint = parseFloat(columns[3]);
+            const totalTime = parseFloat(columns[4]);
+            const timePoint = parseFloat(columns[5]);
+            const overallPoint = parseFloat(columns[6]);
 
             parsedData.push({
+                timestamp, // Include timestamp in the parsed data
                 name,
                 group,
                 totalPoint,
@@ -256,8 +260,20 @@ const exportJsonBtn = document.getElementById('exportJsonBtn');
 exportJsonBtn.addEventListener('click', exportToJson);
 
 function exportToJson() {
-    const jsonData = JSON.stringify(data, null, 2); // The second argument is for formatting
-    const blob = new Blob([jsonData], { type: 'application/json' });
+    const jsonData = data.map(item => {
+        return {
+            timestamp: item.timestamp, // Add timestamp to JSON data
+            name: item.name,
+            group: item.group,
+            totalPoint: item.totalPoint.toFixed(2),
+            totalTime: item.totalTime.toFixed(2),
+            timePoint: item.timePoint.toFixed(2),
+            overallPoint: item.overallPoint.toFixed(2)
+        };
+    });
+
+    const jsonString = JSON.stringify(jsonData, null, 2); // The second argument is for formatting
+    const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
@@ -281,9 +297,24 @@ importJsonForm.addEventListener('submit', function (e) {
         reader.onload = function (event) {
             const jsonData = event.target.result;
             try {
-                const importedData = JSON.parse(jsonData);
+                const importedData = JSON.parse(jsonData, (key, value) => {
+                    // Parse numerical values as numbers
+                    if (!isNaN(value)) {
+                        return parseFloat(value);
+                    }
+                    return value;
+                });
+
                 if (Array.isArray(importedData)) {
-                    data = importedData;
+                    // Check if timestamps are present, otherwise add timestamps
+                    const dataWithTimestamps = importedData.map(item => {
+                        return {
+                            timestamp: new Date().toISOString(), // Add current timestamp
+                            ...item // Include the rest of the object's properties
+                        };
+                    });
+
+                    data = dataWithTimestamps;
                     updateDataList();
                 } else {
                     console.error('Invalid JSON data.');
@@ -312,7 +343,25 @@ fetchJsonForm.addEventListener('submit', function (e) {
         .then(response => response.json())
         .then(importedData => {
             if (Array.isArray(importedData)) {
-                data = importedData;
+                // Check if timestamps are present, otherwise add timestamps
+                const dataWithTimestamps = importedData.map(item => {
+                    return {
+                        timestamp: new Date().toISOString(), // Add current timestamp
+                        ...item // Include the rest of the object's properties
+                    };
+                });
+
+                // Parse numerical values as numbers
+                const dataParsed = dataWithTimestamps.map(item => {
+                    for (const key in item) {
+                        if (!isNaN(item[key])) {
+                            item[key] = parseFloat(item[key]);
+                        }
+                    }
+                    return item;
+                });
+
+                data = dataParsed;
                 updateDataList();
             } else {
                 console.error('Invalid JSON data.');

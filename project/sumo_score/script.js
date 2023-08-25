@@ -1,14 +1,33 @@
 const toggleButton = document.getElementById('toggleButton');
+const openModalButton = document.getElementById('openModalButton');
 const firstContainer = document.querySelector('.container:first-child');
 const secondContainer = document.querySelector('.container:last-child');
+const modal = document.getElementById('myModal');
+const closeModalButton = document.getElementById('closeModal');
 
 toggleButton.addEventListener('click', () => {
   if (secondContainer.style.display === 'none') {
     secondContainer.style.display = 'block';
     firstContainer.style.width = '70%';
+    toggleButton.textContent = 'Hide Submit Data';
   } else {
     secondContainer.style.display = 'none';
     firstContainer.style.width = '100%';
+    toggleButton.textContent = 'Show Submit Data';
+  }
+});
+
+openModalButton.addEventListener('click', () => {
+  modal.style.display = 'flex';
+});
+
+closeModalButton.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = 'none';
   }
 });
 
@@ -196,27 +215,45 @@ function displayRanking() {
 
         if(loser.status==='Disqualified' && winner.status==='Disqualified'){
             entryDiv.innerHTML = `
-            <h2>${winner.teamName} vs ${loser.teamName}</h2>
-            <p style="color:red;">${winner.teamName} and ${loser.teamName} are disqualified</p>
+            <table><tr><th><h2>${winner.teamName} vs ${loser.teamName}</h2>
+            <h3 style="color:red;">${winner.teamName} and ${loser.teamName} are disqualified</h3></th>
+            <th style="width: 90px;"><button class="delete-button" onclick="deleteEntry(${sortedData[i].timestamp})"><i class="fa-regular fa-trash-can"></i></button></th>
+            </tr>
+            </table>
             
-        `;
+        `;STYLE="font-weight:bold"
         }
         else if(loser.status==='Disqualified'){
             entryDiv.innerHTML = `
-            <h2>${winner.teamName} vs ${loser.teamName}</h2>
-            <p style="color: forestgreen;">Winner: ${winner.teamName} (${winner.groupName}); Status: ${winner.status}; Total Points: ${winner.totalPoints.toFixed(2)}; Total Overall: ${winner.totalOverall.toFixed(2)}</p>
-            <p style="color:red;">Lost: ${loser.teamName} (${loser.groupName}); Status: ${loser.status}; Total Points: ${loser.totalPoints.toFixed(2)}; Total Overall: ${loser.totalOverall.toFixed(2)}</p>
+            <table><tr><th><h2>${winner.teamName} vs ${loser.teamName}</h2>
+            <h3 style="color: forestgreen;">Winner: ${winner.teamName} (${winner.groupName}); Status: ${winner.status}; Total Points: ${winner.totalPoints.toFixed(2)}; Total Overall: ${winner.totalOverall.toFixed(2)}</h3>
+            <h3 style="color:red;">Lost: ${loser.teamName} (${loser.groupName}); Status: ${loser.status}; Total Points: ${loser.totalPoints.toFixed(2)}; Total Overall: ${loser.totalOverall.toFixed(2)}</h3></th>
+            <th style="width: 90px;"><button class="delete-button" onclick="deleteEntry(${sortedData[i].timestamp})"><i class="fa-regular fa-trash-can"></i></button></th>
+            </tr>
+            </table>
         `;
         }
         else{
             entryDiv.innerHTML = `
-            <h2>${winner.teamName} vs ${loser.teamName}</h2>
-            <p style="color: forestgreen;">Winner: ${winner.teamName} (${winner.groupName}); Status: ${winner.status}; Total Points: ${winner.totalPoints.toFixed(2)}; Total Overall:</p>
-            <p>Lost: ${loser.teamName} (${loser.groupName}); Status: ${loser.status}; Total Points: ${loser.totalPoints.toFixed(2)}; Total Overall: ${loser.totalOverall.toFixed(2)}</p>
+            <table><tr><th><h2>${winner.teamName} vs ${loser.teamName}</h2>
+            <h3 style="color: forestgreen;">Winner: ${winner.teamName} (${winner.groupName}); Status: ${winner.status}; Total Points: ${winner.totalPoints.toFixed(2)}; Total Overall: ${winner.totalOverall.toFixed(2)}</h3>
+            <h3>Lost: ${loser.teamName} (${loser.groupName}); Status: ${loser.status}; Total Points: ${loser.totalPoints.toFixed(2)}; Total Overall: ${loser.totalOverall.toFixed(2)}</h3></th>
+            <th style="width: 90px;"><button class="delete-button" onclick="deleteEntry(${sortedData[i].timestamp})"><i class="fa-regular fa-trash-can"></i></button></th>
+            </tr>
+            </table>
         `;
         }
 
         rankingDisplay.appendChild(entryDiv);
+    }
+}
+
+function deleteEntry(timestamp) {
+    const indexToDelete = teamData.findIndex(entry => entry.timestamp === timestamp);
+
+    if (indexToDelete !== -1) {
+        teamData.splice(indexToDelete, 2); // Remove both winner and loser entries
+        displayRanking();
     }
 }
 
