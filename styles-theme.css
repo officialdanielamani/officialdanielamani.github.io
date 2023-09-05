@@ -1,0 +1,32 @@
+body { 
+    font-family: Arial, Helvetica, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+	  max-width: 1080px; 
+	  margin: 0 auto !important; 
+	  float: none !important; 
+    line-height: 1.4;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.dark-mode {
+    background-color: #101010;
+    color: #fff;
+}
+
+.dark-mode th {
+    background-color: #555;
+}
+
+.dark-mode a:visited { color:#d9b3ff;
+}
+.dark-mode a:active { color:#6699ff;
+}
+.dark-mode a{ color:#6699ff;
+}
+.dark-mode a:hover { color:#99ccff;
+}
