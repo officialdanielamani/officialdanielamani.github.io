@@ -13,6 +13,19 @@ input[type="text"] {
     margin-top: 10px;
 }
 
+button {
+    background-color: white;
+    padding: 5px 5px;
+    text-align: center; 
+    font-size: 14px;
+    color: black; 
+    border: 2px solid #101010;;
+  }
+button:hover {
+    background-color:black;
+    color: white;
+}
+
 .dark-mode {
     background-color: #101010;
     color: #fff;
@@ -29,4 +42,17 @@ input[type="text"] {
 .dark-mode a{ color:#6699ff;
 }
 .dark-mode a:hover { color:#99ccff;
+}
+
+.dark-mode button {
+    background-color: black;
+    padding: 5px 5px;
+    text-align: center; 
+    font-size: 14px;
+    color: white; 
+    border: 2px solid white;
+  }
+  .dark-mode button:hover {
+    background-color:white;
+    color: black;
 }

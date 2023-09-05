@@ -11,11 +11,11 @@
 
         // Toggle mode and save preference to localStorage
         const toggleModeButton = document.getElementById('toggleModeButton');
-        toggleModeButton.textContent = isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        toggleModeButton.textContent = isDarkMode ? 'Switch to Light Mode ☀️' : 'Switch to Dark Mode 🌑';
         toggleModeButton.addEventListener('click', function () {
             isDarkMode = !isDarkMode;
             setMode(isDarkMode);
-            toggleModeButton.textContent = isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+            toggleModeButton.textContent = isDarkMode ? 'Switch to Light Mode ☀️' : 'Switch to Dark Mode 🌑';
             localStorage.setItem('darkMode', isDarkMode);
         });
 

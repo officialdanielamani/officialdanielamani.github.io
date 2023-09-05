@@ -3,38 +3,9 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<link rel="stylesheet" type="text/css" href="styles-theme.css">
 <style>
-    body { 
-    font-family: Arial, Helvetica, sans-serif;
-    transition: background-color 0.3s, color 0.3s;
-	  max-width: 1080px; 
-	  margin: 0 auto !important; 
-	  float: none !important; 
-    line-height: 1.4;
-}
-
-@media (prefers-color-scheme: dark) {
-    body {
-        color: white;
-        background-color: #101010;
-    }
-    a:visited { color:#d9b3ff;
-    }
-    a:active { color:#6699ff;
-    }
-    a{ color:#6699ff;
-    }
-    a:hover { color:#99ccff;
-    }
-}
-* {
-  box-sizing: border-box;
-}
-
 #myInput {
-  background-image: url('/css/searchicon.png');
-  background-position: 10px 12px;
-  background-repeat: no-repeat;
   width: 100%;
   font-size: 16px;
   padding: 12px 20px 12px 40px;
@@ -67,7 +38,7 @@
 <body>
 
 <h2>Post/Project List</h2>
-
+<button id="toggleModeButton">Switch to Dark Mode 🌑</button>
 <p>This list project/post. Search to filter any post, and click to view detail (If no redirect means the project/post not available)</p>
 <p><a href="index.html">Go Back Home</a></p>
 <br/>
@@ -112,6 +83,6 @@ function myFunction() {
 }
  //Thanks W3School
 </script>
-
+<script src="script-theme.js"></script>
 </body>
 </html>
