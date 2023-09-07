@@ -210,22 +210,22 @@ function formatOutput() {
   }
 
   function format(html) {
-    var tab = '\t';
+    var spaces = '    '; // Four spaces for each level of indentation
     var result = '';
     var indent = '';
-
+  
     html.split(/>\s*</).forEach(function (element) {
       if (element.match(/^\/\w/)) {
-        indent = indent.substring(tab.length);
+        indent = indent.substring(spaces.length);
       }
-
+  
       result += indent + '<' + element + '>\r\n';
-
+  
       if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input")) {
-        indent += tab;
+        indent += spaces;
       }
     });
-
+  
     return result.substring(1, result.length - 3);
   }
   function sendToInput() {
