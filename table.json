@@ -1,50 +1,75 @@
 [
     {
-        "Post": "Selfhosted Journey",
+        "Post": {
+            "text": "Selfhosted Journey",
+            "link": "#"
+        },
         "Info": "-",
         "Date": "2023-07-20",
         "Tag": "Project, Selfhosted"
     },
     {
-        "Post": "<a href=\"https://github.com/officialdanielamani/proteus-library-collection\">Proteus Arduino Library Collection</a>",
+        "Post": {
+            "text": "Proteus Arduino Library Collection",
+            "link": "https://github.com/officialdanielamani/proteus-library-collection"
+        },
         "Info": "Collection of library component simulaton for Arduino",
         "Date": "2023-09-01",
         "Tag": "Github, Project"
     },
     {
-        "Post": "Line Following Time Ranking",
+        "Post": {
+            "text": "Line Following Time Ranking",
+            "link": "/project/time_score/index.html"
+        },
         "Info": "-",
         "Date": "2023-08-15",
         "Tag": "Project"
     },
     {
-        "Post": "Sumo Robot Calculate",
+        "Post": {
+            "text": "Sumo Robot Calculate",
+            "link": "/project/sumo_score/index.html"
+        },
         "Info": "-",
         "Date": "2023-09-05",
         "Tag": "Project"
     },
     {
-        "Post": "Network Topology (Server)",
+        "Post": {
+            "text": "Network Topology (Server)",
+            "link": "#"
+        },
         "Info": "Inner networking of my NAS",
         "Date": "2023-07-20",
         "Tag": "Project, Networking"
     },
     {
-        "Post": "HTML Extractor Tool",
-        "Info": "Extracting HTML information",
+        "Post": {
+            "text": "HTML Extractor Tool",
+            "link": "Extracting HTML information"
+        },
+        "Info": "-",
         "Date": "2023-07-20",
         "Tag": "Project"
     },
     {
-        "Post": "J1900 Problems",
+        "Post": {
+            "text": "J1900 Problems",
+            "link": "#"
+        },
         "Info": "Cstate Problem",
         "Date": "2023-07-20",
         "Tag": "Project"
     },
     {
-        "Post": "J19cc00 Problems",
-        "Info": "Cstate Problem",
-        "Date": "2023-07-20",
-        "Tag": "Project"
-    }
+        "Post": {
+            "text": "-",
+            "link": "#"
+        },
+        "Info": "-",
+        "Date": "-",
+        "Tag": "-"
+    }    
+
 ]

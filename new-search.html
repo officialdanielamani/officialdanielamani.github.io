@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch data from the JSON file
     function fetchData() {
-        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/table.json") // Replace with the path to your JSON file
+        fetch("data.json") // Replace with the path to your JSON file
             .then(response => response.json())
             .then(data => {
                 tableData = data;
@@ -70,9 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
             for (const key in rowData) {
                 const cell = document.createElement("td");
                 if (key === "Post") {
+                    // Create an <a> element for the "Post" column
                     const link = document.createElement("a");
-                    link.href = rowData[key] === "-" ? "#" : rowData[key];
-                    link.textContent = rowData[key] === "-" ? "N/A" : rowData[key];
+                    link.href = rowData[key].link;
+                    link.textContent = rowData[key].text;
                     cell.appendChild(link);
                 } else {
                     cell.textContent = rowData[key];
@@ -92,6 +93,14 @@ document.addEventListener("DOMContentLoaded", function () {
             dataTable.appendChild(row);
         });
     }
+
+    // Function to initialize the table sorting
+    function resetTableSort() {
+        currentSortColumn = null;
+        currentSortOrder = "default";
+        sortTable(0, sortingOrder[currentSortOrder]);
+    }
+
 
     function sortTable(column, order) {
             const rowsArray = Array.from(dataTable.getElementsByTagName('tr'));
@@ -119,12 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             sortTable(column, sortingOrder[currentSortOrder]);
             currentSortColumn = column;
-        }
-
-        function resetTableSort() {
-            currentSortColumn = null;
-            currentSortOrder = "default";
-            sortTable(0, sortingOrder[currentSortOrder]);
         }
 
         tableHeaders.forEach((header, index) => {
