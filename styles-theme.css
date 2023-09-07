@@ -1,9 +1,10 @@
 body { 
     font-family: Arial, Helvetica, sans-serif;
     transition: background-color 0.3s, color 0.3s;
-	  max-width: 1080px; 
-	  margin: 0 auto !important; 
-	  float: none !important; 
+	max-width: 1080px; 
+	margin: 0 auto !important; 
+	float: none !important; 
+    padding: 10px;
     line-height: 1.4;
 }
 
@@ -21,6 +22,36 @@ button {
     color: black; 
     border: 2px solid #101010;;
   }
+table{
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+td,th {
+    
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+tr{
+    background-color: #f2f2f2;}
+th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: gray;
+
+  }
+
+.dark-mode th {
+    background-color: #555;
+}
+.dark-mode tr {
+    background-color:#212121 ;
+}
+
+
+
 button:hover {
     background-color:black;
     color: white;
@@ -29,10 +60,6 @@ button:hover {
 .dark-mode {
     background-color: #101010;
     color: #fff;
-}
-
-.dark-mode th {
-    background-color: #555;
 }
 
 .dark-mode a:visited { color:#d9b3ff;
