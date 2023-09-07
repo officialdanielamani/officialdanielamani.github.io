@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="styles.css">
+  <title>HTML Extractor</title>
+</head>
+<body>
+  <h1 style="text-align: center;">HTML Extractor Tool</h1>  
+
+<div class="container">
+  <table>
+    <tr>
+      <td><h3>Enter your HTML code:</h3></td>
+    </tr>
+    <tr>
+      <td><textarea id="htmlInput" class="notes" rows="10" cols="50" oninput="updateCounts(this, 'inputCounts', 'inputWordCount')"></textarea></td>
+    </tr>
+    <tr>
+      <td><p>Total Characters in Input: <span id="inputCounts">0 characters</span> | Total Words in Input: <span id="inputWordCount">0 words</span></p></td>
+    </tr>
+  </table>
+</div>
+
+<div class="container">
+
+    <table id="option">
+        <tr>
+          <td><strong>Formating:</strong></td>
+          <td><label for="extractValueOnly">Extract Value Inside  Only:</label><input type="checkbox" id="extractValueOnly" class="largerCheckbox"></td>
+          <td><label for="keepLineBreaks">Keep Line Breaks: </label><input type="checkbox" id="keepLineBreaks" class="largerCheckbox" checked></td>
+          <td><label for="keepIndent">Keep Indent: </label><input type="checkbox" id="keepIndent" class="largerCheckbox" checked></td>  
+        </tr>
+        <tr>
+          <td><strong>Option:</strong></td>
+          <td><label for="classToKeep">Enter the HTML <strong>"Class"</strong> to extract (comma-separated): </label><input type="text" id="classToKeep" placeholder="e.g., class1, class2"></td>
+          <td><label for="idToKeep">Enter the HTML <strong>"ID"</strong> to extract (comma-separated): </label><input type="text" id="idToKeep" placeholder="e.g., id1, id2"></td>
+          <td><label for="tagsToKeep">Enter HTML <strong>"Tags"</strong> to extract (comma-separated): </label><input type="text" id="tagsToKeep" placeholder="e.g., p, div, label"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button onclick="extractElements()">Extract HTML Elements</button></td>
+          <td><button onclick="extractTextOnly()">Extract Text Only</button></td>
+          <td><label for="formatOutput">Format Output:</label><input type="checkbox" id="formatOutput" class="largerCheckbox" onchange="formatOutput()">
+            </td>
+        </tr>
+    </table>
+  
+</div>
+
+<div class="container">  
+  <table>
+    <tr>
+      <td><h3>Extracted Elements:</h3></td>
+    </tr>
+    <tr>
+      <td><textarea id="output" class="notes"rows="10" cols="50" readonly oninput="updateCounts(this, 'outputCounts', 'outputWordCount')"></textarea></td>
+    </tr>
+    <tr>
+      <td><p>Total Characters in Output: <span id="outputCounts">0 characters</span> | Total Words in Output: <span id="outputWordCount">0 words</span></p><button onclick="copyToClipboard()">Copy to Clipboard</button>      <button onclick="sendToInput()">Send to Input</button>      <button onclick="saveAsHtml()">Save as HTML</button>      <button onclick="saveAsTxt()">Save as TXT</button>      <button id="openModalButton">Information & Guide</button>
+      
+      </td>
+    </tr>
+  </table>
+  <br/>
+</div>
+
+<div class="modal" id="myModal">
+  <div class="modal-content" style="text-align: left;">
+    <button class="modal-close" id="closeModal" style="background-color: red; max-width: max-content;">X</button>
+    <br/><br/>
+    <h3>Guide and Information</h3>
+    <table style="text-align: left;">
+      <tr>
+        <td>Function</td>
+        <td>Info</td>
+        <td>Shortcut</td>
+      </tr>
+      <tr>
+        <td>Input Textarea:</td>
+        <td>Where you put input HTML</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Extract Value Inside Only:</td>
+        <td><ul>
+          <li>Checked: Remove HTML tag, take inner value </li>
+          <li>Unchecked (Default): Preserve HTML tag</li>
+        </ul></td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Keep Line Breaks:</td>
+        <td><ul>
+          <li>Checked (Default): Preserve current line break </li>
+          <li>Unchecked: Remove all line break</li>
+        </ul></td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Keep Indent:</td>
+        <td><ul>
+          <li>Checked (Default): Preserve current indent </li>
+          <li>Unchecked: Remove all indent (eg tab, space)</li>
+        </ul></td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Input Class:</td>
+        <td >Enter the class name you want to extract. Example <i>&lt;p class=&quot;class-ok&quot;&gt;&lt;/p&gt;</i>, the class is <i>class-ok</i></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Input ID:</td>
+        <td >Enter the class name you want to extract. Example <i>&lt;p id=&quot;id-ok&quot;&gt;&lt;/p&gt;</i>, the id is <i>id-ok</i></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Input Tag:</td>
+        <td>Enter HTML tag you want to extract. Example for code <i>&lt;p&gt;Testing&lt;a href=&quot;https://example.com&gt;Website&lt;a&gt;&lt;/p&gt;</i>, the HTML tag inside it are <i>p,a</i> .To extract multiple class, comma-separated between tag</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Format Output:</td>
+        <td><ul>
+          <li>Checked: Using basic HTML Formating </li>
+          <li>Unchecked (Default): Preserve current input formatting</li>
+        </ul>
+        Uncheck and check the checkbox again to change the output formatting.
+      </td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Output Textarea:</td>
+        <td>Where the process extract will be output</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Extract HTML Element:</td>
+        <td>Extract only selected Class,ID and HTML tag. If the element are nested, will include all inside the main nested. If all input leaved as blank, will passthrough to output</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Extract Text Only:</td>
+        <td>This will extract all text and remove all HTML tag (note: will ignore Class, ID and Tags input)</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Send to Input:</td>
+        <td>Current output will replace input text area</td>
+        <td>-</td>
+      </tr>
+    </table>
+    Shoutcut key on planing.
+    <p><i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 1.0.1</i></p>
+    <br/><br/>
+
+  </div></div>
+
+<footer style="text-align: center;">
+  <i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 1.0.1</i>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
