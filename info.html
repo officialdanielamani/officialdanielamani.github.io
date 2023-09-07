@@ -14,7 +14,7 @@
 <button id="toggleModeButton">Switch to Dark Mode 🌑</button> 
 <br/><br/>
 <h3>About</h3>
-<p>This only personal website for me. </p>
+<p>This only personal website for me to publish things that 'may' help people? <i>or not...</i></p>
 <hr>
 <h3>Inspiration</h3>
 <p>
@@ -27,12 +27,69 @@
 </p>
 <hr>
 <h3>License</h3>
-<p>All code and information on website are License on <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">"Creative Commons Attribution-ShareAlike 4.0 International License"</a></p>
+<p>All code and information on website are License on <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">"Creative Commons Attribution-ShareAlike 4.0 International License"</a>
+EDNA is a shotname of ProjectEDNA, while DANP is shotname "my name" + "Project"</p>
+<hr>
+<h3>Privacy</h3>
+<p>This entire websiste is hosted on Github. By accessing this website you also need to know <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank">Github privacy policy.</a>
+All code are mean to run locally on the browser. The code may use JS code such as localStorage and fetchJson function to ensure it working properly (Example store theme selection). All code are open-source, do whatever you want. No analytics bullshit.</p>
+  
+<table>
+    <tr>
+        <td><button onclick="showLocalStorage()">Show all localStorage</button>   <button onclick=" deleteLocalStorage()">Clear all localStorage</button>
+        </td>
+        <td><button onclick="showCookies()">Show all Cookies</button>   <button onclick="deleteCookies()">Clear all Cookies*</button> 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id = "resultLocalStorage"></div>
+        </td>
+        <td>
+            <div id = "resultCookies"></div>
+        </td>
+    </tr>
+</table>
 <br>
 <hr>
 <footer>
   <p>Powered by EDNA. Copyright DANP 2016-2023</p>
 </footer>
+<script>
+		function deleteLocalStorage() {
+			// Clear local storage items.
+			localStorage.clear();
+            showLocalStorage();
+		}
+
+        function showLocalStorage() {
+
+            var archive = [],
+            keys = Object.keys(localStorage),
+            i = 0, key;
+
+            for (; key = keys[i]; i++) {
+            archive.push( key + '=' + localStorage.getItem(key));
+            }
+
+            document.getElementById("resultLocalStorage").innerHTML = archive;
+        }
+
+        function deleteCookies() {
+            var Cookies = document.cookie.split(';');
+ 
+            // set 1 Jan, 1970 expiry for every cookies
+            for (var i = 0; i < Cookies.length; i++)
+            document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
+            showCookies();
+        }
+        // function to show cookies
+        function showCookies() {
+            var show = document.getElementById("resultCookies");
+            show.innerHTML = document.cookie;
+        }
+
+</script>
 <script src="script-theme.js"></script>
 </body>
 <html>
