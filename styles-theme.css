@@ -1,6 +1,5 @@
 body { 
     font-family: Arial, Helvetica, sans-serif;
-    transition: background-color 0.3s, color 0.3s;
 	max-width: 1080px; 
 	margin: 0 auto !important; 
 	float: none !important; 
