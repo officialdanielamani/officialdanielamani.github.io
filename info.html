@@ -85,8 +85,13 @@ All code are mean to run locally on the browser. The code may use JS code such a
         }
         // function to show cookies
         function showCookies() {
-            var show = document.getElementById("resultCookies");
-            show.innerHTML = document.cookie;
+            if (document.cookie == null) {
+        document.getElementById("resultCookies").innerHTML = "Not Exist";
+        // do cookie doesn't exist stuff;
+           }
+           else{
+        document.getElementById("resultCookies").innerHTML = document.cookie;
+        }
         }
 
 </script>

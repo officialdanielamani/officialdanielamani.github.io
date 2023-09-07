@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch data from the JSON file
     function fetchData() {
-        fetch("data.json") // Replace with the path to your JSON file
+        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/table.json") // Replace with the path to your JSON file
             .then(response => response.json())
             .then(data => {
                 tableData = data;
