@@ -11,7 +11,12 @@
 <h1 style="text-align:center;">Network Topology</h1>
 <h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-05</h3> 
 <hr>
-<button id="toggleModeButton">Switch to Dark Mode 🌑</button> 
+<div id="siteSetting" style="text-align: center;">
+  <button id="themeSetting">Theme Settings ⚙️</button>
+  <div id="themeButtons" style="display: none;">
+      <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+  </div>
+</div>
 <br/><br/>
 <p style="text-align: center;"><img src="../image/NetworkTopology.jpg" atl="logo" style="width:90%;height:90%"></p>
 <p>The all application is running on Docker Container. All docker are managed by using Portainer. Some Docker can be access by Wireguard Tunnel or by Cloudflare Tunnel. 

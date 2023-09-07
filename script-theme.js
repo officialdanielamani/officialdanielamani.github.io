@@ -32,3 +32,69 @@
                 }
             });
         }
+
+        const body = document.body;
+        let currentFontSize = parseInt(localStorage.getItem("fontSize")) || 16;
+        const fontSizeButtonsContainer = document.getElementById("themeButtons");
+        const fontAccessibilityButton = document.getElementById("toggleFontAccessibility");
+        let fontAccessibilityEnabled = localStorage.getItem("fontAccessibilityEnabled") === "true";
+
+        function updateFontSize() {
+            body.style.fontSize = currentFontSize + "px";
+            localStorage.setItem("fontSize", currentFontSize);
+        }
+
+        function toggleFontAccessibility() {
+            if (!fontAccessibilityEnabled) {
+                body.style.fontFamily = "OpenDyslexic, Comic Sans MS, Verdana, sans-serif";
+                fontAccessibilityButton.textContent = "Font Accessibility: ✔️";
+                fontAccessibilityEnabled = true;
+            } else {
+                body.style.fontFamily = "Arial, Helvetica, sans-serif";
+                fontAccessibilityButton.textContent = "Font Accessibility: ❌";
+                fontAccessibilityEnabled = false;
+            }
+            localStorage.setItem("fontAccessibilityEnabled", fontAccessibilityEnabled);
+        }
+
+        function checkFontAccessibility(){
+            if(fontAccessibilityEnabled === true){
+                body.style.fontFamily = "OpenDyslexic, Comic Sans MS, Verdana, sans-serif";
+                fontAccessibilityButton.textContent = "Font Accessibility: ✔️";
+            }
+            else{
+                body.style.fontFamily = "Arial, Helvetica, sans-serif";
+                fontAccessibilityButton.textContent = "Font Accessibility: ❌";
+            }
+        }
+
+        document.getElementById("decreaseFontSize").addEventListener("click", function () {
+            currentFontSize = Math.max(currentFontSize - 2, 8); // Ensure minimum font size
+            updateFontSize();
+        });
+
+        document.getElementById("defaultFontSize").addEventListener("click", function () {
+            currentFontSize = 16; // Set it back to the default size
+            updateFontSize();
+        });
+
+        document.getElementById("increaseFontSize").addEventListener("click", function () {
+            currentFontSize += 2;
+            updateFontSize();
+        });
+
+        document.getElementById("themeSetting").addEventListener("click", function () {
+            if (fontSizeButtonsContainer.style.display === "none" || fontSizeButtonsContainer.style.display === "") {
+                fontSizeButtonsContainer.style.display = "block";
+            } else {
+                fontSizeButtonsContainer.style.display = "none";
+            }
+        });
+
+        document.getElementById("toggleFontAccessibility").addEventListener("click", function () {
+            toggleFontAccessibility();
+        });
+
+        // Initialize the font size and font accessibility settings
+        updateFontSize();
+        checkFontAccessibility();

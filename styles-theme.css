@@ -5,19 +5,22 @@ body {
 	float: none !important; 
     padding: 25px;
     line-height: 1.4;
+    font-size: 16px;
 }
 
 input[type="text"] {
+    font-size: inherit;
     width: 100%;
     padding: 10px;
     margin-top: 10px;
 }
 
 button {
+    font-size: inherit;
     background-color: white;
     padding: 5px 5px;
     text-align: center; 
-    font-size: 14px;
+    font-size: 16px;
     color: black; 
     border: 2px solid #101010;;
   }
@@ -28,12 +31,13 @@ table{
 }
 
 td,th {
-    
+    font-size: inherit;
     border: 1px solid #ddd;
     padding: 8px;
   }
   
 tr{
+    font-size: inherit;
     background-color: #f2f2f2;}
 th {
     padding-top: 12px;
@@ -44,9 +48,11 @@ th {
   }
 
 .dark-mode th {
+    font-size: inherit;
     background-color: #555;
 }
 .dark-mode tr {
+    font-size: inherit;
     background-color:#212121 ;
 }
 
@@ -72,10 +78,11 @@ button:hover {
 }
 
 .dark-mode button {
+    font-size: inherit;
     background-color: black;
     padding: 5px 5px;
     text-align: center; 
-    font-size: 14px;
+    font-size: 16px;
     color: white; 
     border: 2px solid white;
   }

@@ -11,7 +11,12 @@
 <h1 style="text-align:center;">Information</h1>
 <h3  style="text-align:center;"> <a href="index.html">Home</a> | <a href="search.html">Posts/Project</a> | 2023-09-07</h3> 
 <hr>
-<button id="toggleModeButton">Switch to Dark Mode 🌑</button> 
+<div id="siteSetting" style="text-align: center;">
+<button id="themeSetting">Theme Settings ⚙️</button>
+<div id="themeButtons" style="display: none;">
+    <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+</div>
+</div>
 <br/><br/>
 <h3>About</h3>
 <p>This only personal website for me to publish things that 'may' help people? <i>or not...</i></p>
@@ -76,24 +81,23 @@ All code are mean to run locally on the browser. The code may use JS code such a
             document.getElementById("resultLocalStorage").innerHTML = archive;
         }
 
-        function deleteCookies() {
-            var Cookies = document.cookie.split(';');
- 
-            // set 1 Jan, 1970 expiry for every cookies
-            for (var i = 0; i < Cookies.length; i++)
-            document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
-            showCookies();
-        }
-        // function to show cookies
         function showCookies() {
-            if (document.cookie == null) {
-        document.getElementById("resultCookies").innerHTML = "Not Exist";
-        // do cookie doesn't exist stuff;
-           }
-           else{
-        document.getElementById("resultCookies").innerHTML = document.cookie;
+            const cookies = document.cookie;
+            const resultCookies = document.getElementById("resultCookies");
+            if (cookies) {
+                resultCookies.textContent = "Cookies: " + cookies;
+            } else {
+                resultCookies.textContent = "No Cookies Found";
+            }
         }
 
+        function deleteCookies() {
+            document.cookie.split(";").forEach(function (c) {
+                document.cookie = c
+                    .replace(/^ +/, "")
+                    .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            showCookies();
         }
 
 </script>
