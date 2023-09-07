@@ -6,34 +6,6 @@
 <link rel="stylesheet" type="text/css" href="styles-theme.css">
 <style>
   
-#myInput {
-  width: 95%;
-  font-size: 16px;
-  padding: 12px 20px 12px 20px;
-  border: 1px solid #ddd;
-  margin-bottom: 12px;
-}
-
-#myUL {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#myUL li a {
-  border: 1px solid #ddd;
-  margin-top: -1px; /* Prevent double borders */
-  background-color: #f6f6f6;
-  padding: 12px;
-  text-decoration: none;
-  font-size: 18px;
-  color: black;
-  display: block
-}
-
-#myUL li a:hover:not(.header) {
-  background-color: #eee;
-}
 </style>
 </head>
 <body>
@@ -44,46 +16,157 @@
 <p><a href="index.html">Go Back Home</a></p>
 <br/>
 
-<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for post.." title="Type in a random text">
-
-<ul id="myUL">
-  <li><a href="#">Selfhosted Journey</a></li>
-  <li><a href="https://github.com/officialdanielamani/proteus-library-collection">Proteus Arduino Library Collection</a></li>
-  <li><a href="/project/time_score/index.html">Line Following Time Ranking</a></li>
-  <li><a href="/project/sumo_score/index.html">Sumo Robot Calculate</a></li>
-  <li><a href="/post/network-topology.html">Network Topology (Server)</a></li>
-  <li><a href="/project/html_extractor/index.html">HTML Extractor Tool</a></li>
-  <li><a href="#">Server Architecture</a></li>
-  <li><a href="#">J1900 Problems</a></li>
-  <li><a href="#">ESP8266 cannot upload code</a></li>
-  <li><a href="#">MrDIY wifi adapter for linux</a></li>
-  <li><a href="#">MAMS</a></li>
-  <li><a href="#">Cat Feeder</a></li>
-  <li><a href="#">Server Architecture</a></li>
-  <li><a href="#">Open Media Vault</a></li>
-</ul>
-
+<input type="text" placeholder="Search" id="searchInput" style="font-size: 24px; width: 98%;">
+<br/>    
+<div>
+    <p>Select a row to search:</p>
+    <input type="radio" name="searchRow" value="Post" checked> Post
+    <input type="radio" name="searchRow" value="Info"> Info
+    <input type="radio" name="searchRow" value="Date"> Date
+    <input type="radio" name="searchRow" value="Tag"> Tag
+</div>
 <br/>
+<table id="dataTable" style="font-size: 18px;">
+    <thead>
+        <tr>
+            <th data-sort="default" style="width: 50%;">Post</th>
+            <th data-sort="default">Info</th>
+            <th data-sort="default"  style="width: 15%;">Date</th>
+            <th data-sort="default">Tag</th>
+        </tr>
+    </thead>
+    <tbody><!-- This is where the table data will be populated --></tbody>
+</table>
+
 <p><a href="index.html">Go Back Home</a></p>
 <script>
-function myFunction() {
-    var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    ul = document.getElementById("myUL");
-    li = ul.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName("a")[0];
-        txtValue = a.textContent || a.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            li[i].style.display = "";
-        } else {
-            li[i].style.display = "none";
-        }
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const searchRowRadioButtons = document.querySelectorAll('input[name="searchRow"]');
+    const dataTable = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+    const tableHeaders = document.querySelectorAll('th[data-sort]');
+    const sortingOrder = { asc: 1, desc: -1, default: 0 };
+
+    let currentSortColumn = null;
+    let currentSortOrder = "default";
+    let tableData = []; // Store the JSON data here
+
+    // Function to fetch data from the JSON file
+    function fetchData() {
+        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/table.json") // Replace with the path to your JSON file
+            .then(response => response.json())
+            .then(data => {
+                tableData = data;
+                populateTable(tableData); // Call this function to populate the table
+                resetTableSort();
+            })
+            .catch(error => console.error("Error fetching data: ", error));
     }
-}
- //Thanks W3School
-</script>
+
+    // Function to populate the table
+    function populateTable(data) {
+        const rows = data.map(rowData => {
+            const row = document.createElement("tr");
+            for (const key in rowData) {
+                const cell = document.createElement("td");
+                if (key === "Post") {
+                    // Create an <a> element for the "Post" column
+                    const link = document.createElement("a");
+                    link.href = rowData[key].link;
+                    link.textContent = rowData[key].text;
+                    cell.appendChild(link);
+                } else {
+                    cell.textContent = rowData[key];
+                }
+                row.appendChild(cell);
+            }
+            return row;
+        });
+
+        // Clear existing rows
+        while (dataTable.firstChild) {
+            dataTable.removeChild(dataTable.firstChild);
+        }
+
+        // Append new rows
+        rows.forEach(row => {
+            dataTable.appendChild(row);
+        });
+    }
+
+    // Function to initialize the table sorting
+    function resetTableSort() {
+        currentSortColumn = null;
+        currentSortOrder = "default";
+        sortTable(0, sortingOrder[currentSortOrder]);
+    }
+
+
+    function sortTable(column, order) {
+            const rowsArray = Array.from(dataTable.getElementsByTagName('tr'));
+            
+            rowsArray.sort((a, b) => {
+                const cellA = a.getElementsByTagName("td")[column].textContent || a.getElementsByTagName("td")[column].innerText;
+                const cellB = b.getElementsByTagName("td")[column].textContent || b.getElementsByTagName("td")[column].innerText;
+                return order * cellA.localeCompare(cellB);
+            });
+
+            while (dataTable.firstChild) {
+                dataTable.removeChild(dataTable.firstChild);
+            }
+
+            rowsArray.forEach(row => {
+                dataTable.appendChild(row);
+            });
+        }
+
+        function toggleSortOrder(column) {
+            if (currentSortColumn !== column) {
+                currentSortOrder = "asc";
+            } else {
+                currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+            }
+            sortTable(column, sortingOrder[currentSortOrder]);
+            currentSortColumn = column;
+        }
+
+        tableHeaders.forEach((header, index) => {
+            header.addEventListener("click", () => {
+                toggleSortOrder(index);
+            });
+        });
+
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedColumn = document.querySelector('input[name="searchRow"]:checked').value;
+            
+            const rows = dataTable.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName("td");
+                const cellText = cells[selectedColumn === "Date" ? 2 : selectedColumn === "Tag" ? 3 : 0].textContent || cells[selectedColumn === "Tag" ? 3 : 0].innerText;
+
+                if (cellText.toLowerCase().indexOf(searchText) > -1) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        }
+
+        searchInput.addEventListener("input", filterTable);
+        searchRowRadioButtons.forEach(radio => radio.addEventListener("change", filterTable));
+
+    // Fetch data when the page loads
+    fetchData();
+
+    // Initialize the table sorting
+    resetTableSort();
+});
+
+
+
+    </script>
 <script src="script-theme.js"></script>
 </body>
 </html>
