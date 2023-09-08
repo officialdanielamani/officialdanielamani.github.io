@@ -10,6 +10,11 @@
     font-family: inherit;
     font-size: inherit;
 }
+
+input.largerRadio {
+    width: 32px;
+    height: 32px;
+}
   
 </style>
 </head>
@@ -30,10 +35,10 @@
 <br/>    
 <div>
     <p>Select a row to search:</p>
-    <input type="radio" name="searchRow" value="Post" checked> Post
-    <input type="radio" name="searchRow" value="Info"> Info
-    <input type="radio" name="searchRow" value="Date"> Date
-    <input type="radio" name="searchRow" value="Tag"> Tag
+    <input class="largerRadio" type="radio" name="searchRow" value="Post" checked> Post
+    <input class="largerRadio" type="radio" name="searchRow" value="Info"> Info
+    <input class="largerRadio" type="radio" name="searchRow" value="Date"> Date
+    <input class="largerRadio" type="radio" name="searchRow" value="Tag"> Tag
 </div>
 <br/>
 <table id="dataTable">
