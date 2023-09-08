@@ -13,13 +13,13 @@ body {
 }
 
 /* Media query for small screens (e.g., mobile) */
-@media (max-width: 768px) {
+@media (max-width: 1280px) {
     #themeSetting {
-        display: block; /* Show the "Settings" button on small screens */
+        display: block !important; /* Show the "Settings" button on small screens */
     }
 
     #themeButtons.show {
-        display: block; /* Show the option buttons on small screens when the class is applied */
+        display: block !important; /* Show the option buttons on small screens when the class is applied */
     }
 }
 
