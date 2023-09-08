@@ -1,3 +1,4 @@
+@import url('https://fonts.cdnfonts.com/css/open-dyslexic');
 body { 
     font-family: Arial, Helvetica, sans-serif;
 	max-width: 1080px; 
@@ -24,12 +25,11 @@ body {
 }
 
 input, textarea, button,td,th,tr {
-    font-family: inherit;
-    font-size: inherit;
+    font-family: inherit !important;
+    font-size: inherit !important;
 }
 
 input[type="text"] {
-    font-size: inherit;
     width: 100%;
     padding: 10px;
     margin-top: 10px;

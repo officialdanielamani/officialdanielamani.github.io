@@ -46,7 +46,7 @@
 
         function toggleFontAccessibility() {
             if (!fontAccessibilityEnabled) {
-                body.style.fontFamily = "OpenDyslexic, Comic Sans MS, Verdana, sans-serif";
+                body.style.fontFamily = "'Open-Dyslexic', Comic Sans MS, Verdana, sans-serif";
                 fontAccessibilityButton.textContent = "Font Accessibility: ✔️";
                 fontAccessibilityEnabled = true;
             } else {
