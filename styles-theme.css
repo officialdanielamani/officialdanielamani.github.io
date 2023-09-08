@@ -6,7 +6,7 @@ body {
 	float: none !important; 
     padding: 25px !important;
     line-height: 1.4;
-    font-size: 18px;
+    font-size: 1.00em;
 }
 
 #themeButtons {
@@ -39,7 +39,6 @@ button {
     background-color: white;
     padding: 5px 5px;
     text-align: center; 
-    font-size: 16px;
     color: black; 
     border: 2px solid #101010;;
   }
@@ -97,7 +96,6 @@ button:hover {
     background-color: black;
     padding: 5px 5px;
     text-align: center; 
-    font-size: 16px;
     color: white; 
     border: 2px solid white;
   }
