@@ -34,7 +34,7 @@
         }
 
         const body = document.body;
-        let currentFontSize = parseInt(localStorage.getItem("fontSize")) || 16;
+        let currentFontSize = parseInt(localStorage.getItem("fontSize")) || 18;
         const fontSizeButtonsContainer = document.getElementById("themeButtons");
         const fontAccessibilityButton = document.getElementById("toggleFontAccessibility");
         let fontAccessibilityEnabled = localStorage.getItem("fontAccessibilityEnabled") === "true";
@@ -59,7 +59,7 @@
 
         function checkFontAccessibility(){
             if(fontAccessibilityEnabled === true){
-                body.style.fontFamily = "OpenDyslexic, Comic Sans MS, Verdana, sans-serif";
+                body.style.fontFamily = "'Open-Dyslexic', Comic Sans MS, Verdana, sans-serif";
                 fontAccessibilityButton.textContent = "Font Accessibility: ✔️";
             }
             else{
@@ -74,7 +74,7 @@
         });
 
         document.getElementById("defaultFontSize").addEventListener("click", function () {
-            currentFontSize = 16; // Set it back to the default size
+            currentFontSize = 18; // Set it back to the default size
             updateFontSize();
         });
 
