@@ -8,6 +8,21 @@ body {
     font-size: 16px;
 }
 
+#themeButtons {
+    display: none; /* Initially hide on all screens */
+}
+
+/* Media query for small screens (e.g., mobile) */
+@media (max-width: 768px) {
+    #themeSetting {
+        display: block; /* Show the "Settings" button on small screens */
+    }
+
+    #themeButtons.show {
+        display: block; /* Show the option buttons on small screens when the class is applied */
+    }
+}
+
 input, textarea, button,td,th,tr {
     font-family: inherit;
     font-size: inherit;
