@@ -8,6 +8,11 @@ body {
     font-size: 16px;
 }
 
+input, textarea, button,td,th,tr {
+    font-family: inherit;
+    font-size: inherit;
+}
+
 input[type="text"] {
     font-size: inherit;
     width: 100%;
@@ -16,7 +21,6 @@ input[type="text"] {
 }
 
 button {
-    font-size: inherit;
     background-color: white;
     padding: 5px 5px;
     text-align: center; 
@@ -31,13 +35,11 @@ table{
 }
 
 td,th {
-    font-size: inherit;
     border: 1px solid #ddd;
     padding: 8px;
   }
   
 tr{
-    font-size: inherit;
     background-color: #f2f2f2;}
 th {
     padding-top: 12px;
@@ -48,11 +50,9 @@ th {
   }
 
 .dark-mode th {
-    font-size: inherit;
     background-color: #555;
 }
 .dark-mode tr {
-    font-size: inherit;
     background-color:#212121 ;
 }
 
@@ -78,7 +78,7 @@ button:hover {
 }
 
 .dark-mode button {
-    font-size: inherit;
+  
     background-color: black;
     padding: 5px 5px;
     text-align: center; 
