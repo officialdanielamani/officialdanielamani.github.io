@@ -48,24 +48,35 @@
       </footer>
       <script src="script-theme.js"></script>
       <script>
-         async function fetchRandomQuote() {
-           try {
-               const response = await fetch('quotes.json');
-               const data = await response.json();
-               const randomIndex = Math.floor(Math.random() * data.length);
-               const randomQuote = data[randomIndex];
-               const quoteText = `${randomQuote.quote} - ${randomQuote.author}`;
-               document.getElementById("quote").textContent = quoteText;
-           } catch (error) {
-               console.error('Error fetching data:', error);
-           }
-         }
-         
-         // Add click event listener to the button
-         document.getElementById("generate-button").addEventListener("click", fetchRandomQuote);
-         
-         // Load a random quote on page load
-         window.addEventListener("load", fetchRandomQuote);
-      </script>
+        let currentQuote = ''; // Initialize currentQuote
+
+        // Function to fetch and display a random quote from the JSON file
+        async function fetchRandomQuote() {
+            try {
+                const response = await fetch('quotes.json');
+                const data = await response.json();
+
+                // Keep generating a random quote until it's different from the current one
+                let randomQuote = '';
+                do {
+                    const randomIndex = Math.floor(Math.random() * data.length);
+                    randomQuote = data[randomIndex];
+                } while (randomQuote.quote === currentQuote);
+
+                currentQuote = randomQuote.quote; // Update currentQuote
+
+                const quoteText = `${randomQuote.quote} - ${randomQuote.author}`;
+                document.getElementById("quote").textContent = quoteText;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Add click event listener to the button
+        document.getElementById("generate-button").addEventListener("click", fetchRandomQuote);
+
+        // Load a random quote on page load
+        window.addEventListener("load", fetchRandomQuote);
+    </script>
    </body>
    <html>
