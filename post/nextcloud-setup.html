@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css" href="../styles-theme.css">
+    <style>
+      *{
+        font-family: inherit;
+        font-size: inherit;
+      }
+    </style>
+  </head>
+<body>
+
+<h1 style="text-align:center;">Nextcloud Docker Setup and basic troubleshooting</h1>
+<h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-27</h3> 
+<hr>
+<div id="siteSetting" style="text-align: center;">
+  <button id="themeSetting">Theme Settings ⚙️</button>
+  <div id="themeButtons" style="display: none;">
+      <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+  </div>
+</div>
+<br/><br/>
+<p>Last edit on: 2023-09-27</p>
+
+<p style="text-align: center;"><img src="../image/NextcloudDashboard.png" atl="logo" style="width:90%;height:90%"></p>
+
+<p>Nextcloud is like selfhosted Google Drive with many apps that you can intergate with it. If you using Linux and docker you need to this changes as I using Redis for memory caching on Nextcloud;</p>
+
+<p>Edit this systemctl configuration</p>
+<div class="code-box"><pre><code>sudo nano /etc/sysctl.conf</code></pre></div>
+
+<p>Add this line</p>
+<div class="code-box"><pre><code>vm.overcommit_memory = 1</code></pre></div>
+
+<p>Then reboot your machine to activate the changes. This prevent error/corruption on Redis if the host computer low on memory. <a href="https://redis.io/docs/management/admin/"><strong>DETAIL</strong></a></p>
+
+<p><br />
+&nbsp;I am currenty using it with docker, here is my docker compose;</p>
+<div class="code-box"><pre><code class="language-markdown">version: '2'
+
+services:
+  nextcloud:
+    image: nextcloud:stable
+    container_name: nextcloud
+    restart: unless-stopped
+    ports:
+      - YOUR-PORT-A:80
+    volumes:
+      - /YOUR-STORAGE-LOCATION/Nextcloud/html:/var/www/html
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_PASSWORD=YOUR-PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - REDIS_HOST=nextcloud-redis
+      - REDIS_HOST_PASSWORD=YOUR-PASSWORD
+      - REDIS_HOST_PORT=6379
+    links:
+      - nextcloud-db
+      - nextcloud-redis
+
+  nextcloud-db:
+    image: mariadb:10.6
+    container_name: nextcloud-db
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    ports:
+      - YOUR-PORT-B:3306
+    volumes:
+      - /YOUR-STORAGE-LOCATION/Nextcloud/DB:/var/lib/mysql
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - MYSQL_ROOT_PASSWORD=YOUR-PASSWORD
+      - MYSQL_PASSWORD=YOUR-PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  nextcloud-redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: redis-server --save 30 1 --loglevel warning --requirepass YOUR-PASSWORD
+    ports:
+      - YOUR-PORT-C:6379
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+    volumes:
+      - /YOUR-STORAGE-LOCATION/Nextcloud/Redis:/data</code></pre></div>
+
+<p>&nbsp;</p>
+
+<p>You need to change some item such as;</p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width:751px">
+	<tbody>
+		<tr>
+			<td style="width:232px">MYSQL_ROOT_PASSWORD</td>
+			<td style="width:506px">Admin user of MariaDB Container</td>
+		</tr>
+		<tr>
+			<td style="width:232px">MYSQL_USER</td>
+			<td style="width:506px">User of MariaDB, here I using Nextcloud. The name must same on both Nexcloud&nbsp;and MariaDB container</td>
+		</tr>
+		<tr>
+			<td style="width:232px">MYSQL_PASSWORD</td>
+			<td style="width:506px">The password&nbsp;must same on both Nexcloud&nbsp;and MariaDB container</td>
+		</tr>
+		<tr>
+			<td style="width:232px">REDIS_HOST_PASSWORD</td>
+			<td style="width:506px">Password for Redis. You also need ensure it same on Redis conatiner on command line redis, --requirepass YOUR-PASSWORD &lt;--Change it</td>
+		</tr>
+		<tr>
+			<td style="width:232px">YOUR-PORT</td>
+			<td style="width:506px">The port you want to expose/access the container</td>
+		</tr>
+		<tr>
+			<td style="width:232px">YOUR-STORAGE-LOCATION</td>
+			<td style="width:506px">Where you want to store all the container data</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>The container that I using are bare Nextcloud so you need to install app after setup if you want more funtionality. This container also only using HTTP (not secure). You can add HTTPS by reverse proxy and change some line in Nextcloud to overwrite to HTTPS. But for me I only uing it within local server, for public I using Nginx Proxy Manager to ensure it in HTTPS.<br />
+<br />
+After the Docker are up and running to the address of Nextcloud to setup. Example my nextcloud address is&nbsp;<strong>172.22.0.20:35000</strong>. (Note: the port is depand on YOUR-PORT-A for acess Nextcloud) Next you setup the admin username and password. By default, it will automatically link the database with mariaDB container (so no need to setup DB). Next it will ask you to install recommaded app or skip the your Nextcloud are finish setup.</p>
+
+<p>&nbsp;</p>
+
+<p>Here is my config.php file for reference. (This setup for http only)</p>
+<div class="code-box">
+<pre>
+<code class="language-php">&lt;?php
+$CONFIG = array (
+  'htaccess.RewriteBase' =&gt; '/',
+  'memcache.local' =&gt; '\\OC\\Memcache\\APCu',
+  'apps_paths' =&gt; 
+  array (
+    0 =&gt; 
+    array (
+      'path' =&gt; '/var/www/html/apps',
+      'url' =&gt; '/apps',
+      'writable' =&gt; false,
+    ),
+    1 =&gt; 
+    array (
+      'path' =&gt; '/var/www/html/custom_apps',
+      'url' =&gt; '/custom_apps',
+      'writable' =&gt; true,
+    ),
+  ),
+  'memcache.distributed' =&gt; '\\OC\\Memcache\\Redis',
+  'memcache.locking' =&gt; '\\OC\\Memcache\\Redis',
+  'redis' =&gt; 
+  array (
+    'host' =&gt; 'nextcloud-redis',
+    'password' =&gt; 'XXXXX',
+    'port' =&gt; 6379,
+  ),
+  'instanceid' =&gt; 'XXXXX',
+  'passwordsalt' =&gt; 'XXXXX',
+  'secret' =&gt; 'XXXXX',
+  'trusted_domains' =&gt; 
+  array (
+    0 =&gt; 'XXXXXXX:YOUR-PORT', #Remove if not needed. Change according to your domain. By default auto generate
+    1 =&gt; 'example.com', #Remove if not needed. Change according to your domain
+  ),
+  'datadirectory' =&gt; '/var/www/html/data',
+  'dbtype' =&gt; 'mysql',
+  'version' =&gt; '27.1.1.0',
+  'overwrite.cli.url' =&gt; 'http://XXXXXXX:YOUR-PORT', #Change according to your nextcloud ip. By default auto generate
+  'overwrite.cli.url' =&gt; 'https://example.com', #Remove if not needed. Change according to your domain
+  'dbname' =&gt; 'nextcloud',
+  'dbhost' =&gt; 'nextcloud-db',
+  'dbport' =&gt; '',
+  'dbtableprefix' =&gt; 'oc_',
+  'mysql.utf8mb4' =&gt; true,
+  'dbuser' =&gt; 'nextcloud',
+  'dbpassword' =&gt; 'XXXXX',
+  'installed' =&gt; true,
+  'app_install_overwrite' =&gt; 
+  array (
+    0 =&gt; 'discretepdfsigner',
+  ),
+  'logtimezone' =&gt; 'Asia/Kuala_Lumpur',#Change according to your location
+  'default_phone_region' =&gt; 'MY', #Change according to your location
+);
+</code></pre></div>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>Troubleshooting</h2>
+
+<p><strong>When setup, on Recommanded app are blank</strong></p>
+
+<ul>
+	<li>Your Internet is slow&nbsp;</li>
+	<li>Nextcloud Appstore is down or slow&nbsp;</li>
+	<li>Just skip for now and try to change timeout value later</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>Cannot login evenr with correct username and password (login loop)</strong></p>
+
+<ul>
+	<li>Try clear sites data and cache</li>
+	<li>Use incognito mode</li>
+	<li>Use on another browser (eg Firefox if you on Chrome)</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>When setup it ask for DB info and DB cannot being connected</strong></p>
+
+<ul>
+	<li>The the docker DB name and host is same on Nextcloud and MariaDB</li>
+	<li>Ensure the Nextcloud and MaridDB on same network</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>Where to edit config.php file and apply the changes</strong></p>
+
+<ul>
+	<li>Stop Netxcloud docker container</li>
+	<li>Go to this location for edit your config file&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/config/config.php</code></pre></div></li>
+	<li>Start back Nextcloud container</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>Appstore are blank and I get cURL 28 error on log file</strong></p>
+
+<ul>
+	<li>Your Internet is slow&nbsp;</li>
+	<li>Nextcloud Appstore is down or slow&nbsp;</li>
+	<li>Change timeout value</li>
+	<li>Go to and check&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/data/appdata_YOUR-INSTANCE-ID/appstore</code></pre></div>If inside this folder there is no files called <em>apps.json</em> and <em>categories.json</em> meaning your Nextcloud cannot connect to Internet or slow to download this files.</li>
+	<li>To check either your Nextcloud is connected to Internet is on Dashboard---&gt;Administrative Setting---&gt;Overview or at System. If there is no error about scanning or eth is up there is no problem. If there is error check your firewall rules and docker network to ensure it can reach the internet</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>How do I know if I am slow or Nextcloud is slow</strong></p>
+
+<ul>
+	<li>Go to the Nextcloud docker container terminal and run this code&nbsp;
+  <div class="code-box"><pre><code class="language-markdown">curl https://apps.nextcloud.com/api/v1/categories.json > tmp.json</code></pre></div>
+	</li>
+	<li>Example output&nbsp;
+    <div class="code-box"><pre>
+<code class="language-markdown">
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 12.1M  100 12.1M    0     0  4216k      0  0:00:02  0:00:02 --:--:-- 4222k  
+</code></pre></div>
+	</li>
+  <li>By normal connection you can download below 30s this file</li>
+	<li>If you get more than 3 minute adjust timeout with your get value. Eg if time total is 5 minute after file complete download adjust your timeout more than 6 minutes </li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>Last background job execution ran X hours ago. Something seems wrong</strong></p>
+
+<ul>
+	<li>Type on terminal and enter&nbsp;
+  <div class="code-box"><pre><code class="language-markdown">sudo crontab -e</code></pre></div>
+	</li>
+	<li>Add this line to the crontab file&nbsp;
+    <div class="code-box"><pre>
+<code class="language-markdown">*/5 * * * * docker exec -u www-data nextcloud php /var/www/html/cron.php</pre></div>
+	</li>
+	<li>Then save the file. (If not work change &quot;nextcloud&quot; to your Nextcloud docker ID. To get docker ID you can using sudo docker ps and check your Nextcloud docker ID)</li>
+</ul>
+
+<p>About problem and solution:&nbsp;<a href="https://help.nextcloud.com/t/nextcloud-docker-container-best-way-to-run-cron-job/157734/4"><strong>DETAIL</strong></a></p>
+
+<p>Background Jobs User Manual: <a href="https://docs.nextcloud.com/server/27/admin_manual/configuration_server/background_jobs_configuration.html"><strong>DETAIL</strong></a></p>
+
+<p>&nbsp;</p>
+
+<p><strong>Your installation has no default phone region set</strong></p>
+
+<ul>
+	<li>Edit your config.php file</li>
+	<li>Before&nbsp;the end of your file add this line&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">'logtimezone' =&gt; 'Asia/Kuala_Lumpur',
+'default_phone_region' =&gt; 'MY',</code></pre></div>
+	</li>
+	<li>Change value &#39;Asia/Kuala_Lumpur&#39; and &#39;MY&#39; according to your region</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><strong>How to change timeout value</strong></p>
+
+<p>A. Change Installer.php timeout</p>
+
+<ul>
+	<li>Open file &nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/lib/private/Installer.php</code></pre></div></li>
+	<li>Find this line&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">$timeout = $this-&gt;isCLI ? 0 : 120;</code></pre></div>
+	</li>
+	<li>Change the value 120 to a higher value (eg 600, 1200) and save the file</li>
+	<li>Restart your Nextcloud container to take effect. <a href="https://help.nextcloud.com/t/solved-nc-18-0-1-default-timeout-limit-for-app-download-still-too-tight-override-is-being-ignored/70985/8"><strong>DETAIL</strong></a></li>
+</ul>
+
+<p>B. Change Fetcher.php timeout</p>
+
+<ul>
+	<li>Open file &nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/lib/private/App/AppStore/Fetcher/Fetcher.php</code></pre></div></li>
+	<li>Find this line&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">'timeout' =&gt; 60,</code></pre></div>
+	</li>
+	<li>Change the value 60 to a higher value (eg 600, 1200) and save the file</li>
+	<li>Restart your Nextcloud container to take effect. <a href="https://help.nextcloud.com/t/appstore-is-empty/65078/3"><strong>DETAIL</strong></a></li>
+</ul>
+
+<p>C. Change CurlFactory.php timeout</p>
+
+<ul>
+	<li>Open file &nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/3rdparty/guzzlehttp/guzzle/src/Handler/CurlFactory.php</code></pre></div></li>
+	<li>Find this line&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">\CURLOPT_CONNECTTIMEOUT =&gt; 150,</code></pre></div>
+	</li>
+	<li>Change the value 150 to a higher value (eg 500, 1500) and save the file</li>
+	<li>Restart your Nextcloud container to take effect. <a href="https://help.nextcloud.com/t/appstore-is-empty/65078/3"><strong>DETAIL</strong></a></li>
+</ul>
+
+<p>D. Change Client.php timeout</p>
+
+<ul>
+	<li>Open file &nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/lib/private/Http/Client/Client.php</code></pre></div></li>
+	<li>Find this line&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">RequestOptions::TIMEOUT =&gt; 30,</code></pre></div>
+	</li>
+	<li>Change the value 30 to a higher value (eg 120, 600, 1200) and save the file</li>
+	<li>Restart your Nextcloud container to take effect. <a href="https://help.nextcloud.com/t/solved-nc-18-0-1-default-timeout-limit-for-app-download-still-too-tight-override-is-being-ignored/70985/8"><strong>DETAIL</strong></a></li>
+</ul>
+
+<p>E. Change timeout on htaccess</p>
+
+<ul>
+	<li>Edit your server .htaccess</li>
+	<li>Add this line to your code to remove timeout&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">&lt;IfModule Litespeed&gt;
+SetEnv noabort 1
+SetEnv noconntimeout 1
+&lt;/IfModule&gt;</code></pre></div>
+	&nbsp;</li>
+	<li>Save file and restart your server. <a href="https://help.nextcloud.com/t/solved-installation-fails-with-request-timeout/79653/4"><strong>DETAIL</strong></a></li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><em>*Discalmer: I am not security nor computer expert use this guide with own risk.</em></p>
+
+<p>Source:</p>
+
+<ol>
+	<li><a href="https://help.nextcloud.com/">help.nextcloud.com</a></li>
+	<li><a href="https://docs.nextcloud.com/server/27/admin_manual/contents.html">https://docs.nextcloud.com/server/27/admin_manual/contents.html</a></li>
+	<li><a href="https://dbt3ch.com/">https://dbt3ch.com/</a></li>
+</ol>
+
+<br>
+<hr>
+<footer>
+  <p>Powered by EDNA. Copyright DANP 2016-2023</p>
+</footer>
+<script src="../script-theme.js"></script>
+</body>
+<html>

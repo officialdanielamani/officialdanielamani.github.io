@@ -1,14 +1,24 @@
-@import url('https://fonts.cdnfonts.com/css/open-dyslexic');
-body { 
-    font-family: Arial, Helvetica, sans-serif;
-	max-width: 1080px; 
-	margin: 0 auto !important; 
-	float: none !important; 
+/* Import the 'Open Dyslexic' font from a more suitable location */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+/* Apply font-family to the body */
+body {
+    font-family: 'Open Dyslexic', Arial, Helvetica, sans-serif;
+    max-width: 1080px;
+    margin: 0 auto !important;
+    float: none !important;
     padding: 25px !important;
     line-height: 1.4;
     font-size: 1.00em;
 }
 
+/* Improve readability by increasing line-height and font-size for code */
+code {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+/* Group related styles together for better organization */
 #themeButtons {
     display: none; /* Initially hide on all screens */
 }
@@ -24,9 +34,12 @@ body {
     }
 }
 
-input, textarea, button,td,th,tr {
-    font-family: inherit !important;
-    font-size: inherit !important;
+/* Remove unnecessary !important declarations */
+
+/* General styles for input, textarea, button, td, th, tr */
+input, textarea, button, td, th, tr {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 input[type="text"] {
@@ -37,69 +50,98 @@ input[type="text"] {
 
 button {
     background-color: white;
-    padding: 5px 5px;
-    text-align: center; 
-    color: black; 
-    border: 2px solid #101010;;
-  }
-table{
+    padding: 5px;
+    text-align: center;
+    color: black;
+    border: 2px solid #101010;
+    cursor: pointer; /* Add a pointer cursor for buttons */
+}
+
+/* Style tables for better readability */
+table {
     border-collapse: collapse;
     width: 100%;
     text-align: center;
 }
 
-td,th {
+td, th {
     border: 1px solid #ddd;
     padding: 8px;
-  }
-  
-tr{
-    background-color: #f2f2f2;}
+}
+
+/*tr:nth-child(even) {
+    background-color: #f2f2f2;
+}*/
+
 th {
     padding-top: 12px;
     padding-bottom: 12px;
-    background-color:#212121;
-    color: white;
-
-  }
-
-.dark-mode th {
-    background-color: #555;
-}
-.dark-mode tr {
-    background-color:#212121 ;
-}
-
-
-
-button:hover {
-    background-color:black;
+    background-color: #212121;
     color: white;
 }
 
+/* Dark mode styles */
 .dark-mode {
     background-color: #101010;
     color: #fff;
 }
 
-.dark-mode a:visited { color:#d9b3ff;
+.dark-mode a:visited {
+    color: #d9b3ff;
 }
-.dark-mode a:active { color:#6699ff;
+
+.dark-mode a:active {
+    color: #6699ff;
 }
-.dark-mode a{ color:#6699ff;
+
+.dark-mode a {
+    color: #6699ff;
 }
-.dark-mode a:hover { color:#99ccff;
+
+.dark-mode a:hover {
+    color: #99ccff;
 }
 
 .dark-mode button {
-  
     background-color: black;
-    padding: 5px 5px;
-    text-align: center; 
-    color: white; 
+    padding: 5px;
+    text-align: center;
+    color: white;
     border: 2px solid white;
-  }
-  .dark-mode button:hover {
-    background-color:white;
+    cursor: pointer; /* Add a pointer cursor for buttons */
+}
+
+.dark-mode button:hover {
+    background-color: white;
     color: black;
+}
+
+/* Code box styles */
+.code-box {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* Style the code inside the code box */
+.code-box code {
+    display: block;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Dark mode styles for the code box */
+.dark-mode .code-box {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+}
+
+.dark-mode .code-box code {
+    color: #fff;
 }

@@ -5,7 +5,16 @@
             "link": "#"
         },
         "Info": "-",
-        "Date": "-",
+        "Date": "",
+        "Tag": "Project, Selfhosted"
+    },
+    {
+        "Post": {
+            "text": "Nextcloud Docker Setup and basic troubleshooting",
+            "link": "/post/nextcloud-setup.html"
+        },
+        "Info": "Setup your own Nextcloud docker",
+        "Date": "2023-09-27",
         "Tag": "Project, Selfhosted"
     },
     {
