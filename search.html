@@ -12,21 +12,23 @@
 }
 
 input.largerRadio {
-    width: 32px;
-    height: 32px;
+    width: 1.2em;
+    height: 1.2em;
 }
   
 </style>
 </head>
 <body>
 
-<h1>Post/Project List</h1>
-<div id="siteSetting" style="text-align: center;">
-    <button id="themeSetting">Theme Settings ⚙️</button>
-    <div id="themeButtons" style="display: none;">
-        <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
-    </div>
-  </div>
+    <h1 style="text-align:center;">Post/Project List</h1>
+    <h3  style="text-align:center;"> <a href="../index.html">Home</a></h3> 
+    <hr>
+    <div id="siteSetting" style="text-align: center;">
+      <button id="themeSetting">Theme Settings ⚙️</button>
+      <div id="themeButtons" style="display: none;">
+          <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+      </div>
+<br/>
 
 <div style="width: 98%;">
 <p>This list project/post. Search to filter any post, and click to view detail (If no redirect means the project/post not available)</p>
@@ -37,10 +39,10 @@ input.largerRadio {
 <br/>    
 <div>
     <p>Select a row to search:</p>
-    Post: <input class="largerRadio" type="radio" name="searchRow" value="Post" checked>
+    <h3>Post: <input class="largerRadio" type="radio" name="searchRow" value="Post" checked>
     Info: <input class="largerRadio" type="radio" name="searchRow" value="Info">
-    Date: <input class="largerRadio" type="radio" name="searchRow" value="Date"> 
-    Tag: <input class="largerRadio" type="radio" name="searchRow" value="Tag">
+    Date: <input class="largerRadio" type="radio" name="searchRow" value="Date">
+    Tag: <input class="largerRadio" type="radio" name="searchRow" value="Tag"></h3>
 </div>
 </div>
 <br/>
