@@ -26,7 +26,7 @@
 
 <p style="text-align: center;"><img src="../image/NextcloudDashboard.png" atl="logo" style="width:90%;height:90%"></p>
 
-<p>Nextcloud is like selfhosted Google Drive with many apps that you can intergate with it. If you using Linux and docker you need to this changes as I using Redis for memory caching on Nextcloud;</p>
+<p>Nextcloud is like selfhosted Google Drive with many apps that you can integrate with it. If you using Linux and docker you need to this changes as I using Redis for memory caching on Nextcloud;</p>
 
 <p>Edit this systemctl configuration</p>
 <div class="code-box"><pre><code>sudo nano /etc/sysctl.conf</code></pre></div>
@@ -367,6 +367,17 @@ SetEnv noconntimeout 1
 </ul>
 
 <p>&nbsp;</p>
+
+<p><strong>I don't want default files are created if new user is added</strong></p>
+
+<ul>'skeletondirectory' => '',
+  <li>Go to this location for edit your config file&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">/YOUR-STORAGE-LOCATION/Nextcloud/html/config/config.php</code></pre></div></li>
+  <li>Add this code to config file, save and restart Nextcloud&nbsp;
+    <div class="code-box"><pre><code class="language-markdown">'skeletondirectory' =&gt; '',</code></pre></div></li>
+</ul>
+<a href="https://forum.cloudron.io/topic/2326/changing-default-files-in-nextcloud"><strong>DETAIL</strong></a></li>
+
 
 <p><em>*Discalmer: I am not security nor computer expert use this guide with own risk.</em></p>
 
