@@ -19,6 +19,15 @@
     },
     {
         "Post": {
+            "text":"Important of backup and documentation",
+            "link": "/post/important-of-backup-and-documentation.html"
+        },
+        "Info": "My pain because of ignorance and stupidity",
+        "Date": "2023-10-04",
+        "Tag": "Notes"
+    },
+    {
+        "Post": {
             "text": "Proteus Arduino Library Collection",
             "link": "https://github.com/officialdanielamani/proteus-library-collection"
         },
