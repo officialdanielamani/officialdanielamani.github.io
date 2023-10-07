@@ -58,7 +58,7 @@
             "text": "Sumo Robot Calculate",
             "link": "/project/sumo_score/index.html"
         },
-        "Info": "-",
+        "Info": "Simple system to calculate winner for sumo robot",
         "Date": "2023-08-05",
         "Tag": "Project"
     },

@@ -34,7 +34,7 @@ function setMode(isDarkMode) {
 }
 
 const body = document.body;
-let currentFontSize = parseFloat(localStorage.getItem("fontSize")) || 1.00; // Default font size in em
+let currentFontSize = parseFloat(localStorage.getItem("fontSize")) || 1.25; // Default font size in em
 const fontSizeButtonsContainer = document.getElementById("themeButtons");
 const fontAccessibilityButton = document.getElementById("toggleFontAccessibility");
 let fontAccessibilityEnabled = localStorage.getItem("fontAccessibilityEnabled") === "true";
@@ -73,7 +73,7 @@ document.getElementById("decreaseFontSize").addEventListener("click", function (
 });
 
 document.getElementById("defaultFontSize").addEventListener("click", function () {
-    currentFontSize = 1.00; // Set it back to the default size
+    currentFontSize = 1.25; // Set it back to the default size
     updateFontSize();
 });
 
