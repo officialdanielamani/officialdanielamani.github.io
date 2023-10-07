@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" type="text/css" href="styles-theme.css">
+<link rel="stylesheet" type="text/css" href="core/styles-theme.css">
 <style>
 
 #dataTable {
@@ -21,7 +21,7 @@ input.largerRadio {
 <body>
 
     <h1 style="text-align:center;">Post/Project List</h1>
-    <h3  style="text-align:center;"> <a href="../index.html">Home</a></h3> 
+    <h3  style="text-align:center;"> <a href="index.html">Home</a></h3> 
     <hr>
     <div id="siteSetting" style="text-align: center;">
       <button id="themeSetting">Theme Settings ⚙️</button>
@@ -72,7 +72,7 @@ input.largerRadio {
 <footer>
     <p>Powered by EDNA. Copyright DANP 2016-2023</p>
   </footer>
-<script src="script-theme.js"></script>
+<script src="core/script-theme.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch data from the JSON file
     function fetchData() {
-        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/table.json") // Replace with the path to your JSON file
+        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/core/table.json") // Replace with the path to your JSON file
             .then(response => response.json())
             .then(data => {
                 tableData = data;

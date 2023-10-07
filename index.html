@@ -2,7 +2,7 @@
 <html>
    <head>
       <meta name="robots" content="noindex">
-      <link rel="stylesheet" type="text/css" href="styles-theme.css">
+      <link rel="stylesheet" type="text/css" href="core/styles-theme.css">
       <style>
          *{
          font-family: inherit;
@@ -46,14 +46,14 @@
       <footer>
          <p>Powered by EDNA. Copyright DANP 2016-2023</p>
       </footer>
-      <script src="script-theme.js"></script>
+      <script src="core/script-theme.js"></script>
       <script>
         let currentQuote = ''; // Initialize currentQuote
 
         // Function to fetch and display a random quote from the JSON file
         async function fetchRandomQuote() {
             try {
-                const response = await fetch('quotes.json');
+                const response = await fetch('core/quotes.json');
                 const data = await response.json();
 
                 // Keep generating a random quote until it's different from the current one
