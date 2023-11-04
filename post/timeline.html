@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css" href="../core/styles-theme.css">
+    <link rel="stylesheet" type="text/css" href="../core/prism.css">
+    <style>
+        .timeline {
+            position: relative;
+            max-width: 1080px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: #333;
+        }
+        .timeline-entry {
+            position: relative;
+            padding: 40px 0;
+            display: flex;
+        }
+        /*
+        .timeline-entry .marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #333;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 50%;
+            z-index: 1;
+        }
+        */
+        .timeline-entry.left .content {
+            margin-right: 60px;
+            flex: 1;
+            text-align: right;
+        }
+        .timeline-entry.right .content {
+            margin-left: 60px;
+            flex: 1;
+            text-align: left;
+        }
+        .year {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .description {
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 80%;
+            margin-top: 10px;
+        }
+    </style>
+  </head>
+<body>
+
+<h1 style="text-align:center;">Timeline</h1>
+<h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-27</h3> 
+<hr>
+<div id="siteSetting" style="text-align: center;">
+  <button id="themeSetting">Theme Settings ⚙️</button>
+  <div id="themeButtons" style="display: none;">
+      <button id="toggleModeButton">Switch to Dark Mode 🌑</button>
+      <button id="decreaseFontSize">◀️ Decrease</button>
+      <button id="defaultFontSize">🔠 Default Font Size</button>
+      <button id="increaseFontSize">Increase ▶️</button>
+      <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+  </div>
+</div>
+
+<div class="timeline">
+    <div class="timeline-entry left">
+        <div class="marker"></div>
+        <div class="content">
+            <div class="year">2020</div>
+            <div class="description">Description for the year 2020.</div>
+            <p style="max-width: 45%;">This is a placeholder paragraph for the year.</p>
+            <img src="example.png" alt="Image placeholder for the year 2020" />
+        </div>
+    </div>
+    <div class="timeline-entry right">
+        <div class="content">
+            <div class="year">2021</div>
+            <div class="description">Description for the year 2021.</div>
+            <p style="max-width: 45%;">This is a placeholder paragraph sfgsdgdsgdfgdfgdsgsdgs edhdfh fdhdh d h hdshdhfor the year.</p>
+            <img src="example.png" alt="Image placeholder for the year 2021" />
+        </div>
+    </div>
+    <div class="timeline-entry left">
+        <div class="content">
+            <div class="year">2022</div>
+            <div class="description">Description for the year 2022.</div>
+            <p>This is a placeholder paragraph for the year.</p>
+            <img src="../image/EDNAV2.png" alt="Image placeholder for the year 2022" />
+        </div>
+    </div>
+</div>
+
+<script src="../core/script-theme.js"></script>
+
+</body>
+</html>

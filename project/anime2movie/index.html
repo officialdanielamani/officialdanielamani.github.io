@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="anime.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Anime Series and Movies Checker</title>
+    <style>
+      body {
+      font-family: Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Anime Series and Movies Checker</h1>
+      <p style="text-align: center;">A simple script fo find movie related to Anime series using <a href="https://jikan.moe">Jikan.moe</a> API (to check on MAL).</p>
+      <br>
+      <div class="dark-mode-toggle">
+        <label class="switch">
+        <input type="checkbox" id="dark-mode-toggle-checkbox">
+        <span class="slider round"></span>
+        </label>
+        <span class="dark-mode-label">Theme</span>
+      </div>
+    </div>
+    <p>Enter a list of anime series, separated by commas:</p>
+    <textarea id="animeInput" rows="5" cols="40"></textarea>
+    <br>
+    <button onclick="checkForMovies()"><i class="fa-solid fa-magnifying-glass"></i> Check for Movies</button>
+    <button onclick="autoFormatInput()"><i class="fa-solid fa-i-cursor"></i> Auto format</button>
+    <button onclick="clearTable()" style="background-color: red;"><i class="fa-solid fa-delete-left"></i> Clear Table</button>
+    <button onclick="downloadJSON()"><i class="fa-solid fa-file-export"></i> Download as JSON</button>
+    <input type="file" id="importJSON" accept=".json" style="display: none;">
+    <button onclick="importDetailFromJSON()"><i class="fa-solid fa-file-import"></i> Import detail from JSON</button>
+    <button id="deleteBlankMoviesButton" style="background-color: red;" onclick="deleteBlankMovies()"><i class="fa-regular fa-trash-can"></i> Delete Blank Movie</button>
+    <button id="openModalButton"><i class="fa-solid fa-circle-info"></i> Information & Guide</button>
+    <br>
+    <br>
+    <div>
+      <label for="downloadSeriesOption">Download Series List Option:</label>
+      <select id="downloadSeriesOption">
+        <option value="all">Download all series list</option>
+        <option value="selected">Download selected series list</option>
+        <option value="unselected">Download unselect series list</option>
+      </select>
+      <button onclick="downloadSeriesList()"><i class="fa-solid fa-download"></i> Download Series List (.txt)</button>
+      <label for="downloadOption">Download Movies List Option:</label>
+      <select id="downloadOption">
+        <option value="all">Download all movies list</option>
+        <option value="selected">Download selected movies list</option>
+        <option value="unselected">Download unselect movies list</option>
+      </select>
+      <button onclick="downloadMoviesList()"><i class="fa-solid fa-download"></i> Download Movies List (.txt)</button>        
+    </div>
+    <br>   
+    <div id="progress-container" style="display: none; text-align: center; max-width: 98%;">
+      <div id="progress-bar"></div>
+      <p>Please wait until done...</p>
+      <br>
+      <div id="progress-label">0/0</div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="result"></div>
+    <div class="modal" id="myModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal" style="background-color: red; max-width: max-content;">X</button>
+      <br/><br/>
+      <h2>How to use</h2>
+      <ul style="text-align: left;">
+        <li>Add the anime list on text area (each comma count as one series) and click "Check for Movies".</li>
+        <li>The output will show below on table. If the series have related movies it will show up in the table.</li>
+        <li>If you want to add more series to the table, just clear the text area, add more list and click "Check for Movies"</li>
+        <li>By default there is ticked checkbox next to series and movie name, this use for selective downlaod.</li>
+      </ul>
+      <p>Note: If you want to load list from JSON, please do it first before adding new list. If you add list before adding saved JSON, the result table will be deleted first before load JSON info</p>
+      <br>
+      <h2>Functions</h2>
+      <ul style="text-align: left;">
+        <li><strong>Check for Movies :</strong> Search movies from the anime series input</li>
+        <li><strong>Auto Format : </strong> This change input entry (one line as one entry), to commas separated entry</li>
+        <li><strong>Clear Table : </strong> Clear result table</li>
+        <li><strong>Download as JSON : </strong> Export data as JSON (saved to used later)</li>
+        <li><strong>Import detail from JSON : </strong> Import list from saved (no update/jikan api call)</li>
+        <li><strong>Download Series/Movies List (.txt) :</strong> Download series/movies from result table depending on option selected</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;Download all series/movies list :</strong> </li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;Download selected series/movies list :</strong> Only download series/movies from checked checkbox</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;Download unselect series/movies list :</strong> Only download series/movies from unchecked checkbox</li>
+      </ul>
+      <br>             
+      <h2>JSON Format</h2>
+      <ul style="text-align: left;">
+        <li>This is example how this system store information for later usage</li>
+        <li><strong>name :</strong> Name of input series</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;movies :</strong> Related movies of the series</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;title :</strong> Name related movie of the series</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;url :</strong> MAL link to the movie</li>
+        <li><strong>&nbsp;&nbsp;&nbsp;&nbsp;checkbox :</strong> Tag/info for movie</li>
+        <li><strong>checkbox :</strong> Tag/info for series</li>
+      </ul>
+      <pre><code><textarea id="json_example" rows="20" cols="130">
+    [
+      {
+        "name": "Carnival Phantasm",
+        "movies": [
+          {
+            "title": "",
+            "url": "",
+            "checkbox": true
+          }
+        ],
+        "checkbox": true
+      },
+      {
+        "name": "Konosuba",
+        "movies": [
+          {
+            "title": " Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+            "url": "https://myanimelist.net/anime/38040/Kono_Subarashii_Sekai_ni_Shukufuku_wo_Movie__Kurenai_Densetsu",
+            "checkbox": true
+          }
+        ],
+        "checkbox": false
+      },
+      {
+        "name": "Psycho-Pass",
+        "movies": [
+          {
+            "title": " Psycho-Pass: Sinners of the System Case.1 - Tsumi to Batsu",
+            "url": "https://myanimelist.net/anime/37440/Psycho-Pass__Sinners_of_the_System_Case1_-_Tsumi_to_Batsu",
+            "checkbox": true
+          },
+          {
+            "title": " Psycho-Pass: Sinners of the System Case.3 - Onshuu no Kanata ni＿＿",
+            "url": "https://myanimelist.net/anime/37442/Psycho-Pass__Sinners_of_the_System_Case3_-_Onshuu_no_Kanata_ni＿＿",
+            "checkbox": false
+          },
+          {
+            "title": " Psycho-Pass: Sinners of the System Case.2 - First Guardian",
+            "url": "https://myanimelist.net/anime/37441/Psycho-Pass__Sinners_of_the_System_Case2_-_First_Guardian",
+            "checkbox": true
+          },
+          {
+            "title": " Psycho-Pass Movie: Providence",
+            "url": "https://myanimelist.net/anime/52747/Psycho-Pass_Movie__Providence",
+            "checkbox": false
+          },
+          {
+            "title": " Psycho-Pass Movie",
+            "url": "https://myanimelist.net/anime/21339/Psycho-Pass_Movie",
+            "checkbox": true
+          }
+        ],
+        "checkbox": true
+      }
+    ]      
+ 
+     </textarea> </code></pre>
+      <h3>Limitation / Bug /ToDo</h3>
+      <ul style="text-align: left;">
+        <li><strong>Rate limit :</strong> just random 1.2s-3s everytime it request API to jikan (Note: MAL also can hit rate limit if not from jikan)</li>
+        <li><strong>API return error : </strong> If the series being skip, not found ot API just timeout, the error handling still not yet implement</li>
+        <li><strong>JSON parsing error : </strong> Sometimes it pop up error just click ok, if it show the result table so you good to go. If not try click "Clear table" and import JSON back</li>
+        <li><strong>JSON upload blank :</strong> Clear table or refresh the page</li>
+        <li><strong>Cannot joint multiple JSON file :</strong> It's the limitation</li>
+        <li><strong>JSON overwrite list :</strong> If you add list first then import JSON, the table will be deleted an load with JSON info</li>
+        <li><strong>Search limitation: </strong> It's only contain related title with season. Example if "Monogatari Series" will not found as movie title is "Kizumonogatari". 
+          Same also with generic series title "Monogatari" will retrun all movies with title "Monogatari". For 90% of time ok tu use this tool, but sotimes title lost in translation might make result not accurate</li>
+      </ul>
+
+      <br>
+      <p><i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 0.7.0 | Modify from <a href="https://pastebin.com/FeHngRhL">pastebin.com/FeHngRhL</a></i></p>
+    </div>
+    <script src="scriptV5.js"></script>
+  </body>
+</html>

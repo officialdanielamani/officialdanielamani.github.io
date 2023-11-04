@@ -3,6 +3,7 @@
   <head>
     <meta name="robots" content="noindex">
     <link rel="stylesheet" type="text/css" href="../core/styles-theme.css">
+    <link rel="stylesheet" type="text/css" href="../core/prism.css">
     <style>
     </style>
   </head>
@@ -10,6 +11,7 @@
 
 <h1 style="text-align:center;">Nextcloud Docker Setup and basic troubleshooting</h1>
 <h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-27</h3> 
+<!--Adding Horizontal Line before "siteSetting"-->
 <hr>
 <div id="siteSetting" style="text-align: center;">
   <button id="themeSetting">Theme Settings ⚙️</button>
@@ -17,25 +19,28 @@
       <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
   </div>
 </div>
-<br/><br/>
+<!--Post Information starting here-->
+<br/>
+<br/>
+<!--Adding Last Update (Optional)-->
 <p>Last edit on: 2023-09-27</p>
+<br/>
+<br/>
 
 <p style="text-align: center;"><img src="../image/NextcloudDashboard.png" atl="logo" style="width:90%;height:90%"></p>
-
+<br />
 <p>Nextcloud is like selfhosted Google Drive with many apps that you can integrate with it. If you using Linux and docker you need to this changes as I using Redis for memory caching on Nextcloud;</p>
-
 <p>Edit this systemctl configuration</p>
-<div class="code-box"><pre><code>sudo nano /etc/sysctl.conf</code></pre></div>
-
+<pre><code class="language-c">sudo nano /etc/sysctl.conf</code></pre>
 <p>Add this line</p>
-<div class="code-box"><pre><code>vm.overcommit_memory = 1</code></pre></div>
+<pre><code class="language-c">vm.overcommit_memory = 1</code></pre>
 
 <p>Then reboot your machine to activate the changes. This prevent error/corruption on Redis if the host computer low on memory. <a href="https://redis.io/docs/management/admin/"><strong>DETAIL</strong></a></p>
 
 <p><br />
-&nbsp;I am currenty using it with docker, here is my docker compose;</p>
-<div class="code-box"><pre><code class="language-markdown">version: '2'
 
+    &nbsp;I am currenty using it with docker, here is my docker compose;</p>
+<pre class="line-numbers"><code class="language-yml">version: '2'
 services:
   nextcloud:
     image: nextcloud:stable
@@ -87,118 +92,113 @@ services:
       - PUID=1000 #optional
       - PGID=1000 #optional
     volumes:
-      - /YOUR-STORAGE-LOCATION/Nextcloud/Redis:/data</code></pre></div>
+      - /YOUR-STORAGE-LOCATION/Nextcloud/Redis:/data</code></pre>
 
 <p>&nbsp;</p>
 
 <p>You need to change some item such as;</p>
 
-<table cellpadding="1" cellspacing="1">
+<table>
 	<tbody>
 		<tr>
-			<td style="width:232px">MYSQL_ROOT_PASSWORD</td>
-			<td style="width:506px">Admin user of MariaDB Container</td>
+			<td>MYSQL_ROOT_PASSWORD</td>
+			<td>Admin user of MariaDB Container</td>
 		</tr>
 		<tr>
-			<td style="width:232px">MYSQL_USER</td>
-			<td style="width:506px">User of MariaDB, here I using Nextcloud. The name must same on both Nexcloud&nbsp;and MariaDB container</td>
+			<td>MYSQL_USER</td>
+			<td>User of MariaDB, here I using Nextcloud. The name must same on both Nexcloud&nbsp;and MariaDB container</td>
 		</tr>
 		<tr>
-			<td style="width:232px">MYSQL_PASSWORD</td>
-			<td style="width:506px">The password&nbsp;must same on both Nexcloud&nbsp;and MariaDB container</td>
+			<td>MYSQL_PASSWORD</td>
+			<td>The password&nbsp;must same on both Nexcloud&nbsp;and MariaDB container</td>
 		</tr>
 		<tr>
-			<td style="width:232px">REDIS_HOST_PASSWORD</td>
-			<td style="width:506px">Password for Redis. You also need ensure it same on Redis conatiner on command line redis, --requirepass YOUR-PASSWORD &lt;--Change it</td>
+			<td>REDIS_HOST_PASSWORD</td>
+			<td>Password for Redis. You also need ensure it same on Redis conatiner on command line redis, --requirepass YOUR-PASSWORD &lt;--Change it</td>
 		</tr>
 		<tr>
-			<td style="width:232px">YOUR-PORT</td>
-			<td style="width:506px">The port you want to expose/access the container</td>
+			<td>YOUR-PORT</td>
+			<td>The port you want to expose/access the container</td>
 		</tr>
 		<tr>
-			<td style="width:232px">YOUR-STORAGE-LOCATION</td>
-			<td style="width:506px">Where you want to store all the container data</td>
+			<td>YOUR-STORAGE-LOCATION</td>
+			<td>Where you want to store all the container data</td>
 		</tr>
 	</tbody>
 </table>
 
 <p>The container that I using are bare Nextcloud so you need to install app after setup if you want more funtionality. This container also only using HTTP (not secure). You can add HTTPS by reverse proxy and change some line in Nextcloud to overwrite to HTTPS. But for me I only uing it within local server, for public I using Nginx Proxy Manager to ensure it in HTTPS.<br />
-<br />
-After the Docker are up and running to the address of Nextcloud to setup. Example my nextcloud address is&nbsp;<strong>172.22.0.20:35000</strong>. (Note: the port is depand on YOUR-PORT-A for acess Nextcloud) Next you setup the admin username and password. By default, it will automatically link the database with mariaDB container (so no need to setup DB). Next it will ask you to install recommaded app or skip the your Nextcloud are finish setup.</p>
+    <br />
+    After the Docker are up and running to the address of Nextcloud to setup. Example my nextcloud address is&nbsp;<strong>172.22.0.20:35000</strong>. (Note: the port is depand on YOUR-PORT-A for acess Nextcloud) Next you setup the admin username and password. By default, it will automatically link the database with mariaDB container (so no need to setup DB). Next it will ask you to install recommaded app or skip the your Nextcloud are finish setup.</p>
+    
+    <p>&nbsp;</p>
+    <p>Here is my config.php file for reference. (This setup for http only)</p>
+    <pre class="line-numbers"><code class="language-php">&lt;?php
+    $CONFIG = array (
+      'htaccess.RewriteBase' =&gt; '/',
+      'memcache.local' =&gt; '\\OC\\Memcache\\APCu',
+      'apps_paths' =&gt; 
+      array (
+        0 =&gt; 
+        array (
+          'path' =&gt; '/var/www/html/apps',
+          'url' =&gt; '/apps',
+          'writable' =&gt; false,
+        ),
+        1 =&gt; 
+        array (
+          'path' =&gt; '/var/www/html/custom_apps',
+          'url' =&gt; '/custom_apps',
+          'writable' =&gt; true,
+        ),
+      ),
+      'memcache.distributed' =&gt; '\\OC\\Memcache\\Redis',
+      'memcache.locking' =&gt; '\\OC\\Memcache\\Redis',
+      'redis' =&gt; 
+      array (
+        'host' =&gt; 'nextcloud-redis',
+        'password' =&gt; 'XXXXX',
+        'port' =&gt; 6379,
+      ),
+      'instanceid' =&gt; 'XXXXX',
+      'passwordsalt' =&gt; 'XXXXX',
+      'secret' =&gt; 'XXXXX',
+      'trusted_domains' =&gt; 
+      array (
+        0 =&gt; 'XXXXXXX:YOUR-PORT', #Remove if not needed. Change according to your domain. By default auto generate
+        1 =&gt; 'example.com', #Remove if not needed. Change according to your domain
+      ),
+      'datadirectory' =&gt; '/var/www/html/data',
+      'dbtype' =&gt; 'mysql',
+      'version' =&gt; '27.1.1.0',
+      'overwrite.cli.url' =&gt; 'http://XXXXXXX:YOUR-PORT', #Change according to your nextcloud ip. By default auto generate
+      'overwrite.cli.url' =&gt; 'https://example.com', #Remove if not needed. Change according to your domain
+      'dbname' =&gt; 'nextcloud',
+      'dbhost' =&gt; 'nextcloud-db',
+      'dbport' =&gt; '',
+      'dbtableprefix' =&gt; 'oc_',
+      'mysql.utf8mb4' =&gt; true,
+      'dbuser' =&gt; 'nextcloud',
+      'dbpassword' =&gt; 'XXXXX',
+      'installed' =&gt; true,
+      'app_install_overwrite' =&gt; 
+      array (
+        0 =&gt; 'discretepdfsigner',
+      ),
+      'logtimezone' =&gt; 'Asia/Kuala_Lumpur',#Change according to your location
+      'default_phone_region' =&gt; 'MY', #Change according to your location
+    );
+    </code></pre>  
 
-<p>&nbsp;</p>
+    <h2>Troubleshooting</h2>
+    <br />
+    <br />
 
-<p>Here is my config.php file for reference. (This setup for http only)</p>
-<div class="code-box">
-<pre>
-<code class="language-php">&lt;?php
-$CONFIG = array (
-  'htaccess.RewriteBase' =&gt; '/',
-  'memcache.local' =&gt; '\\OC\\Memcache\\APCu',
-  'apps_paths' =&gt; 
-  array (
-    0 =&gt; 
-    array (
-      'path' =&gt; '/var/www/html/apps',
-      'url' =&gt; '/apps',
-      'writable' =&gt; false,
-    ),
-    1 =&gt; 
-    array (
-      'path' =&gt; '/var/www/html/custom_apps',
-      'url' =&gt; '/custom_apps',
-      'writable' =&gt; true,
-    ),
-  ),
-  'memcache.distributed' =&gt; '\\OC\\Memcache\\Redis',
-  'memcache.locking' =&gt; '\\OC\\Memcache\\Redis',
-  'redis' =&gt; 
-  array (
-    'host' =&gt; 'nextcloud-redis',
-    'password' =&gt; 'XXXXX',
-    'port' =&gt; 6379,
-  ),
-  'instanceid' =&gt; 'XXXXX',
-  'passwordsalt' =&gt; 'XXXXX',
-  'secret' =&gt; 'XXXXX',
-  'trusted_domains' =&gt; 
-  array (
-    0 =&gt; 'XXXXXXX:YOUR-PORT', #Remove if not needed. Change according to your domain. By default auto generate
-    1 =&gt; 'example.com', #Remove if not needed. Change according to your domain
-  ),
-  'datadirectory' =&gt; '/var/www/html/data',
-  'dbtype' =&gt; 'mysql',
-  'version' =&gt; '27.1.1.0',
-  'overwrite.cli.url' =&gt; 'http://XXXXXXX:YOUR-PORT', #Change according to your nextcloud ip. By default auto generate
-  'overwrite.cli.url' =&gt; 'https://example.com', #Remove if not needed. Change according to your domain
-  'dbname' =&gt; 'nextcloud',
-  'dbhost' =&gt; 'nextcloud-db',
-  'dbport' =&gt; '',
-  'dbtableprefix' =&gt; 'oc_',
-  'mysql.utf8mb4' =&gt; true,
-  'dbuser' =&gt; 'nextcloud',
-  'dbpassword' =&gt; 'XXXXX',
-  'installed' =&gt; true,
-  'app_install_overwrite' =&gt; 
-  array (
-    0 =&gt; 'discretepdfsigner',
-  ),
-  'logtimezone' =&gt; 'Asia/Kuala_Lumpur',#Change according to your location
-  'default_phone_region' =&gt; 'MY', #Change according to your location
-);
-</code></pre></div>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<h2>Troubleshooting</h2>
-
-<p><strong>When setup, on Recommanded app are blank</strong></p>
+    <p><strong>When setup, on Recommanded app are blank</strong></p>
 
 <ul>
-	<li>Your Internet is slow&nbsp;</li>
-	<li>Nextcloud Appstore is down or slow&nbsp;</li>
+	<li>Your Internet is slow</li>
+	<li>Nextcloud Appstore is down or slow</li>
 	<li>Just skip for now and try to change timeout value later</li>
 </ul>
 
@@ -220,7 +220,6 @@ $CONFIG = array (
 	<li>The the docker DB name and host is same on Nextcloud and MariaDB</li>
 	<li>Ensure the Nextcloud and MaridDB on same network</li>
 </ul>
-
 <p>&nbsp;</p>
 
 <p><strong>Where to edit config.php file and apply the changes</strong></p>
@@ -251,13 +250,12 @@ $CONFIG = array (
 
 <ul>
 	<li>Go to the Nextcloud docker container terminal and run this code&nbsp;
-  <div class="code-box"><pre><code class="language-markdown">curl https://apps.nextcloud.com/api/v1/categories.json > tmp.json</code></pre></div>
+  <div class="code-box"><pre><code class="language-c">curl https://apps.nextcloud.com/api/v1/categories.json > tmp.json</code></pre></div>
 	</li>
 	<li>Example output&nbsp;
     <div class="code-box"><pre>
-<code class="language-markdown">
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
+<code class="language-c"> % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                Dload  Upload   Total   Spent    Left  Speed
 100 12.1M  100 12.1M    0     0  4216k      0  0:00:02  0:00:02 --:--:-- 4222k  
 </code></pre></div>
 	</li>
@@ -275,7 +273,7 @@ $CONFIG = array (
 	</li>
 	<li>Add this line to the crontab file&nbsp;
     <div class="code-box"><pre>
-<code class="language-markdown">*/5 * * * * docker exec -u www-data nextcloud php /var/www/html/cron.php</pre></div>
+<code class="language-markdown">*/5 * * * * docker exec -u www-data nextcloud php /var/www/html/cron.php</code></pre></div>
 	</li>
 	<li>Then save the file. (If not work change &quot;nextcloud&quot; to your Nextcloud docker ID. To get docker ID you can using sudo docker ps and check your Nextcloud docker ID)</li>
 </ul>
@@ -385,11 +383,13 @@ SetEnv noconntimeout 1
 	<li><a href="https://dbt3ch.com/">https://dbt3ch.com/</a></li>
 </ol>
 
-<br>
+<br />
+<!--Adding Horizontal Line before footer-->
 <hr>
 <footer>
   <p>Powered by EDNA. Copyright DANP 2016-2023</p>
 </footer>
 <script src="../core/script-theme.js"></script>
+<script src="../core/prism.js"></script>
 </body>
 <html>

@@ -10,6 +10,15 @@
     },
     {
         "Post": {
+            "text": "Anime2Movie",
+            "link": "/project/anime2movie/index.html"
+        },
+        "Info": "My simple internal tool to find related movie from anime series",
+        "Date": "2023-11-04",
+        "Tag": "Project, Tool"
+    },
+    {
+        "Post": {
             "text": "Nextcloud Docker Setup and basic troubleshooting",
             "link": "/post/nextcloud-setup.html"
         },

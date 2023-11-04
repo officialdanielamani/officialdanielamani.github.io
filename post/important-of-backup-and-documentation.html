@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <meta name="robots" content="noindex">
-      <link rel="stylesheet" type="text/css" href="../core/styles-theme.css">
-      <style></style>
-   </head>
-   <body>
-      <h1 style="text-align:center;">Important of Backup and Documentation</h1>
-      <h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-10-04</h3>
-      <hr>
-      <div id="siteSetting" style="text-align: center;">
-         <button id="themeSetting">Theme Settings ⚙️</button>
-         <div id="themeButtons" style="display: none;">
-            <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
-         </div>
-      </div>
-      <br /><br />
-      <h2>Backup and Documentation</h2>
-      <p>I know people always said backup everything and document every thing but is we doing it. I myself admit I don&rsquo;t do &ldquo;Documentation&rdquo; and &ldquo;Backup&rdquo;. But after learning self-hosted the important of documentation and backup is very important (This also why I start making this website), because we will encounter many problems, some is easy to solve (just google it) but some are to obscure and cannot found in the internet (sometimes the solution is plain and simple but we looked at wrong perspective). Or maybe you lose steps and skipping important bits when you doing other side project and may affect you later.</p>
-      <h3><br />
-         Case 1 &ndash; Even small that&rsquo;s matter
-      </h3>
-      <p>When I starting using Cloudflare tunnel to add alternative to my VPS I encounter a very strange bug. I have two domains, we call &ldquo;DomainA.com&rdquo; and &ldquo;DomainB.com&rdquo;. I wanted to using &ldquo;DomainA.com&rdquo; as my selfhosted address. I follow the tutorial online, spin up docker Cloudflare tunnel and nothing happen when I open the address. Maybe, I have selected wrong internal IP or protocol but still cannot connected. Firewall maybe (because I am student, so &hellip;thanks my Uni for provide free internet), but when check connection in docker it connected to internet. Maybe all docker need in same network, but still problem. DNS record for domain also no problem as it all suing default setting. I try google everything but seams nothing like me.</p>
-      <p>After 3 days of troubleshooting I don&rsquo;t know what&rsquo;s the problem, so I give up and try using &ldquo;DomainB.com&rdquo; and surprise, just firs time try it got working. So, what the problem between these two domains. This all domain is on same registar and purchased at same day so what different.</p>
-      <p>Here is my stupidity, on Cloudflare page of the domain, at the very bottom right there is &ldquo;Advance Action&rdquo; and I may have clicked &ldquo;Pause&rdquo;. After resume back all can be access without problem. 3 days wasted because on one button at bottom of page. Now I put the info on my self-documentation to check every button (even though the name seams not important).</p>
-      <p style="text-align: center;"><img src="../image/CloudflareResume.png" atl="CloudflareResume" style="width:90%;height:90%"></p>
-      <p style="text-align: center;">That small option on Cloudflare that cause problem for 3 days</p>
-      <br />
-      <h3><br />
-         Case 2 &ndash; Track everything, Check everything
-      </h3>
-      <p>There is one time I need to add capability for &ldquo;Hardware Acceleration&rdquo; for my Jellyfin server. So I read the documentation on website and just follow what required. But after adding and configure all package the HWA seams not working. The HVEC 10bit seams not functioning. After doing some googling maybe I need add CUDA as from Intel spec the chip support HVEC. But still problem, maybe it need suing non-free apt, so I enable backport (Here the problem begins).</p>
-      <p>After adding non-free apt seams it partially working but sudden cut off. I check i-GPU load seams no problem but after a minute it just stop. Maybe I need specific driver version as some forum suggest that, but still problem. After debug the Jellyfin stream maybe I know the answer. A Github user also encounter the same problem but actually the CPU I am currently using is not supporting 10bit HVEC for transcoding (even with CUDA install), even though it said support HVEC 10-bit (actually only for decode only not encoding). So I undo all thing (but forget about the backport), and all running without a problem (minus cannot transcode HVEC 10 bit)</p>
-      <p>After few weeks I learn about securing the OS, one of thing is to disable backport. I disable backport and check for update. There suddenly have 500+ update maybe because turning off backport. Weird but I wait for all installation and reboot back the server after done update. But after few minutes I cannot reach the server. Maybe IP address have being changed. But when check on server directy is show it not detecting LAN and have problem about Nginx. Weird, maybe I need enable backport again. But cannot as I meet with conflicting dependency. So, I resort to last option, backup important file to pendrive, but in surprise USB not working. Congratulation I brick the OS. Maybe I can backup to my ZFS drive, I think. But when in the main directory some files/folders are missing. But I don&rsquo;t care just copy all important configs to ZFS storage and format the OS is the best solution.</p>
-      <p>After fresh install and go back to my ZFS, there is not backup files that I copy. I search everywhere but nothing. This my fault is not confirming the files that being copy is exist before formatting, and my fault not doing weekly/ monthly backup and verified the backup files. So, majority of my diary about selfhosting just puff missing after I bricked the OS.</p>
-      <p style="text-align: center;"><img src="../image/PainUmet.jpeg" atl="PainUmet" style="width:90%;height:90%"></p>
-      <p style="text-align: center;">Pain peko peko</p>
-      <br />
-      <h2>Lesson Learnt</h2>
-      <ul>
-         <li>Documents all your setup and step when starting some project. This will help to undo if anything happens, so you don&rsquo;t lose step or skipping important bits.</li>
-         <li>Documents what the problem and the solution even through it seems small stupid problem. This will save you later.</li>
-         <li>Remember do 3,2,1 backup + test, check and verify the backup. Backup without verify = No backup.</li>
-         <li>A simple documentation (such as step and command you use, what you change) is better than nothing at all.</li>
-         <li>Don&rsquo;t blindly raw dogging copy paste/ follow tutorial. Know what each command to, know your setup info. (Read documentation thoroughly)</li>
-      </ul>
-      <br />
-      <br />
-      <hr>
-      <footer>
-         <p>Powered by EDNA. Copyright DANP 2016-2023</p>
-      </footer>
-      <script src="../core/script-theme.js"></script>
-   </body>
-   <html>
+  <head>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css" href="../core/styles-theme.css">
+    <link rel="stylesheet" type="text/css" href="../core/prism.css">
+    <style>
+    </style>
+  </head>
+<body>
+
+    <h1 style="text-align:center;">Important of Backup and Documentation</h1>
+<h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-27</h3> 
+<!--Adding Horizontal Line before "siteSetting"-->
+<hr>
+<div id="siteSetting" style="text-align: center;">
+  <button id="themeSetting">Theme Settings ⚙️</button>
+  <div id="themeButtons" style="display: none;">
+      <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+  </div>
+</div>
+<!--Post Information starting here-->
+<br/>
+<br/>
+<h2>Backup and Documentation</h2>
+<p>I know people always said backup everything and document every thing but is we doing it. I myself admit I don&rsquo;t do &ldquo;Documentation&rdquo; and &ldquo;Backup&rdquo;. But after learning self-hosted the important of documentation and backup is very important (This also why I start making this website), because we will encounter many problems, some is easy to solve (just google it) but some are to obscure and cannot found in the internet (sometimes the solution is plain and simple but we looked at wrong perspective). Or maybe you lose steps and skipping important bits when you doing other side project and may affect you later.</p>
+<h3><br />
+   Case 1 &ndash; Even small that&rsquo;s matter
+</h3>
+<p>When I starting using Cloudflare tunnel to add alternative to my VPS I encounter a very strange bug. I have two domains, we call &ldquo;DomainA.com&rdquo; and &ldquo;DomainB.com&rdquo;. I wanted to using &ldquo;DomainA.com&rdquo; as my selfhosted address. I follow the tutorial online, spin up docker Cloudflare tunnel and nothing happen when I open the address. Maybe, I have selected wrong internal IP or protocol but still cannot connected. Firewall maybe (because I am student, so &hellip;thanks my Uni for provide free internet), but when check connection in docker it connected to internet. Maybe all docker need in same network, but still problem. DNS record for domain also no problem as it all suing default setting. I try google everything but seams nothing like me.</p>
+<p>After 3 days of troubleshooting I don&rsquo;t know what&rsquo;s the problem, so I give up and try using &ldquo;DomainB.com&rdquo; and surprise, just firs time try it got working. So, what the problem between these two domains. This all domain is on same registar and purchased at same day so what different.</p>
+<p>Here is my stupidity, on Cloudflare page of the domain, at the very bottom right there is &ldquo;Advance Action&rdquo; and I may have clicked &ldquo;Pause&rdquo;. After resume back all can be access without problem. 3 days wasted because on one button at bottom of page. Now I put the info on my self-documentation to check every button (even though the name seams not important).</p>
+<p style="text-align: center;"><img src="../image/CloudflareResume.png" atl="CloudflareResume" style="width:90%;height:90%"></p>
+<p style="text-align: center;"><em>That small option on Cloudflare that cause problem for 3 days</em></p>
+<br />
+<h3><br />
+   Case 2 &ndash; Track everything, Check everything
+</h3>
+<p>There is one time I need to add capability for &ldquo;Hardware Acceleration&rdquo; for my Jellyfin server. So I read the documentation on website and just follow what required. But after adding and configure all package the HWA seams not working. The HVEC 10bit seams not functioning. After doing some googling maybe I need add CUDA as from Intel spec the chip support HVEC. But still problem, maybe it need suing non-free apt, so I enable backport (Here the problem begins).</p>
+<p>After adding non-free apt seams it partially working but sudden cut off. I check i-GPU load seams no problem but after a minute it just stop. Maybe I need specific driver version as some forum suggest that, but still problem. After debug the Jellyfin stream maybe I know the answer. A Github user also encounter the same problem but actually the CPU I am currently using is not supporting 10bit HVEC for transcoding (even with CUDA install), even though it said support HVEC 10-bit (actually only for decode only not encoding). So I undo all thing (but forget about the backport), and all running without a problem (minus cannot transcode HVEC 10 bit)</p>
+<p>After few weeks I learn about securing the OS, one of thing is to disable backport. I disable backport and check for update. There suddenly have 500+ update maybe because turning off backport. Weird but I wait for all installation and reboot back the server after done update. But after few minutes I cannot reach the server. Maybe IP address have being changed. But when check on server directy is show it not detecting LAN and have problem about Nginx. Weird, maybe I need enable backport again. But cannot as I meet with conflicting dependency. So, I resort to last option, backup important file to pendrive, but in surprise USB not working. Congratulation I brick the OS. Maybe I can backup to my ZFS drive, I think. But when in the main directory some files/folders are missing. But I don&rsquo;t care just copy all important configs to ZFS storage and format the OS is the best solution.</p>
+<p>After fresh install and go back to my ZFS, there is not backup files that I copy. I search everywhere but nothing. This my fault is not confirming the files that being copy is exist before formatting, and my fault not doing weekly/ monthly backup and verified the backup files. So, majority of my diary about selfhosting just puff missing after I bricked the OS.</p>
+<p style="text-align: center;"><img src="../image/PainUmet.jpeg" atl="PainUmet" style="width:90%;height:90%"></p>
+<p style="text-align: center;"><em>Pain peko peko</p></em>
+<br />
+<h2>Lesson Learnt</h2>
+<ul>
+   <li>Documents all your setup and step when starting some project. This will help to undo if anything happens, so you don&rsquo;t lose step or skipping important bits.</li>
+   <li>Documents what the problem and the solution even through it seems small stupid problem. This will save you later.</li>
+   <li>Remember do 3,2,1 backup + test, check and verify the backup. Backup without verify = No backup.</li>
+   <li>A simple documentation (such as step and command you use, what you change) is better than nothing at all.</li>
+   <li>Don&rsquo;t blindly raw dogging copy paste/ follow tutorial. Know what each command to, know your setup info. (Read documentation thoroughly)</li>
+</ul>
+<br />
+<!--Adding Horizontal Line before footer-->
+<hr>
+<footer>
+  <p>Powered by EDNA. Copyright DANP 2016-2023</p>
+</footer>
+<script src="../core/script-theme.js"></script>
+<script src="../core/prism.js"></script>
+</body>
+<html>
