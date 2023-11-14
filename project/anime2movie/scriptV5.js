@@ -123,7 +123,7 @@ async function checkForMovies() {
           if (relevantMovies.length > 0) {
             for (const movie of relevantMovies) {
               const malUrl = movie.url;
-              const movieTitle = `${movie.title} [${movie.year}]`;
+              const movieTitle = movie.title;
 
               if (malUrl) {
                 // Add a click event listener to the checkbox to prevent event propagation
@@ -166,6 +166,7 @@ async function checkForMovies() {
 
   progressContainer.style.display = 'none';
 }
+
 
 // Function to delete a series row
 function deleteSeries(button) {
