@@ -25,27 +25,21 @@ function fetchData() {
             var timerElement = doc.getElementById('timer');
             if (timerElement) {
                 var timeString = timerElement.textContent;
-                var milliseconds = convertToMilliseconds(timeString);
-                document.getElementById('milliseconds').value = milliseconds;
+                // Extract minutes, seconds, and milliseconds
+                var parts = timeString.match(/(\d+)m:\s*(\d+)s:\s*(\d+)ms/);
+                if (parts) {
+                    document.getElementById('minutes').value = parts[1];
+                    document.getElementById('seconds').value = parts[2];
+                    document.getElementById('milliseconds').value = parts[3];
+                } else {
+                    alert('Invalid time format');
+                }
             } else {
                 alert('Timer element not found');
             }
         }).catch(error => {
             alert('Error fetching or parsing: ' + error.message);
         });
-}
-
-function convertToMilliseconds(timeString) {
-    var parts = timeString.match(/(\d+)m:\s*(\d+)s:\s*(\d+)ms/);
-    if (parts) {
-        var minutes = parseInt(parts[1], 10);
-        var seconds = parseInt(parts[2], 10);
-        var milliseconds = parseInt(parts[3], 10);
-        return (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
-    } else {
-        alert('Invalid time format');
-        return 0;
-    }
 }
 
 toggleButton.addEventListener('click', () => {
