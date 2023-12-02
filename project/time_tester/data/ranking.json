@@ -1,0 +1,92 @@
+[
+  {
+    "timestamp": "2023-08-25T16:29:53.702Z",
+    "name": "Daniel",
+    "group": "GMI",
+    "totalPoint": "100.00",
+    "totalTime": "40.57",
+    "timePoint": "24.65",
+    "overallPoint": "124.65"
+  },
+  {
+    "timestamp": "2023-08-25T16:30:15.977Z",
+    "name": "Layla",
+    "group": "Fast",
+    "totalPoint": "100.00",
+    "totalTime": "43.01",
+    "timePoint": "23.25",
+    "overallPoint": "123.25"
+  },
+  {
+    "timestamp": "2023-08-25T16:30:59.359Z",
+    "name": "Zahran",
+    "group": "MFI",
+    "totalPoint": "100.00",
+    "totalTime": "53.32",
+    "timePoint": "18.75",
+    "overallPoint": "118.75"
+  },
+  {
+    "timestamp": "2023-08-25T16:31:25.706Z",
+    "name": "Keqing",
+    "group": "Gensin",
+    "totalPoint": "100.00",
+    "totalTime": "60.99",
+    "timePoint": "16.40",
+    "overallPoint": "116.40"
+  },
+  {
+    "timestamp": "2023-08-25T16:32:23.205Z",
+    "name": "Afif",
+    "group": "Kembar",
+    "totalPoint": "100.00",
+    "totalTime": "61.10",
+    "timePoint": "16.37",
+    "overallPoint": "116.37"
+  },
+  {
+    "timestamp": "2023-08-25T16:32:51.240Z",
+    "name": "Arif",
+    "group": "Kembar",
+    "totalPoint": "100.00",
+    "totalTime": "61.20",
+    "timePoint": "16.34",
+    "overallPoint": "116.34"
+  },
+  {
+    "timestamp": "2023-08-25T16:33:26.935Z",
+    "name": "Emir",
+    "group": "Eng",
+    "totalPoint": "100.00",
+    "totalTime": "72.00",
+    "timePoint": "13.89",
+    "overallPoint": "113.89"
+  },
+  {
+    "timestamp": "2023-08-25T16:33:58.893Z",
+    "name": "Raja",
+    "group": "Fly",
+    "totalPoint": "95.00",
+    "totalTime": "72.54",
+    "timePoint": "13.79",
+    "overallPoint": "108.79"
+  },
+  {
+    "timestamp": "2023-08-25T16:34:38.435Z",
+    "name": "Rusa",
+    "group": "Haiwan",
+    "totalPoint": "80.00",
+    "totalTime": "57.32",
+    "timePoint": "17.45",
+    "overallPoint": "97.45"
+  },
+  {
+    "timestamp": "2023-08-25T16:34:56.660Z",
+    "name": "Brono",
+    "group": "Art",
+    "totalPoint": "30.00",
+    "totalTime": "30.00",
+    "timePoint": "33.33",
+    "overallPoint": "63.33"
+  }
+]
