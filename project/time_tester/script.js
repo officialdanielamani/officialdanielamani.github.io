@@ -86,12 +86,12 @@ userInputForm.addEventListener('submit', function (e) {
     
     const timestamp = new Date().toISOString(); // Get current timestamp
 
-    if (isNaN(totalTime) || totalTime <= 0) {
+    if (isNaN(totalTime) || totalTime <= -1) {
         alert('Total time must be a positive value. Please calculate the time.');
         return;
     }
 
-    if (isNaN(totalPoint) || totalPoint <= 0) {
+    if (isNaN(totalPoint) || totalPoint <= -1) {
         alert('Total time must be a positive value. Please calculate the time.');
         return;
     }
@@ -148,7 +148,7 @@ function updateDataList() {
         if(sortType === 'group'|| sortType === 'name'|| sortType === 'oldest'|| sortType === 'newest'){
         itemElement.innerHTML = `
         <table><tr><th><h2><strong>${item.name}</strong> (Group: ${item.group}) |
-            Total Point: ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2></th>
+            Total Point: ${item.totalPoint.toFixed(3)} | Total Time: ${item.totalTime.toFixed(3)}s<br><h2></th>
             <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
             </tr>
         </table>    
@@ -157,7 +157,7 @@ function updateDataList() {
         else{
         itemElement.innerHTML = `
         <table><tr><th><h2><strong>Rank No${index + 1}. ${item.name}</strong> (Group: ${item.group}) |
-            Total Point : ${item.totalPoint.toFixed(2)} | Total Time: ${item.totalTime.toFixed(2)}s<br><h2></th>
+            Total Point : ${item.totalPoint.toFixed(3)} | Total Time: ${item.totalTime.toFixed(3)}s<br><h2></th>
             <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
             </tr>
         </table>
@@ -197,11 +197,14 @@ function calculateTotalTime() {
     const minutes = parseInt(document.getElementById('minutes').value) || 0;
     const seconds = parseInt(document.getElementById('seconds').value) || 0;
     const milliseconds = parseInt(document.getElementById('milliseconds').value) || 0;
-  
+
+    // Convert the total time to seconds
     const totalTimeInSeconds = (minutes * 60) + seconds + (milliseconds / 1000);
-  
-    document.getElementById('totalTime').value = totalTimeInSeconds.toFixed(2);
-  }
+
+    // Update the 'totalTime' field with the calculated time, rounded to 3 decimal places
+    document.getElementById('totalTime').value = totalTimeInSeconds.toFixed(3);
+}
+
 
 const exportCsvBtn = document.getElementById('exportCsvBtn');
 
@@ -215,10 +218,10 @@ function exportToCsv() {
             item.timestamp, // Add timestamp to CSV data
             item.name,
             item.group,
-            item.totalPoint.toFixed(2),
-            item.totalTime.toFixed(2),
-            item.timePoint.toFixed(2),
-            item.overallPoint.toFixed(2)
+            item.totalPoint.toFixed(3),
+            item.totalTime.toFixed(3),
+            item.timePoint.toFixed(3),
+            item.overallPoint.toFixed(3)
         ]);
     });
 
@@ -302,14 +305,14 @@ function exportToJson() {
             timestamp: item.timestamp, // Add timestamp to JSON data
             name: item.name,
             group: item.group,
-            totalPoint: item.totalPoint.toFixed(2),
-            totalTime: item.totalTime.toFixed(2),
-            timePoint: item.timePoint.toFixed(2),
-            overallPoint: item.overallPoint.toFixed(2)
+            totalPoint: item.totalPoint.toFixed(3),
+            totalTime: item.totalTime.toFixed(3),
+            timePoint: item.timePoint.toFixed(3),
+            overallPoint: item.overallPoint.toFixed(3)
         };
     });
 
-    const jsonString = JSON.stringify(jsonData, null, 2); // The second argument is for formatting
+    const jsonString = JSON.stringify(jsonData, null, 3); // The second argument is for formatting
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
