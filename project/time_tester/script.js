@@ -5,37 +5,50 @@ const secondContainer = document.querySelector('.container:last-child');
 const modal = document.getElementById('myModal');
 const closeModalButton = document.getElementById('closeModal');
 
-function fetchData() {
+
+// Function to add IP/URL to the dropdown list
+function addIpToList() {
     var ipAddress = document.getElementById('ipAddress').value;
+    var ipList = document.getElementById('ipList');
+
+    // Create a new option element and add it to the dropdown
+    var option = document.createElement('option');
+    option.value = ipAddress;
+    option.text = ipAddress;
+    ipList.appendChild(option);
+
+    // Clear the input field after adding
+    document.getElementById('ipAddress').value = '';
+}
+
+function fetchData() {
+    var ipList = document.getElementById('ipList');
+    var selectedIp = ipList.value;
+
     // Check if the input includes http:// or https://, if not, prepend it
-    if (!ipAddress.startsWith('http://') && !ipAddress.startsWith('https://')) {
-        ipAddress = 'http://' + ipAddress; // Defaulting to http if no protocol is provided
+    if (!selectedIp.startsWith('http://') && !selectedIp.startsWith('https://')) {
+        selectedIp = 'http://' + selectedIp; // Defaulting to http if no protocol is provided
     }
 
-    fetch(ipAddress)
+    // Append the /timer endpoint to the selected IP
+    var timerUrl = selectedIp + "/timer";
+
+    fetch(timerUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.text();
         })
-        .then(html => {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(html, 'text/html');
-            var timerElement = doc.getElementById('timer');
-            if (timerElement) {
-                var timeString = timerElement.textContent;
-                // Extract minutes, seconds, and milliseconds
-                var parts = timeString.match(/(\d+)m:\s*(\d+)s:\s*(\d+)ms/);
-                if (parts) {
-                    document.getElementById('minutes').value = parts[1];
-                    document.getElementById('seconds').value = parts[2];
-                    document.getElementById('milliseconds').value = parts[3];
-                } else {
-                    alert('Invalid time format');
-                }
+        .then(timerValue => {
+            // Process the timer value
+            var parts = timerValue.match(/(\d+)m:\s*(\d+)s:\s*(\d+)ms/);
+            if (parts) {
+                document.getElementById('minutes').value = parts[1];
+                document.getElementById('seconds').value = parts[2];
+                document.getElementById('milliseconds').value = parts[3];
             } else {
-                alert('Timer element not found');
+                alert('Invalid time format');
             }
         }).catch(error => {
             alert('Error fetching or parsing: ' + error.message);
