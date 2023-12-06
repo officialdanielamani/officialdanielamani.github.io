@@ -24,9 +24,11 @@
          <table>
             <tr>
               <td style="width: 70%;">
+               <label for="nickname">Device Name:</label>       
+               <input type="text" id="nickname" name="nickname">
                <label for="ipAddress">IP Address:</label>
-              
-<input type="text" id="ipAddress" name="ipAddress"> <!--<br>
+               <input type="text" id="ipAddress" name="ipAddress">
+ <!--<br>
 
 <label for="username">Username:</label>
 <input type="text" id="username" name="username"><br>
@@ -34,11 +36,13 @@
 <label for="password">Password:</label>
 <input type="password" id="password" name="password"><br> -->
             </td>
-              <td style="width: 30%;"><button style="width: 95%;" onclick="addIpToList()">Add IP</button></td>
+              <td style="width: 30%;"><button style="width: 95%;" onclick="addIpToList()">Add Device</button>
+               <br><button style="width: 95%; background-color: crimson;" onclick="deleteIp()">Delete Device</button></td>
             </tr>
             <tr>
               <td><select id="ipList"></select></td>
-              <td><button style="width: 95%;" type="button" id="fetchButton" onclick="fetchData()">Fetch</button></td>
+              <td><button style="width: 95%;" type="button" id="fetchButton" onclick="fetchData()">Fetch Time</button></td>
+
             </tr>
           </table>
         <br>

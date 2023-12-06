@@ -6,24 +6,32 @@ const modal = document.getElementById('myModal');
 const closeModalButton = document.getElementById('closeModal');
 
 
-// Function to add IP/URL to the dropdown list
+// Object to store the mapping of nicknames to IP addresses
+var ipNicknameMap = {};
+
 function addIpToList() {
     var ipAddress = document.getElementById('ipAddress').value;
+    var nickname = document.getElementById('nickname').value; // Get the nickname value
     var ipList = document.getElementById('ipList');
 
-    // Create a new option element and add it to the dropdown
+    // Store the IP address with its corresponding nickname
+    ipNicknameMap[nickname] = ipAddress;
+
+    // Create a new option element with the nickname and add it to the dropdown
     var option = document.createElement('option');
-    option.value = ipAddress;
-    option.text = ipAddress;
+    option.value = nickname; // Use nickname as the value
+    option.text = nickname; // Display nickname in the dropdown
     ipList.appendChild(option);
 
-    // Clear the input field after adding
+    // Clear the input fields after adding
     document.getElementById('ipAddress').value = '';
+    document.getElementById('nickname').value = '';
 }
 
 function fetchData() {
     var ipList = document.getElementById('ipList');
-    var selectedIp = ipList.value;
+    var selectedNickname = ipList.value;
+    var selectedIp = ipNicknameMap[selectedNickname]; // Get the IP address using the selected nickname
 
     // Check if the input includes http:// or https://, if not, prepend it
     if (!selectedIp.startsWith('http://') && !selectedIp.startsWith('https://')) {
@@ -53,6 +61,26 @@ function fetchData() {
         }).catch(error => {
             alert('Error fetching or parsing: ' + error.message);
         });
+}
+
+function deleteIp() {
+    var ipList = document.getElementById('ipList');
+    var selectedNickname = ipList.value;
+
+    // Remove the selected nickname and its associated IP from the map
+    if (ipNicknameMap.hasOwnProperty(selectedNickname)) {
+        delete ipNicknameMap[selectedNickname];
+
+        // Find and remove the option from the dropdown list
+        for (var i = 0; i < ipList.options.length; i++) {
+            if (ipList.options[i].value == selectedNickname) {
+                ipList.remove(i);
+                break;
+            }
+        }
+    } else {
+        alert('Nickname not found');
+    }
 }
 
 toggleButton.addEventListener('click', () => {
