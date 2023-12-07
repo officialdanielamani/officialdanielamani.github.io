@@ -5,28 +5,93 @@ const secondContainer = document.querySelector('.container:last-child');
 const modal = document.getElementById('myModal');
 const closeModalButton = document.getElementById('closeModal');
 
+function toggleTableInfo() {
+    var div = document.getElementById("tableinfo");
+    if (div.style.display === "none") {
+        div.style.display = "block";
+    } else {
+        div.style.display = "none";
+    }
+}
 
-// Object to store the mapping of nicknames to IP addresses
 var ipNicknameMap = {};
 
+// Function to add IP to the list and create a corresponding checkbox
 function addIpToList() {
     var ipAddress = document.getElementById('ipAddress').value;
-    var nickname = document.getElementById('nickname').value; // Get the nickname value
+    var nickname = document.getElementById('nickname').value;
+    //var username = document.getElementById('username').value;
+    //var password = document.getElementById('password').value;
     var ipList = document.getElementById('ipList');
+    var checkboxContainer = document.getElementById('checkboxContainerIP');
 
     // Store the IP address with its corresponding nickname
     ipNicknameMap[nickname] = ipAddress;
 
-    // Create a new option element with the nickname and add it to the dropdown
+    // Add the nickname to the dropdown
     var option = document.createElement('option');
-    option.value = nickname; // Use nickname as the value
-    option.text = nickname; // Display nickname in the dropdown
+    option.value = nickname;
+    option.text = nickname;
     ipList.appendChild(option);
+
+    // Create a checkbox for the nickname
+    var checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = nickname;
+    checkbox.name = 'ipCheckboxes';
+    checkbox.value = nickname;
+
+    var label = document.createElement('label');
+    label.htmlFor = nickname;
+    label.appendChild(document.createTextNode(nickname));
+
+    // Add the checkbox and label to the container
+    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(label);
+    checkboxContainer.appendChild(document.createElement('br'));
 
     // Clear the input fields after adding
     document.getElementById('ipAddress').value = '';
     document.getElementById('nickname').value = '';
 }
+
+// Function to handle the Start button click
+function startAction() {
+    var checkboxes = document.getElementsByName('ipCheckboxes');
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            var ipAddress = ipNicknameMap[checkbox.value];
+            var url = 'http://' + ipAddress + '/update?output=1000';
+
+            // Open the URL in the background with no-cors mode
+            fetch(url, { mode: 'no-cors' })
+                .then(response => {
+                    console.log('Request sent to ' + url);
+                }).catch(error => {
+                    console.error('Error making request to ' + url + ': ' + error.message);
+                });
+        }
+    });
+}
+
+function resetAction() {
+    var checkboxes = document.getElementsByName('ipCheckboxes');
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            var ipAddress = ipNicknameMap[checkbox.value];
+            var url = 'http://' + ipAddress + '/update?output=3000';
+
+            // Open the URL in the background with no-cors mode
+            fetch(url, { mode: 'no-cors' })
+                .then(response => {
+                    console.log('Request sent to ' + url);
+                }).catch(error => {
+                    console.error('Error making request to ' + url + ': ' + error.message);
+                });
+        }
+    });
+}
+
 
 function fetchData() {
     var ipList = document.getElementById('ipList');
@@ -64,24 +129,41 @@ function fetchData() {
 }
 
 function deleteIp() {
+    var checkboxes = Array.from(document.getElementsByName('ipCheckboxes'));
+    var checkboxContainer = document.getElementById('checkboxContainerIP');
     var ipList = document.getElementById('ipList');
-    var selectedNickname = ipList.value;
 
-    // Remove the selected nickname and its associated IP from the map
-    if (ipNicknameMap.hasOwnProperty(selectedNickname)) {
-        delete ipNicknameMap[selectedNickname];
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            var nickname = checkbox.value;
 
-        // Find and remove the option from the dropdown list
-        for (var i = 0; i < ipList.options.length; i++) {
-            if (ipList.options[i].value == selectedNickname) {
-                ipList.remove(i);
-                break;
+            // Remove the nickname and its associated IP from the map
+            if (ipNicknameMap.hasOwnProperty(nickname)) {
+                delete ipNicknameMap[nickname];
+
+                // Remove the checkbox and label from the container
+                var label = checkbox.nextSibling; // Assuming label immediately follows the checkbox
+                checkboxContainer.removeChild(checkbox);
+                if (label && label.nodeName === 'LABEL') {
+                    checkboxContainer.removeChild(label);
+                }
+                // Remove the line break after the label
+                if (label.nextSibling && label.nextSibling.nodeName === 'BR') {
+                    checkboxContainer.removeChild(label.nextSibling);
+                }
+
+                // Remove the option from the dropdown list
+                for (var i = 0; i < ipList.options.length; i++) {
+                    if (ipList.options[i].value == nickname) {
+                        ipList.remove(i);
+                        break;
+                    }
+                }
             }
         }
-    } else {
-        alert('Nickname not found');
-    }
+    });
 }
+
 
 toggleButton.addEventListener('click', () => {
   if (secondContainer.style.display === 'none') {
@@ -122,8 +204,9 @@ userInputForm.addEventListener('submit', function (e) {
     const group = document.getElementById('group').value;
     const totalPoint = parseFloat(document.getElementById('totalPoint').value);
     const totalTime = parseFloat(document.getElementById('totalTime').value);
-    const timePoint = 1000 / totalTime;
+    const timePoint = 10000 / totalTime;
     const overallPoint = totalPoint + timePoint;
+    const repeat = parseInt(document.getElementById('repeat').value);
     
     const timestamp = new Date().toISOString(); // Get current timestamp
 
@@ -133,7 +216,11 @@ userInputForm.addEventListener('submit', function (e) {
     }
 
     if (isNaN(totalPoint) || totalPoint <= -1) {
-        alert('Total time must be a positive value. Please calculate the time.');
+        alert('Total point must be a positive value. Please calculate the point.');
+        return;
+    }
+    if (isNaN(repeat) || repeat <= -1) {
+        alert('Repeat must 0 and above. Please calculate back.');
         return;
     }
 
@@ -145,6 +232,7 @@ userInputForm.addEventListener('submit', function (e) {
         totalTime,
         timePoint,
         overallPoint,
+        repeat,
     };
 
     data.push(newData);
@@ -189,7 +277,8 @@ function updateDataList() {
         if(sortType === 'group'|| sortType === 'name'|| sortType === 'oldest'|| sortType === 'newest'){
         itemElement.innerHTML = `
         <table><tr><th><h2><strong>${item.name}</strong> (Group: ${item.group}) |
-            Total Point: ${item.totalPoint.toFixed(3)} | Total Time: ${item.totalTime.toFixed(3)}s<br><h2></th>
+        Total Time: ${item.totalTime.toFixed(3)}s <br>
+        Total Point: ${item.totalPoint.toFixed(3)} | Repeat: ${item.repeat}<br><h2></th>
             <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
             </tr>
         </table>    
@@ -198,7 +287,8 @@ function updateDataList() {
         else{
         itemElement.innerHTML = `
         <table><tr><th><h2><strong>Rank No${index + 1}. ${item.name}</strong> (Group: ${item.group}) |
-            Total Point : ${item.totalPoint.toFixed(3)} | Total Time: ${item.totalTime.toFixed(3)}s<br><h2></th>
+        Total Time: ${item.totalTime.toFixed(3)}s <br>  
+        Total Point : ${item.totalPoint.toFixed(3)} | Repeat: ${item.repeat}<br><h2></th>
             <th style="width: 90px;"><button class="delete-button" data-timestamp="${item.timestamp}"><i class="fa-regular fa-trash-can"></i></button></th>
             </tr>
         </table>
@@ -229,6 +319,7 @@ function clearForm() {
     document.getElementById('minutes').value = '';
     document.getElementById('seconds').value = '';
     document.getElementById('milliseconds').value = '';
+    document.getElementById('repeat').value = '';
 }
 
 const calculateTimeButton = document.getElementById('calculateTime');
@@ -252,7 +343,7 @@ const exportCsvBtn = document.getElementById('exportCsvBtn');
 exportCsvBtn.addEventListener('click', exportToCsv);
 
 function exportToCsv() {
-    const csvData = [['Timestamp', 'Name', 'Group', 'Total Point', 'Total Time', 'Time Point', 'Overall Point']];
+    const csvData = [['Timestamp', 'Name', 'Group', 'Total Point', 'Total Time', 'Time Point', 'Overall Point','Repeat']];
 
     data.forEach(item => {
         csvData.push([
@@ -262,7 +353,8 @@ function exportToCsv() {
             item.totalPoint.toFixed(3),
             item.totalTime.toFixed(3),
             item.timePoint.toFixed(3),
-            item.overallPoint.toFixed(3)
+            item.overallPoint.toFixed(3),
+            item.repeat
         ]);
     });
 
@@ -310,7 +402,7 @@ function parseCsv(csvText) {
     for (let i = 1; i < rows.length; i++) { // Skip the first row (header)
         const row = rows[i];
         const columns = row.split(',');
-        if (columns.length === 7) { // Update the length to 7 to accommodate the timestamp
+        if (columns.length === 8) { // Update the length to 7 to accommodate the timestamp
             const timestamp = columns[0]; // Extract timestamp
             const name = columns[1];
             const group = columns[2];
@@ -318,6 +410,7 @@ function parseCsv(csvText) {
             const totalTime = parseFloat(columns[4]);
             const timePoint = parseFloat(columns[5]);
             const overallPoint = parseFloat(columns[6]);
+            const repeat = parseInt(columns[7])
 
             parsedData.push({
                 timestamp, // Include timestamp in the parsed data
@@ -326,7 +419,8 @@ function parseCsv(csvText) {
                 totalPoint,
                 totalTime,
                 timePoint,
-                overallPoint
+                overallPoint,
+                repeat
             });
         } else if (row.trim() !== '') {
             return null; // Invalid CSV format
@@ -349,7 +443,8 @@ function exportToJson() {
             totalPoint: item.totalPoint.toFixed(3),
             totalTime: item.totalTime.toFixed(3),
             timePoint: item.timePoint.toFixed(3),
-            overallPoint: item.overallPoint.toFixed(3)
+            overallPoint: item.overallPoint.toFixed(3),
+            repeat: item.repeat
         };
     });
 

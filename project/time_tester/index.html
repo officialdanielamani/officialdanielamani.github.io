@@ -12,6 +12,7 @@
     <div class="container" style="background-image: url('GMI.jpg');
     background-size: auto;">
       <h2>Line Following Scoring System</h2>
+      <p style="font-size: 0.7rem;"><i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 5.0.7</i> </p>
       <button id="toggleButton">Hide Submit Data</button>
       <br/><br/>
       <div id="dataList" style="opacity: 0.9;" ></div>
@@ -19,34 +20,53 @@
     <div class="container">
       <h2>Submit Data</h2>
       <button id="openModalButton"><i class="fa-solid fa-circle-info"></i> Information & Guide</button>
-      <br/><br/>
+      <br/>
       <form id="userInputForm">
-         <table>
-            <tr>
-              <td style="width: 70%;">
-               <label for="nickname">Device Name:</label>       
-               <input type="text" id="nickname" name="nickname">
-               <label for="ipAddress">IP Address:</label>
-               <input type="text" id="ipAddress" name="ipAddress">
- <!--<br>
-
-<label for="username">Username:</label>
-<input type="text" id="username" name="username"><br>
-             
-<label for="password">Password:</label>
-<input type="password" id="password" name="password"><br> -->
+         <div id="tableinfo">
+            <table>
+               <tr>
+                 <td style="width: 70%;">
+                  
+                  <label for="nickname">Device Name:</label>       
+                  <input type="text" id="nickname" name="nickname">
+                  <label for="ipAddress">IP Address:</label>
+                  <input type="text" id="ipAddress" name="ipAddress">
+                  <!--<label for="username">Username:</label>
+                  <input type="text" id="username" name="username"><br>
+                
+                  <label for="password">Password:</label>
+                  <input type="password" id="password" name="password"><br>-->
+               </td>
+                 <td style="width: 30%;"><button style="width: 95%;" onclick="addIpToList()">Add Device</button></td>
+               </tr>
+               <tr>
+                  <td>
+                     <div id="checkboxContainerIP">
+                     <!-- Checkboxes will be added here -->
+                 </div>
+                 </td>
+                  <td><p>Select to Sync or Delete</p></br></br>
+                     <button style="width: 95%; background-color: crimson;" onclick="deleteIp()"><i class="fa-regular fa-trash-can"></i>  Delete Device</button>
+                 </td>
+   
+               </tr>
+             </table>
+        </div>
+        
+        <button style="background-color: mediumblue;" onclick="toggleTableInfo()"><i class="fa-solid fa-hard-drive"></i>  Device Manager</button>
+      </br>
+      </br>
+        <table>
+         <tr>
+            <td style="width: 70%;"><select id="ipList"></select></br></br>
+               <button style="width: 95%;" type="button" id="fetchButton" onclick="fetchData()"><i class="fa-regular fa-pen-to-square"></i> Fetch Time</button>
             </td>
-              <td style="width: 30%;"><button style="width: 95%;" onclick="addIpToList()">Add Device</button>
-               <br><button style="width: 95%; background-color: crimson;" onclick="deleteIp()">Delete Device</button></td>
-            </tr>
-            <tr>
-              <td><select id="ipList"></select></td>
-              <td><button style="width: 95%;" type="button" id="fetchButton" onclick="fetchData()">Fetch Time</button></td>
-
-            </tr>
-          </table>
+            <td><button style="width: 95%; background-color: #2c8934;"onclick="startAction()"><i class="fa-regular fa-circle-play"></i> Start Time (Sync)</button></br></br>
+                <button style="width: 95%; background-color: crimson;"onclick="resetAction()"><i class="fa-solid fa-rotate-left"></i>  Reset Time (Sync)</button>
+               </td>
+         </tr>
+        </table>
         <br>
-     
         <label for="name" accesskey="N">Name:</label>
         <input type="text" id="name" required>
         <label for="group" accesskey="G">Group:</label>
@@ -70,16 +90,20 @@
         <br>
         <table>
            <tr>
-              <td style="width: 50%;">
+              <td style="width: 40%;">
                  <label for="totalTime">Total Time:</label>
                  <input type="number" id="totalTime"  placeholder="0" step="0.001" min="0.001" required> 
                  <button type="button" id="calculateTime" accesskey="C" style="width: 90%;"><i class="fa-solid fa-stopwatch"></i> Calculate Time</button>
               </td>
-              <td style="width: 50%;">
+              <td style="width: 40%;">
                  <label for="totalPoint" accesskey="P">Total Point:</label>
                  <input type="number" id="totalPoint"  placeholder="0" step="0.001" min="0" max="100" required>
                  <button type="submit" accesskey="A" style="width: 90%; background-color: #2c8934;"><i class="fa-solid fa-pencil"></i> Submit Data</button>
               </td>
+              <td style="width: 20%;">
+               <label for="totalTime">Total Repeat:</label>
+               <input type="number" id="repeat" step="1" min="0" placeholder="0"> 
+            </td>
            </tr>
         </table>
         <br>
@@ -122,7 +146,6 @@
         <button type="submit" style="width: 30%;"><i class="fa-regular fa-file-code"></i> Fetch</button>
      </form>
      <br/>
-     <p><i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 3.0.3</i> </p>
     </div>
   </div>
   <div class="modal" id="myModal">
@@ -138,6 +161,17 @@
             <br><b>Calc</b> Alt+ C | <b>Total Point</b> Alt+ P | <b>Submit</b> Alt+ A
             <br>
             By maximum total point are 100.
+            <h3><strong>Device Manager</strong></h3>
+            You can add our ESP8266 stopwatch system to intergate with this system. Add device IP
+            address and give nickname to device to add.
+            <br>
+            <br> <b>IP: </b>The IP address that being display on OLED display
+            <br> <b>Device Name: </b>Nickname yor your device
+            <br> <b>Device Checkbox:</b>Selection device to start in sync or device to delete
+            <br> <b>Start Time: </b>Start all selection device stopwatch 
+            <br> <b>Reset Time: </b>Reset all selection device stopwatch 
+            <br> <b>Fetch Time: </b>Select using dropdown to fetch time data from device
+            <br> <b>Delete Device: </b>Using checkbox to delete multiple devices
          </td>
          <td>
             <h3>Saving File</h3>
@@ -195,7 +229,7 @@
       </tr>
 
    </table>
-     <br><p><i>Powered by:<a href="https://danielamani.com">DanielAmani.com</a> | Version 3.0.3</i> </p>
+     <br>
    </div>
  <script src="script.js"></script>
 </body>
