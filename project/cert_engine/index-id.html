@@ -38,10 +38,9 @@ function searchData() {
     let result = data.find(item => item[1] === searchId);
 
     if (result) {
-        // Assuming the first element is some encoded ID which is not displayed
-        document.getElementById("ic").textContent = result[1]; // Displaying the ID itself
-        document.getElementById("school").textContent = result[2];
-        document.getElementById("part").textContent = result[3];
+        document.getElementById("ic").textContent = result[1]; // Displaying the ID
+        document.getElementById("school").textContent = result[2]; // School
+        document.getElementById("part").textContent = result[3]; // Part
         document.getElementById("certificateStatus").textContent = "Certificate Valid";
     } else {
         document.getElementById("ic").textContent = "Not Found";
@@ -50,9 +49,7 @@ function searchData() {
         document.getElementById("certificateStatus").textContent = "Certificate Invalid";
     }
 }
-
-
-loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.csv");
+loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.json");
 
 
     </script>
