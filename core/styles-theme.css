@@ -62,12 +62,14 @@ input, textarea, button, td, th, tr {
 }
 
 input[type="text"] {
+    font-size: inherit;
     width: 100%;
     padding: 10px;
     margin-top: 10px;
 }
 
 button {
+    font-size: inherit;
     background-color: white;
     padding: 5px;
     text-align: center;
@@ -124,6 +126,7 @@ th {
 }
 
 .dark-mode button {
+    font-size: inherit;
     background-color: black;
     padding: 5px;
     text-align: center;

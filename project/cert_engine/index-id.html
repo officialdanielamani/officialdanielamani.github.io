@@ -52,18 +52,20 @@ function loadJSON(url) {
 // Function to search data
 function searchData() {
     let searchId = document.getElementById("searchId").value;
+    let certificateStatusElement = document.getElementById("certificateStatus");
     let result = data.find(item => item[0] === searchId);
 
     if (result) {
         document.getElementById("ic").textContent = result[2]; // Displaying the numerical ID
         document.getElementById("school").textContent = result[2]; // School
         document.getElementById("part").textContent = result[3]; // Part
-        document.getElementById("certificateStatus").textContent = "Certificate Valid";
+        certificateStatusElement.textContent = "Certificate Valid";
     } else {
         document.getElementById("ic").textContent = "Not Found";
         document.getElementById("school").textContent = "Not Found";
         document.getElementById("part").textContent = "Not Found";
-        document.getElementById("certificateStatus").textContent = "Certificate Invalid";
+        certificateStatusElement.textContent = "Certificate Invalid";
+        certificateStatusElement.style.color = "red";
     }
 /*
     if (result) {
