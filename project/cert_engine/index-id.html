@@ -25,7 +25,7 @@
     <input type="text" id="searchId" placeholder="Enter CERT-ID">
     <br>
     <br>
-    <button onclick="searchData()" style="width: 300px; margin: 0 auto; text-align: center;">Search</button>
+    <p style="margin: 0 auto; text-align: center;"><button onclick="searchData()" style="width: 30%;">Search</button></p>
 
     <div id="result" style="text-align: center;">
         <p>IC (Last 4 Digit): <span id="ic"></span></p>
@@ -79,7 +79,7 @@ function searchData() {
         document.getElementById("ic").textContent = result[1]; // Displaying the numerical ID
         document.getElementById("school").textContent = result[2]; // School
         document.getElementById("part").textContent = result[3]; // Part
-        certificateStatusElement.textContent = "Certificate Valid";
+        certificateStatusElement.textContent = "Certificate Valid (Have record in system)";
     } else {
         document.getElementById("ic").textContent = "Not Found";
         document.getElementById("school").textContent = "Not Found";
@@ -93,7 +93,7 @@ function searchData() {
         document.getElementById("ic").textContent = result[2]; // Displaying the numerical ID
         document.getElementById("school").textContent = result[3]; // School
         document.getElementById("part").textContent = result[4]; // Part
-        document.getElementById("certificateStatus").textContent = "Certificate Valid";
+        document.getElementById("certificateStatus").textContent = "Certificate Valid (Have record in system)";
     } else {
         document.getElementById("name").textContent = "Not Found";
         document.getElementById("ic").textContent = "Not Found";
