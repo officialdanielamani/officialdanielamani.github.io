@@ -24,13 +24,25 @@
 
     <div id="result" style="text-align: center;">
         <p>IC (Last 4 Digit): <span id="ic"></span></p>
-        <p>School: <span id="school"></span></p>
-        <p>Archivement / Join in: <span id="part"></span></p>
+        <p>School / Institute / Group: <span id="school"></span></p>
+        <p>Achievement / Join in: <span id="part"></span></p>
         <p>Certificate Status: <span id="certificateStatus"></span></p>
     </div>
 </div>
+<br>
 <hr>
-    <p>Note: For privacy we only give snipped data only (no full IC/Name)</p>
+<p>Example "MDEyM1JCMjNDQi1QR01JREFOSUVMCg==" will be decode as "0123RB23CB-PGMIDANIEL" in base-64
+    <ul>
+        <li>First 4 Digit is the last 4 digit in the IC (in this case 0123)</li>
+        <li>Next is what the participant joined, eg RB23CB-P is Combat Robat as Participant</li>
+        <li>Next is institute/school name (max 14 char, in this case GMI)</li>
+        <li>Last is the name of participant (max 12 char, in this case DANIEL)</li>
+    </ul>
+    If the Certificate ID is not matching with detail on certificate meaning it being tampered or not authentic. 
+</p>
+<hr>
+    <p>Note: For privacy we only give snipped data only</p>
+    <p>SHA-5 JSON:  | Last update on: </p>
     <script>
 let data = []; // This will hold the JSON data
 
