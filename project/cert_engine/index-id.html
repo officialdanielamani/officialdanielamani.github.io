@@ -14,47 +14,34 @@
     </div>
 
     <script>
-        // Assuming CSV data format: ID, IC, School, Part
-let data = []; // This will hold the parsed CSV data
 
-// Function to load and parse CSV file from an external URL
-function loadCSV(url) {
+let data = []; // This will hold the JSON data
+
+// Function to load and parse JSON file
+function loadJSON(url) {
     fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.text();
+            return response.json();
         })
-        .then(text => {
-            // Parse the CSV text
-            let rows = text.split("\n");
-            data = rows.map(row => {
-                let cols = row.split(",");
-                return {
-                    id: cols[0].trim(),
-                    ic: cols[1].trim(),
-                    school: cols[2].trim(),
-                    part: cols[3].trim()
-                };
-            });
+        .then(json => {
+            data = json;
         })
-        .catch(error => console.error('Error fetching the CSV:', error));
+        .catch(error => console.error('Error fetching the JSON:', error));
 }
-
-// Call loadCSV with the path to your CSV file
-loadCSV("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.json");
-
 
 // Function to search data
 function searchData() {
     let searchId = document.getElementById("searchId").value;
-    let result = data.find(row => row.id === searchId);
+    let result = data.find(item => item[1] === searchId);
 
     if (result) {
-        document.getElementById("ic").textContent = result.ic;
-        document.getElementById("school").textContent = result.school;
-        document.getElementById("part").textContent = result.part;
+        // Assuming the first element is some encoded ID which is not displayed
+        document.getElementById("ic").textContent = result[1]; // Displaying the ID itself
+        document.getElementById("school").textContent = result[2];
+        document.getElementById("part").textContent = result[3];
         document.getElementById("certificateStatus").textContent = "Certificate Valid";
     } else {
         document.getElementById("ic").textContent = "Not Found";
@@ -63,6 +50,9 @@ function searchData() {
         document.getElementById("certificateStatus").textContent = "Certificate Invalid";
     }
 }
+
+
+loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.csv");
 
 
     </script>
