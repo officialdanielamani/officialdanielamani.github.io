@@ -502,5 +502,1730 @@
         "0279",
         "SYSCORE ACADEMY JB",
         "LINE FOLLOWING ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM3MVJCMjNTUlMtUFNNU1RFTkdLVUFNVUhBTU1BREFSSUVG",
+        "0371",
+        "SMS TENGKU ABDULLAH (CALIPH DUO)",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTAwOVJCMjNTUlMtUFNNU1RFTkdLVUFNVUhBTU1BREZBUklT",
+        "1009",
+        "SMS TENGKU ABDULLAH (CALIPH DUO)",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTA0MFJCMjNTUlMtUFNNU1RFTkdLVUFMWU5EQU5PT1JBRlo=",
+        "5040",
+        "SMS TENGKU ABDULLAH (CALIPH DUO)",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTMwMVJCMjNTUlMtUFNNU1RFTkdLVUFTWUFISURFRUJJTk8=",
+        "5301",
+        "SMS TENGKU ABDULLAH (CALIPH DUO)",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTEzMVJCMjNTUlMtUENPREVUUk9OSUNTQU5EWUdPSFBJQ0s=",
+        "5131",
+        "CODETRONICS ALPHA",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDU2MVJCMjNTUlMtUENPREVUUk9OSUNTR09IWUlLSFVORw==",
+        "0561",
+        "CODETRONICS ALPHA",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTIxN1JCMjNTUlMtUENPREVUUk9OSUNTR09IWUlLWFVFTg==",
+        "1217",
+        "CODETRONICS ALPHA",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTEzMVJCMjNTUlMtUENPREVUUk9OSUNTQU5EWUdPSFBJQ0s=",
+        "5131",
+        "CODETRONICS BRAVO",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTIzNVJCMjNTUlMtUENPREVUUk9OSUNTQ0FMVkVORkFOR0tB",
+        "1235",
+        "CODETRONICS BRAVO",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTEzMVJCMjNTUlMtUENPREVUUk9OSUNTQU5EWUdPSFBJQ0s=",
+        "5131",
+        "CODETRONICS CHARLIE",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTA0OVJCMjNTUlMtUENPREVUUk9OSUNTSEVFSlVORU4=",
+        "1049",
+        "CODETRONICS CHARLIE",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTEzMVJCMjNTUlMtUENPREVUUk9OSUNTQU5EWUdPSFBJQ0s=",
+        "5131",
+        "CODETRONICS DELTA",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA4MVJCMjNTUlMtUENPREVUUk9OSUNTSk9FTFRJTkdaSFVO",
+        "0081",
+        "CODETRONICS DELTA",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "OTgzMVJCMjNTUlMtUElSQU5JQU5URUFNSEFTVElNQUxBS09VVA==",
+        "9831",
+        "IRANIAN TEAM A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NDQ5NlJCMjNTUlMtUElSQU5JQU5URUFNTUVMSUtBRkFISU1J",
+        "4496",
+        "IRANIAN TEAM A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MjUxN1JCMjNTUlMtUElSQU5JQU5URUFNTkFTUklOQVNIT09SSQ==",
+        "2517",
+        "IRANIAN TEAM A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NjkwM1JCMjNTUlMtUElSQU5JQU5URUFNQUhNQURTQU1JRUlNQQ==",
+        "6903",
+        "IRANIAN TEAM B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "ODg1MFJCMjNTUlMtUElSQU5JQU5URUFNQU1JUkdIT0RTSQ==",
+        "8850",
+        "IRANIAN TEAM B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NzQwMFJCMjNTUlMtUElSQU5JQU5URUFNRUxJWUFSRVpBRU1P",
+        "7400",
+        "IRANIAN TEAM B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NjkwM1JCMjNTUlMtUElSQU5JQU5URUFNQUhNQURTQU1JRUlNQQ==",
+        "6903",
+        "IRANIAN TEAM C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MzM2OFJCMjNTUlMtUElSQU5JQU5URUFNUkVaQU1BS0tBUkk=",
+        "3368",
+        "IRANIAN TEAM C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NDM5M1JCMjNTUlMtUElSQU5JQU5URUFNWUFTSU5FU01BRUlMSQ==",
+        "4393",
+        "IRANIAN TEAM C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NzI3NlJCMjNTUlMtUElSQU5JQU5URUFNQVJFR1NIQVZFUkRJQQ==",
+        "7276",
+        "IRANIAN TEAM D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDI5M1JCMjNTUlMtUElSQU5JQU5URUFNTU9IQU1NQURIT1NTRUk=",
+        "0293",
+        "IRANIAN TEAM D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTQwN1JCMjNTUlMtUElSQU5JQU5URUFNU0FNTkFTSVJJ",
+        "5407",
+        "IRANIAN TEAM D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NjkwM1JCMjNTUlMtUElSQU5JQU5URUFNQUhNQURTQU1JRUlNQQ==",
+        "6903",
+        "IRANIAN TEAM E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTI0MFJCMjNTUlMtUElSQU5JQU5URUFNU0FCQUtBTEFOVEFSSQ==",
+        "1240",
+        "IRANIAN TEAM E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MzIwM1JCMjNTUlMtUElSQU5JQU5URUFNU0hBR0hBWUVHSFNIQQ==",
+        "3203",
+        "IRANIAN TEAM E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTQxMVJCMjNTUlMtUE1SU01LT1RBUFVNVUhBTU1BREJBSUhB",
+        "5411",
+        "MRSM KOTA PUTRA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA4NVJCMjNTUlMtUE1SU01LT1RBUFVNVUhBTU1BREhBRElG",
+        "0085",
+        "MRSM KOTA PUTRA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDAzN1JCMjNTUlMtUE1SU01LT1RBUFVNVUhBTU1BRFdBRklZ",
+        "0037",
+        "MRSM KOTA PUTRA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "OSBSQjIzU1JTLVBNUlNNS09UQVBVTVVIQU1NQURJTVJBTg==",
+        "\"9",
+        "",
+        "",
+        "\"",
+        "MRSM KOTA PUTRA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTQxMVJCMjNTUlMtUE1SU01LT1RBUFVNVUhBTU1BREJBSUhB",
+        "5411",
+        "MRSM KOTA PUTRA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDU3M1JCMjNTUlMtUE1SU01LT1RBUFVOSUtBSE1BREFGSUY=",
+        "0573",
+        "MRSM KOTA PUTRA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE5MVJCMjNTUlMtUE1SU01LT1RBUFVTWUFITUlFSEFZS0FM",
+        "0191",
+        "MRSM KOTA PUTRA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDYyMVJCMjNTUlMtUFJBS1VTSE9BQkRVTExBSEFLSUY=",
+        "0621",
+        "RAKUSHO",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTIzMlJCMjNTUlMtUFJBS1VTSE9BRExJTkFTWUFGSVFB",
+        "5232",
+        "RAKUSHO",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDgzNlJCMjNTUlMtUFJBS1VTSE9BTElTWUFTQUZJWVlB",
+        "0836",
+        "RAKUSHO",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDg4NVJCMjNTUlMtUFJBS1VTSE9CQUtFRUZEQU5JRUxC",
+        "0885",
+        "RAKUSHO B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE1NVJCMjNTUlMtUFJBS1VTSE9CTU9IQU1BREZBSVpBTA==",
+        "5155",
+        "RAKUSHO B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTMwMlJCMjNTUlMtUFJBS1VTSE9CTVVIQU1NQURBWklNVQ==",
+        "1302",
+        "RAKUSHO B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NjEwOVJCMjNTUlMtUFNFUkdBTU1PSERGQVpMSUJJTg==",
+        "6109",
+        "SERGAM",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDUwM1JCMjNTUlMtUFNFUkdBTU1VSEFNTUFERkFSSVM=",
+        "0503",
+        "SERGAM",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE3N1JCMjNTUlMtUFNFUkdBTU1VSEFNTUFEWkFIRUU=",
+        "0177",
+        "SERGAM",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTQ1N1JCMjNTUlMtUFNIQVJPQ0RBQkRIQUxJTUJJTg==",
+        "5457",
+        "SHAROC D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDg0MVJCMjNTUlMtUFNIQVJPQ0RNVUhBTU1BREFRSUw=",
+        "0841",
+        "SHAROC D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM1OVJCMjNTUlMtUFNIQVJPQ0RNVUhBTU1BRE1VU1lS",
+        "0359",
+        "SHAROC D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDQ2OFJCMjNTUlMtUFNIQVJPQ0VBTUlSQUhTT0ZFQUI=",
+        "0468",
+        "SHAROC E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM2NlJCMjNTUlMtUFNIQVJPQ0VTT0ZJRU5BQUxZQUI=",
+        "0366",
+        "SHAROC E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA2OVJCMjNTUlMtUFNIQVJPQ0VNVUhBTU1BRElNQU4=",
+        "0069",
+        "SHAROC E",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE4NlJCMjNTUlMtUFNKSyhDKVlBS0NGT05HTEFJSEE=",
+        "5186",
+        "SJK(C) YAK CHEE A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDg5N1JCMjNTUlMtUFNKSyhDKVlBS0NMQU1IT1VaSEVORw==",
+        "0897",
+        "SJK(C) YAK CHEE A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDQzOVJCMjNTUlMtUFNKSyhDKVlBS0NPTkdIT05HQ0hFTkc=",
+        "0439",
+        "SJK(C) YAK CHEE A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MzAyM1JCMjNTUlMtUFNKSyhDKVlBS0NDSE9PTkdZRUtBTkc=",
+        "3023",
+        "SJK(C) YAK CHEE B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE4NlJCMjNTUlMtUFNKSyhDKVlBS0NGT05HTEFJSEE=",
+        "5186",
+        "SJK(C) YAK CHEE B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE0MVJCMjNTUlMtUFNKSyhDKVlBS0NJVkFOTE9IU0hBTw==",
+        "0141",
+        "SJK(C) YAK CHEE B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTM4NlJCMjNTUlMtUFNKSyhDKVlBS0NDSElOWUlZQU4=",
+        "1386",
+        "SJK(C) YAK CHEE C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE4NlJCMjNTUlMtUFNKSyhDKVlBS0NGT05HTEFJSEE=",
+        "5186",
+        "SJK(C) YAK CHEE C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDIyOFJCMjNTUlMtUFNKSyhDKVlBS0NZVVJVSVhJTg==",
+        "0228",
+        "SJK(C) YAK CHEE C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTUyOVJCMjNTUlMtUFNLQkFOREFSUE9UUy5EUi5BTU1BUg==",
+        "5529",
+        "SK BANDAR PONTIAN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDAxMlJCMjNTUlMtUFNLQkFOREFSUE9OVUhBWklOTklSQUg=",
+        "0012",
+        "SK BANDAR PONTIAN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDk3NVJCMjNTUlMtUFNLQkFOREFSUE9JTVJBTkhBWklRQkk=",
+        "0975",
+        "SK BANDAR PONTIAN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MjE5OVJCMjNTUlMtUFNLQkFOREFSUE9VTUFSRkFITUlCSU4=",
+        "2199",
+        "SK BANDAR PONTIAN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM4N1JCMjNTUlMtUFNLSU5UQU5QRVJNVUhBTU1BRFNBSUZV",
+        "0387",
+        "SK INTAN PERDANA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE5MVJCMjNTUlMtUFNLSU5UQU5QRVJBRklRSEFaSVFCSU4=",
+        "0191",
+        "SK INTAN PERDANA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTYzNlJCMjNTUlMtUFNLSU5UQU5QRVJKQUxJTEFCSU5USUo=",
+        "5636",
+        "SK INTAN PERDANA A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTI4MFJCMjNTUlMtUFNLSU5UQU5QRVJLQU1FTElBQklOVEk=",
+        "5280",
+        "SK INTAN PERDANA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDgzM1JCMjNTUlMtUFNLSU5UQU5QRVJNVUhBTU1BRElNQU4=",
+        "0833",
+        "SK INTAN PERDANA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDI3M1JCMjNTUlMtUFNLSU5UQU5QRVJNVUhBTU1BRFpVSERJ",
+        "0273",
+        "SK INTAN PERDANA B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE0OFJCMjNTUlMtUFNLTEFMQU5HUEVOT09SQUZJWUFBTEg=",
+        "0148",
+        "SK LALANG PEPUYU",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA1OFJCMjNTUlMtUFNLTEFMQU5HUEVOT09SQUxZQUFBTA==",
+        "0058",
+        "SK LALANG PEPUYU",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTAxMlJCMjNTUlMtUFNLTEFMQU5HUEVOT1JBWkxJTkFIQVpJ",
+        "5012",
+        "SK LALANG PEPUYU",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MjM5MVJCMjNTUlMtUFNNQVBLQUpBTkdNVUhBTU1BREFJTUFO",
+        "2391",
+        "SMAP KAJANG A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDg2M1JCMjNTUlMtUFNNQVBLQUpBTkdNVUhBTU1BREZVREhB",
+        "0863",
+        "SMAP KAJANG A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTYyNlJCMjNTUlMtUFNNQVBLQUpBTkdOT1JBWk5JTkFCSU5U",
+        "5626",
+        "SMAP KAJANG A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM5NVJCMjNTUlMtUFNNQVBLQUpBTkdIQUZJWUhBWklNSUI=",
+        "0395",
+        "SMAP KAJANG C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NjEwMFJCMjNTUlMtUFNNQVBLQUpBTkdNQUhBTklCSU5USU0=",
+        "6100",
+        "SMAP KAJANG C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTU0NVJCMjNTUlMtUFNNQVBLQUpBTkdNVUhBTU1BREhBRkla",
+        "1545",
+        "SMAP KAJANG C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDQ3M1JCMjNTUlMtUFNNQVBLQUpBTkdGQVRJSEFRSUxCSU4=",
+        "0473",
+        "SMAP KAJANG D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE4MFJCMjNTUlMtUFNNQVBLQUpBTkdOVVJVTFdBSEVFREE=",
+        "5180",
+        "SMAP KAJANG D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDkwNVJCMjNTUlMtUFNNQVBLQUpBTkdXQUZSSVNZQU1SSU4=",
+        "0905",
+        "SMAP KAJANG D",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "UkIyM1NSUy1QU01BUEtBSkFORw==",
+        "",
+        "SMAP KAJANG F",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "UkIyM1NSUy1QU01BUEtBSkFORw==",
+        "",
+        "SMAP KAJANG F",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "UkIyM1NSUy1QU01BUEtBSkFORw==",
+        "",
+        "SMAP KAJANG F",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDQ3M1JCMjNTUlMtUFNNQVBLQUpBTkdGQVRJSEFRSUxCSU4=",
+        "0473",
+        "SMAP KAJANG G",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDQwNVJCMjNTUlMtUFNNQVBLQUpBTkdXQUZSSVNZQU1SSU4=",
+        "0405",
+        "SMAP KAJANG G",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDk0N1JCMjNTUlMtUFNNS0RBVE8nQUhBTElGRklTS0FOREFS",
+        "0947",
+        "SMK DATO' AHMAD MAHER A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDYwN1JCMjNTUlMtUFNNS0RBVE8nQUhNVUhBTU1BREFEQU0=",
+        "0607",
+        "SMK DATO' AHMAD MAHER A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTM2MFJCMjNTUlMtUFNNS0RBVE8nQUhaVUxBRklEQUJUQQ==",
+        "5360",
+        "SMK DATO' AHMAD MAHER A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDMzNFJCMjNTUlMtUFNNS0RBVE8nQUhBSU5JTEZBUUlIQUg=",
+        "0334",
+        "SMK DATO' AHMAD MAHER B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDgzMlJCMjNTUlMtUFNNS0RBVE8nQUhOVVJBTEVFU1lBREE=",
+        "0832",
+        "SMK DATO' AHMAD MAHER B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTM2MFJCMjNTUlMtUFNNS0RBVE8nQUhaVUxBRklEQUJUQQ==",
+        "5360",
+        "SMK DATO' AHMAD MAHER B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTUxOVJCMjNTUlMtUFNNS0lOVEFOUEVUUy5BSE1BREFGQU4=",
+        "5519",
+        "SMK INTAN PERDANA C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA5MlJCMjNTUlMtUFNNS0lOVEFOUEVGQVJBSEFUSVFBSEI=",
+        "0092",
+        "SMK INTAN PERDANA C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA5OFJCMjNTUlMtUFNNS0lOVEFOUEVaQUhSQUhBUUlMQUg=",
+        "0098",
+        "SMK INTAN PERDANA C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTUwMlJCMjNTUlMtUFNNS0lOVEFOUEVBTUlSQUhBUUlMQUg=",
+        "5502",
+        "SMK INTAN PERDANA C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTI0OFJCMjNTUlMtUFNNS0lOVEFOUEVOSUtBTElTWUFRSVM=",
+        "1248",
+        "SMK INTAN PERDANA C",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDUyNFJCMjNTUlMtUFNNS1NUTUFSWUxVSUJBT1pJ",
+        "0524",
+        "SMK ST MARY A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE2N1JCMjNTUlMtUFNNS1NUTUFSWU1PSERHSEFaQUxJQg==",
+        "5167",
+        "SMK ST MARY A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTA0MlJCMjNTUlMtUFNNS1NUTUFSWVBVVEVSSUVMWUFOQQ==",
+        "1042",
+        "SMK ST MARY A",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MjM3NlJCMjNTUlMtUFNNS1NUTUFSWUxBV1hJTllJTg==",
+        "2376",
+        "SMK ST MARY B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTE2N1JCMjNTUlMtUFNNS1NUTUFSWU1PSERHSEFaQUxJQg==",
+        "5167",
+        "SMK ST MARY B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE1MlJCMjNTUlMtUFNNS1NUTUFSWVdIQVlBTlRIRU5H",
+        "0152",
+        "SMK ST MARY B",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTAxMlJCMjNTUlMtUFNNVShBKVRJS05PUkFaTElOQUhBWkk=",
+        "5012",
+        "SMU (A) TI KG KUALA KAJANG",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDIwOFJCMjNTUlMtUFNNVShBKVRJS05VUklaWkFIQklOVA==",
+        "0208",
+        "SMU (A) TI KG KUALA KAJANG",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDM3NlJCMjNTUlMtUFNNVShBKVRJS05VUlVMSU1BTkhVUw==",
+        "0376",
+        "SMU (A) TI KG KUALA KAJANG",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTA1OVJCMjNTUlMtUFNSSUFMLUFNSU5JRFJJU0JJTk1BVA==",
+        "5059",
+        "SRI AL-AMIN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDE5MVJCMjNTUlMtUFNSSUFMLUFNSU5NVUhBTU1BRFJBRklR",
+        "0191",
+        "SRI AL-AMIN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDA3OFJCMjNTUlMtUFNSSUFMLUFNSU5OVVJNQUlTQVJBQkk=",
+        "0078",
+        "SRI AL-AMIN",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDAzOVJCMjNTUlMtUFNVTU9SVDFBUUlMSVJIQU1CSU4=",
+        "0039",
+        "SUMORT 1",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDI3MVJCMjNTUlMtUFNVTU9SVDFNT0hBTUFESU1BTkg=",
+        "0271",
+        "SUMORT 1",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTM4OFJCMjNTUlMtUFNVTU9SVDFOVVJISURBWUFUSUI=",
+        "5388",
+        "SUMORT 1",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTQ1NFJCMjNTUlMtUFNVTU9SVDJOVVJTVVpJQU5BQklO",
+        "5454",
+        "SUMORT 2",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDc0NVJCMjNTUlMtUFNVTU9SVDJZQU5HQ0hFTkdKVU4=",
+        "0745",
+        "SUMORT 2",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDI4MVJCMjNTUlMtUFNVTU9SVDJZQU5HQ0hFTkdaRQ==",
+        "0281",
+        "SUMORT 2",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTgzMVJCMjNTUlMtUFhFTklYMUpBQ0tMRUU=",
+        "5831",
+        "XENIX 1",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MTI3N1JCMjNTUlMtUFhFTklYMVlPT05HSlVOU0lBTg==",
+        "1277",
+        "XENIX 1",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTgzMVJCMjNTUlMtUFhFTklYMkpBQ0tMRUU=",
+        "5831",
+        "XENIX 2",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "MDcyOFJCMjNTUlMtUFhFTklYMk5HWUVFWFVBTg==",
+        "0728",
+        "XENIX 2",
+        "SUMO ROBOT (SCHOOL)"
+    ],
+    [
+        "NTIwOVJCMjNJTi1QSUxQUEFTSVJHVU1PSERBWlJJRkFITQ==",
+        "5209",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDI2M1JCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFESVJGQU4=",
+        "0263",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MTE1MVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFETlVSQQ==",
+        "1151",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MTU5N1JCMjNJTi1QSUxQUEFTSVJHVUFNSVJVTEFTSFJBRg==",
+        "1597",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MTMwNVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFEQVpJWkk=",
+        "1305",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDU4OVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFEQURJQg==",
+        "0589",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDE4MVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFESVNLQU4=",
+        "0181",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDE4OVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFEQU1JTg==",
+        "0189",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDI2OVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFEQUtNQUw=",
+        "0269",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MDI0NVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNQURJWlpBVA==",
+        "0245",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "MTMzOVJCMjNJTi1QSUxQUEFTSVJHVU1VSEFNTUFEQVFJRg==",
+        "1339",
+        "ILP PASIR GUDANG A",
+        "INNOVATION"
+    ],
+    [
+        "NjU2N1JCMjNJTi1QSUxQVEFOR0tBS0FMSEFaQVJJQklO",
+        "6567",
+        "ILP TANGKAK A",
+        "INNOVATION"
+    ],
+    [
+        "NTEzOVJCMjNJTi1QSUxQVEFOR0tBS1pBTVJZQklOWkFLQQ==",
+        "5139",
+        "ILP TANGKAK A",
+        "INNOVATION"
+    ],
+    [
+        "NTUzOVJCMjNJTi1QSUxQVEFOR0tBS0FaTklaQU5CSU5NRA==",
+        "5539",
+        "ILP TANGKAK A",
+        "INNOVATION"
+    ],
+    [
+        "NTI4N1JCMjNJTi1QSUxQVEFOR0tBS05PT1JJWkFMQklOWg==",
+        "5287",
+        "ILP TANGKAK C",
+        "INNOVATION"
+    ],
+    [
+        "NTU3M1JCMjNJTi1QSUxQVEFOR0tBS1NBSUZVTERJTkJJTg==",
+        "5573",
+        "ILP TANGKAK C",
+        "INNOVATION"
+    ],
+    [
+        "NTU3M1JCMjNJTi1QSUxQVEFOR0tBS1RTLkRSLlNBSUZVTA==",
+        "5573",
+        "ILP TANGKAK C",
+        "INNOVATION"
+    ],
+    [
+        "NTc0NVJCMjNJTi1QSUxQVEFOR0tBS0pBU05JQklOU0FNQQ==",
+        "5745",
+        "ILP TANGKAK E",
+        "INNOVATION"
+    ],
+    [
+        "NTUzM1JCMjNJTi1QSUxQVEFOR0tBS01VSEFNTUFEWlVMRkE=",
+        "5533",
+        "ILP TANGKAK E",
+        "INNOVATION"
+    ],
+    [
+        "NTAyNVJCMjNJTi1QSUxQVEFOR0tBS0FaUlVMTk9SQVpNSQ==",
+        "5025",
+        "ILP TANGKAK E",
+        "INNOVATION"
+    ],
+    [
+        "NTQxM1JCMjNJTi1QSUxQVEFOR0tBS0FITUFETU9IU0lOQg==",
+        "5413",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "NjIwM1JCMjNJTi1QSUxQVEFOR0tBS1NBSURCSU5JU01BSQ==",
+        "6203",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "NTQ1NVJCMjNJTi1QSUxQVEFOR0tBS1NBUFBBQklOU0FNUA==",
+        "5455",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "NTU2MlJCMjNJTi1QSUxQVEFOR0tBS1NBSFpBSUhBQklOVEk=",
+        "5562",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "NTY0MFJCMjNJTi1QSUxQVEFOR0tBS05PUkFMSUZBSEJJTg==",
+        "5640",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "NTE1NVJCMjNJTi1QSUxQVEFOR0tBS01PSEFNQUROT09SQg==",
+        "5155",
+        "ILP TANGKAK",
+        "INNOVATION"
+    ],
+    [
+        "MjY5MVJCMjNJTi1QSVJBTklBTlRFQU1QQVJJU0FBRlNIQVI=",
+        "2691",
+        "IRANIAN TEAM A",
+        "INNOVATION"
+    ],
+    [
+        "NDQ4NlJCMjNJTi1QSVJBTklBTlRFQU1SQVlBUkVaQUVJTU9H",
+        "4486",
+        "IRANIAN TEAM A",
+        "INNOVATION"
+    ],
+    [
+        "ODYxM1JCMjNJTi1QSVJBTklBTlRFQU1ST1pIQU5OQVpBUklN",
+        "8613",
+        "IRANIAN TEAM A",
+        "INNOVATION"
+    ],
+    [
+        "LVJCMjNJTi1QSVJBTklBTlRFQU0t",
+        "-",
+        "IRANIAN TEAM B",
+        "INNOVATION"
+    ],
+    [
+        "NjkwM1JCMjNJTi1QSVJBTklBTlRFQU1BSE1BRFNBTUlFSU1B",
+        "6903",
+        "IRANIAN TEAM B",
+        "INNOVATION"
+    ],
+    [
+        "MTI0MFJCMjNJTi1QSVJBTklBTlRFQU1TQUJBS0FMQU5UQVJJ",
+        "1240",
+        "IRANIAN TEAM B",
+        "INNOVATION"
+    ],
+    [
+        "NjkwM1JCMjNJTi1QSVJBTklBTlRFQU1BSE1BRFNBTUlFSU1B",
+        "6903",
+        "IRANIAN TEAM C",
+        "INNOVATION"
+    ],
+    [
+        "OTQ0NlJCMjNJTi1QSVJBTklBTlRFQU1BUkFEUkVaQUVJ",
+        "9446",
+        "IRANIAN TEAM C",
+        "INNOVATION"
+    ],
+    [
+        "NTQzNlJCMjNJTi1QSVJBTklBTlRFQU1TRVBFSFJBREVTSFJB",
+        "5436",
+        "IRANIAN TEAM C",
+        "INNOVATION"
+    ],
+    [
+        "NjkwM1JCMjNJTi1QSVJBTklBTlRFQU1BSE1BRFNBTUlFSU1B",
+        "6903",
+        "IRANIAN TEAM D",
+        "INNOVATION"
+    ],
+    [
+        "MTI2OVJCMjNJTi1QSVJBTklBTlRFQU1CQVJEWUFKQUJCQVJa",
+        "1269",
+        "IRANIAN TEAM D",
+        "INNOVATION"
+    ],
+    [
+        "ODg5MlJCMjNJTi1QSVJBTklBTlRFQU1CRUhSQURIRU1BVElT",
+        "8892",
+        "IRANIAN TEAM D",
+        "INNOVATION"
+    ],
+    [
+        "NzQyMFJCMjNJTi1QSVJBTklBTlRFQU1FSFNBTkdIQVNFTUlE",
+        "7420",
+        "IRANIAN TEAM E",
+        "INNOVATION"
+    ],
+    [
+        "NTEwNFJCMjNJTi1QSVJBTklBTlRFQU1NQUVERUhOQUpBRkk=",
+        "5104",
+        "IRANIAN TEAM E",
+        "INNOVATION"
+    ],
+    [
+        "NjUzNlJCMjNJTi1QSVJBTklBTlRFQU1NT0hBTU1BRE1BSERJ",
+        "6536",
+        "IRANIAN TEAM E",
+        "INNOVATION"
+    ],
+    [
+        "NjkwM1JCMjNJTi1QSVJBTklBTlRFQU1BSE1BRFNBTUlFSU1B",
+        "6903",
+        "IRANIAN TEAM F",
+        "INNOVATION"
+    ],
+    [
+        "MzQ2MFJCMjNJTi1QSVJBTklBTlRFQU1BTUlSSE9TU0VJTkdI",
+        "3460",
+        "IRANIAN TEAM F",
+        "INNOVATION"
+    ],
+    [
+        "MzU2MVJCMjNJTi1QSVJBTklBTlRFQU1NT0hBTU1BRFRBSEFH",
+        "3561",
+        "IRANIAN TEAM F",
+        "INNOVATION"
+    ],
+    [
+        "NjkwM1JCMjNJTi1QSVJBTklBTlRFQU1BSE1BRFNBTUlFSU1B",
+        "6903",
+        "IRANIAN TEAM G",
+        "INNOVATION"
+    ],
+    [
+        "Njg1NVJCMjNJTi1QSVJBTklBTlRFQU1TQURSQVJPU0hBTkk=",
+        "6855",
+        "IRANIAN TEAM G",
+        "INNOVATION"
+    ],
+    [
+        "MjUzNVJCMjNJTi1QSVJBTklBTlRFQU1TT0JIQU5ST1NIQU5J",
+        "2535",
+        "IRANIAN TEAM G",
+        "INNOVATION"
+    ],
+    [
+        "LVJCMjNJTi1QSVJBTklBTlRFQU0t",
+        "-",
+        "IRANIAN TEAM H",
+        "INNOVATION"
+    ],
+    [
+        "NTEwNFJCMjNJTi1QSVJBTklBTlRFQU1NQUVERUhOQUpBRkk=",
+        "5104",
+        "IRANIAN TEAM H",
+        "INNOVATION"
+    ],
+    [
+        "MzIwM1JCMjNJTi1QSVJBTklBTlRFQU1TSEFHSEFZRUdIU0hB",
+        "3203",
+        "IRANIAN TEAM H",
+        "INNOVATION"
+    ],
+    [
+        "ODA5NVJCMjNJTi1QTUpJSUFOT1JJWkFNQklOTU8=",
+        "8095",
+        "MJII A",
+        "INNOVATION"
+    ],
+    [
+        "MDM5OFJCMjNJTi1QTUpJSUFOVVJJUkRJRU5BTkE=",
+        "0398",
+        "MJII A",
+        "INNOVATION"
+    ],
+    [
+        "NjEzOVJCMjNJTi1QTUpJSUFKQSdBUklTQklOU0E=",
+        "6139",
+        "MJII A",
+        "INNOVATION"
+    ],
+    [
+        "MDgwNFJCMjNJTi1QTUpJSUFXQU5OVVJFVFpaQUg=",
+        "0804",
+        "MJII A",
+        "INNOVATION"
+    ],
+    [
+        "MDU5M1JCMjNJTi1QU01LREFUTydBQkFITUFEQVJIQU1XQQ==",
+        "0593",
+        "SMK DATO' ABU BAKAR BAGINDA",
+        "INNOVATION"
+    ],
+    [
+        "MDc5MVJCMjNJTi1QU01LREFUTydBQk1VSEFNTUFEVU1BWVI=",
+        "0791",
+        "SMK DATO' ABU BAKAR BAGINDA",
+        "INNOVATION"
+    ],
+    [
+        "NTgxMlJCMjNJTi1QU01LREFUTydBQlBVQU5VTU1JSEFOSQ==",
+        "5812",
+        "SMK DATO' ABU BAKAR BAGINDA",
+        "INNOVATION"
+    ],
+    [
+        "MDI4NVJCMjNJTi1QVU5JS0xNRklBTVVIQU1NQURTWUFGSQ==",
+        "0285",
+        "UNIKL MFI A",
+        "INNOVATION"
+    ],
+    [
+        "MDUyMFJCMjNJTi1QVU5JS0xNRklBTlVSU1lBWk1FRU5V",
+        "0520",
+        "UNIKL MFI A",
+        "INNOVATION"
+    ],
+    [
+        "NTkzNFJCMjNJTi1QVU5JS0xNRklBRFJSQUpBRkFaTEla",
+        "5934",
+        "UNIKL MFI A",
+        "INNOVATION"
+    ],
+    [
+        "MTEwMVJCMjNJTi1QVU5JS0xNSUlUQUFITUFEREFOSUFMSA==",
+        "1101",
+        "UNIKL MIIT A",
+        "INNOVATION"
+    ],
+    [
+        "MDIwMVJCMjNJTi1QVU5JS0xNSUlUQUFITUFEREFSV0lTSA==",
+        "0201",
+        "UNIKL MIIT A",
+        "INNOVATION"
+    ],
+    [
+        "NTE4OFJCMjNJTi1QVU5JS0xNSUlUQU5PT1JIQVpMSU5BQQ==",
+        "5188",
+        "UNIKL MIIT A",
+        "INNOVATION"
+    ],
+    [
+        "MTAzMVJCMjNJTi1QVVBNQUFITUFER0hBWkFMSQ==",
+        "1031",
+        "UPM A",
+        "INNOVATION"
+    ],
+    [
+        "NjQyM1JCMjNJTi1QVVBNQUlSLlRTLkRSLkhB",
+        "6423",
+        "UPM A",
+        "INNOVATION"
+    ],
+    [
+        "MDEzNVJCMjNJTi1QVVBNQU1VSEFNTUFETkFCSUw=",
+        "0135",
+        "UPM A",
+        "INNOVATION"
+    ],
+    [
+        "NTA2OVJCMjNDQi1QSUlVTUFLSEFJUlVMQUZGRU5E",
+        "5069",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDc3NlJCMjNDQi1QSUlVTUFIQU5JU0JJTlRJTU8=",
+        "0776",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTAxNVJCMjNDQi1QSUlVTUFFSU1BTkJJTkFaWkE=",
+        "1015",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDE3NFJCMjNDQi1QSUlVTUFTT0ZFQVRVTEFRSURB",
+        "0174",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAyOVJCMjNDQi1QSUlVTUFaVUxISUxNSUJJTkE=",
+        "0029",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTI5NVJCMjNDQi1QSUlVTUFNT0hBTUFESU1BREE=",
+        "1295",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDE2N1JCMjNDQi1QSUlVTUFNVUhBTU1BRE5BVUZB",
+        "0167",
+        "IIUM A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDY4OVJCMjNDQi1QSUtCTlBFS0FOQU1PSEFNQURBSURJTA==",
+        "0689",
+        "IKBN PEKAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjIxNVJCMjNDQi1QSUtCTlBFS0FOQU1PSERaVUxBRkZBTkQ=",
+        "6215",
+        "IKBN PEKAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDMyNVJCMjNDQi1QSUtCTlBFS0FOQU5BWklSVUxBUUlMQg==",
+        "0325",
+        "IKBN PEKAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDEyM1JCMjNDQi1QSUtCTlBFS0FOQkFJTUFOSVpaVUxLSA==",
+        "0123",
+        "IKBN PEKAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDYyMVJCMjNDQi1QSUtCTlBFS0FOQkFEQU1IQUtFRU1CSQ==",
+        "0621",
+        "IKBN PEKAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQ3N1JCMjNDQi1QSUtCTlBFS0FOQk1VSEFNTUFEUlVTWUk=",
+        "0477",
+        "IKBN PEKAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjI1OFJCMjNDQi1QSUtCTlBFS0FOQlNVUklZQVRJQklOVEk=",
+        "6258",
+        "IKBN PEKAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTQyMVJCMjNDQi1QSUtUQk5EVVNVTkFCRFVMTEFIQklOSg==",
+        "5421",
+        "IKTBN DUSUN TUA A (LKF TANKER)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTI2NVJCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFESEFUVEE=",
+        "1265",
+        "IKTBN DUSUN TUA A (LKF TANKER)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAyOVJCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFESVpaVUw=",
+        "0029",
+        "IKTBN DUSUN TUA A (LKF TANKER)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTA5NVJCMjNDQi1QSUtUQk5EVVNVTk1PSERSQVpJQklO",
+        "5095",
+        "IKTBN DUSUN TUA B (BRONGKOS)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTEzN1JCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFESEFGSVo=",
+        "1137",
+        "IKTBN DUSUN TUA B (BRONGKOS)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDkzOVJCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFESEFaSVE=",
+        "0939",
+        "IKTBN DUSUN TUA B (BRONGKOS)",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTA5NVJCMjNDQi1QSUtUQk5EVVNVTk1PSERSQVpJQklO",
+        "5095",
+        "IKTBN DUSUN TUA",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQ4NVJCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFEQURBTQ==",
+        "0485",
+        "IKTBN DUSUN TUA",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTU0MVJCMjNDQi1QSUtUQk5EVVNVTk1VSEFNTUFETk9SQg==",
+        "1541",
+        "IKTBN DUSUN TUA",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTEyMVJCMjNDQi1QSUtUQk5EVVNVTk1VU1RBRkFLQU1BTA==",
+        "5121",
+        "IKTBN DUSUN TUA",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTMzMVJCMjNDQi1QSUtUQk5EVVNVTk1PSERaVVJBSU1JQg==",
+        "5331",
+        "IKTBN DUSUN TUA",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTUwN1JCMjNDQi1QSUxQS0VQQUxBQk1PSERTSFVLUklCSQ==",
+        "5507",
+        "ILP KEPALA BATAS A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDkzOVJCMjNDQi1QSUxQS0VQQUxBQk1VSEFNTUFERklSREE=",
+        "0939",
+        "ILP KEPALA BATAS A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDU3OVJCMjNDQi1QSUxQVEFOR0tBS01PSERJREhBTUhBUw==",
+        "0579",
+        "ILP TANGKAK A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDE5M1JCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFES0hBSVI=",
+        "0193",
+        "ILP TANGKAK A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjIwM1JCMjNDQi1QSUxQVEFOR0tBS1NBSURCSU5JU01BSQ==",
+        "6203",
+        "ILP TANGKAK A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTMyNVJCMjNDQi1QSUxQVEFOR0tBS01PSEFNQURBWk1FSVI=",
+        "1325",
+        "ILP TANGKAK B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA0M1JCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEQU5BUw==",
+        "0043",
+        "ILP TANGKAK B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTg4NVJCMjNDQi1QSUxQVEFOR0tBS1dBTkFaTUFOQklO",
+        "5885",
+        "ILP TANGKAK B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTczNVJCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEQU1JUlU=",
+        "1735",
+        "ILP TANGKAK C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTMwM1JCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEUkFaVUE=",
+        "1303",
+        "ILP TANGKAK C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTI0OVJCMjNDQi1QSUxQVEFOR0tBS1NIQVJVTFNVSEFJWkE=",
+        "5249",
+        "ILP TANGKAK C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTcxOVJCMjNDQi1QSUxQVEFOR0tBS0RFTkVTSEtVTUFSQQ==",
+        "1719",
+        "ILP TANGKAK D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTIzOVJCMjNDQi1QSUxQVEFOR0tBS1RSSVNIRUtLVU1BUg==",
+        "1239",
+        "ILP TANGKAK D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTEzOVJCMjNDQi1QSUxQVEFOR0tBS1pBTVJZQklOWkFLQQ==",
+        "5139",
+        "ILP TANGKAK D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjE4OVJCMjNDQi1QSUxQVEFOR0tBS01PSERSQUZJWklCSQ==",
+        "6189",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTczNVJCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEQU1JUlU=",
+        "1735",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA0M1JCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFTQU5BUw==",
+        "0043",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDk5M1JCMjNDQi1QSUxQVEFOR0tBS01PSEFNQURTWUFISVI=",
+        "0993",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDI3OVJCMjNDQi1QSUxQVEFOR0tBS0FITUFETVVLSFJJUw==",
+        "0279",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTMzM1JCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEQVJJRg==",
+        "1333",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTc0N1JCMjNDQi1QSUxQVEFOR0tBS01PSERBRklaQUxBTVI=",
+        "5747",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTkxNVJCMjNDQi1QSUxQVEFOR0tBS0FaSEFSQklOQUJEVQ==",
+        "5915",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDYzNVJCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFEQUZJRg==",
+        "0635",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDU3NVJCMjNDQi1QSUxQVEFOR0tBS01VSEFNTUFETkFVRkE=",
+        "0575",
+        "ILP TANGKAK",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTQ3N1JCMjNDQi1QS0tUTUtVQU5UQU5BS01BUkhJU1lBTUI=",
+        "5477",
+        "KKTM KUANTAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDU5M1JCMjNDQi1QS0tUTUtVQU5UQU5NVUhBTU1BREFMSUY=",
+        "0593",
+        "KKTM KUANTAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NzE4OVJCMjNDQi1QS0tUTUtVQU5UQU5NVUhBTU1BREZJUkRB",
+        "7189",
+        "KKTM KUANTAN A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDMwN1JCMjNDQi1QS0tUTUtVQU5UQU5NT0hBTUFETlVSRkFJ",
+        "0307",
+        "KKTM KUANTAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTMzOVJCMjNDQi1QS0tUTUtVQU5UQU5NT0hEQUJVSEFTU0E=",
+        "5339",
+        "KKTM KUANTAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjQwM1JCMjNDQi1QS0tUTUtVQU5UQU5NVUhBTU1BRElaWkFU",
+        "6403",
+        "KKTM KUANTAN B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDYxMVJCMjNDQi1QS0tUTUtVQU5UQU5JQlJBSElNQURIQU0=",
+        "0611",
+        "KKTM KUANTAN D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA3OVJCMjNDQi1QS0tUTUtVQU5UQU5NVUhBTU1BREFNU1lB",
+        "0079",
+        "KKTM KUANTAN D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTU4OVJCMjNDQi1QS0tUTUtVQU5UQU5TWUFIUlVMWVVTUkk=",
+        "5589",
+        "KKTM KUANTAN",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQyMVJCMjNDQi1QS0tUTUtVQU5UQU5NVUhBTU1BREFNRUVS",
+        "0421",
+        "KKTM KUANTAN",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAyM1JCMjNDQi1QS0tUTUtVQU5UQU5NT0hBTUFEWkFGUkk=",
+        "0023",
+        "KKTM KUANTAN",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTA3MVJCMjNDQi1QS0tUTUtVQU5UQU5UUy5TSEFaV0FOQkk=",
+        "5071",
+        "KKTM KUANTAN D",
+        "COMBAT ROBOT"
+    ],
+    [
+        "ODA5NVJCMjNDQi1QTUpJSUFOT1JJWkFNQklOTU8=",
+        "8095",
+        "MJII A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjYxMFJCMjNDQi1QTUpJSUFTSVRJQUlTWUFITkE=",
+        "6610",
+        "MJII A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA0NVJCMjNDQi1QTUpJSUFVTUFSREFOSVNIQkk=",
+        "0045",
+        "MJII A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAxM1JCMjNDQi1QTUpJSUJNVUhBTU1BREFNTUFS",
+        "0013",
+        "MJII B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "LVJCMjNDQi1QTUpJSUJKQSdBUklTQklOU0E=",
+        "-",
+        "MJII B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA0MlJCMjNDQi1QTUpJSUJTSVRJTlVSWkFSSU5B",
+        "0042",
+        "MJII B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDcyN1JCMjNDQi1QTUpJSU1VSEFNTUFEUklGUUk=",
+        "0727",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA3OVJCMjNDQi1QTUpJSUxVUU1BTkhBS0lNQg==",
+        "0079",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTc1NVJCMjNDQi1QTUpJSU1VSEFNTUFEQUxJRkY=",
+        "1755",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDEzMVJCMjNDQi1QTUpJSU1VSEFNTUFESElKQVo=",
+        "0131",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAxM1JCMjNDQi1QTUpJSU1VSEFNTUFEQU1NQVI=",
+        "0013",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDM5OFJCMjNDQi1QTUpJSU5VUklSRElFTkFOQQ==",
+        "0398",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDgwNFJCMjNDQi1QTUpJSVdBTk5VUkVUWlpBSA==",
+        "0804",
+        "MJII",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTU5N1JCMjNDQi1QU0NPUlBSQ0VWT0FNSVJVTEFTSFJBRg==",
+        "1597",
+        "SCORP RC EVO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTIwOVJCMjNDQi1QU0NPUlBSQ0VWT01PSERBWlJJRkFITQ==",
+        "5209",
+        "SCORP RC EVO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTMwNVJCMjNDQi1QU0NPUlBSQ0VWT01VSEFNTUFEQVpJWkk=",
+        "1305",
+        "SCORP RC EVO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTIwOVJCMjNDQi1QU0NPUlBSQ05FT01PSERBWlJJRkFITQ==",
+        "5209",
+        "SCORP RC NEO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDU4OVJCMjNDQi1QU0NPUlBSQ05FT01VSEFNTUFEQURJQg==",
+        "0589",
+        "SCORP RC NEO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDE4MVJCMjNDQi1QU0NPUlBSQ05FT01VSEFNTUFESVNLQU4=",
+        "0181",
+        "SCORP RC NEO",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTU2M1JCMjNDQi1QU0NPUlBSQzFNT0hEUUFZWVVNQkk=",
+        "5563",
+        "SCORP RC1",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTU2M1JCMjNDQi1QU0NPUlBSQzFNT0hEUUFZWVVNQkk=",
+        "5563",
+        "SCORP RC1",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTM1OVJCMjNDQi1QU0NPUlBSQzFNVUhBTUFERkFJWlVM",
+        "5359",
+        "SCORP RC1",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTU2M1JCMjNDQi1QU0NPUlBSQzJNT0hEUUFZWVVNQkk=",
+        "5563",
+        "SCORP RC2",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTMwNVJCMjNDQi1QU0NPUlBSQzJNVUhBTU1BREFaSVpJ",
+        "1305",
+        "SCORP RC2",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NTYxM1JCMjNDQi1QU0NPUlBSQzJXLk1BSE1VRFVMSEFT",
+        "5613",
+        "SCORP RC2",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDA0MVJCMjNDQi1QVU5JS0xNRklBTUlaQUxIQUlSRUVa",
+        "0041",
+        "UNIKL MFI A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQxNVJCMjNDQi1QVU5JS0xNRklBTVVIT01NQURLSEFJUg==",
+        "0415",
+        "UNIKL MFI A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MTM2MFJCMjNDQi1QVU5JS0xNRklBTlVSSVpaQUhLSEE=",
+        "1360",
+        "UNIKL MFI A",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDI2OVJCMjNDQi1QVU5JS0xNRklCRElOSUVNVUhBTU1BRA==",
+        "0269",
+        "UNIKL MFI B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDM3OVJCMjNDQi1QVU5JS0xNRklCTVVIQU1NQURSSURIQQ==",
+        "0379",
+        "UNIKL MFI B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQxNVJCMjNDQi1QVU5JS0xNRklCTVVIT01NQURLSEFJUg==",
+        "0415",
+        "UNIKL MFI B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDcwMlJCMjNDQi1QVU5JS0xNRklDQkFMUUlTQklOVElN",
+        "0702",
+        "UNIKL MFI C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDAxOVJCMjNDQi1QVU5JS0xNRklDTVVIQU1NQURIQU1JWg==",
+        "0019",
+        "UNIKL MFI C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQxNVJCMjNDQi1QVU5JS0xNRklDTVVIT01NQURLSEFJUg==",
+        "0415",
+        "UNIKL MFI C",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjgzNVJCMjNDQi1QVU5JS0xNRklFTVVIQU1NQURJWkhBTQ==",
+        "6835",
+        "UNIKL MFI E",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDYxNVJCMjNDQi1QVU5JS0xNRklFTVVIQU1NQURaQVJJRg==",
+        "0615",
+        "UNIKL MFI E",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQxNVJCMjNDQi1QVU5JS0xNRklFTVVIT01NQURLSEFJUg==",
+        "0415",
+        "UNIKL MFI E",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDQ4OVJCMjNDQi1QVVBNQk1PSEFNQURNVUFaQg==",
+        "0489",
+        "UPM B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDU1N1JCMjNDQi1QVVBNQk1VSEFNTUFESEFNQkE=",
+        "0557",
+        "UPM B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "NjQyNFJCMjNDQi1QVVBNQklSLlRTLkRSLkhB",
+        "6424",
+        "UPM B",
+        "COMBAT ROBOT"
+    ],
+    [
+        "MDYxMVJCMjNDQi1QVVBNQk5JS0FLSUZIQVpJUQ==",
+        "0611",
+        "UPM B",
+        "COMBAT ROBOT"
     ]
 ]
