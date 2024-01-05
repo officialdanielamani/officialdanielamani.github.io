@@ -23,6 +23,7 @@
     <p style="margin: 0 auto; text-align: center;"><button onclick="searchData()" style="width: 30%;">Search</button></p>
 
     <div id="result" style="text-align: center;">
+        <h3>Detail of Certificate</h3>
         <p>IC (Last 4 Digit): <span id="ic"></span></p>
         <p>School / Institute / Group: <span id="school"></span></p>
         <p>Achievement / Join in: <span id="part"></span></p>
@@ -38,6 +39,15 @@
     <ul>
         <li>First 4 Digit is the last 4 digit in the IC (in this case 0123)</li>
         <li>Next is what the participant joined, eg RB23CB-P is Combat Robat as Participant</li>
+        <ul>
+            <li>RB23CB - Robot Combat</li>
+            <li>RB23IN - Innovation</li>
+            <li>RB23SRS - Sumo Robot School</li>
+            <li>RB23SRO - Sumo Robot Open</li>
+            <li>RB23LFS - Line Following School</li>
+            <li>RB23LFO - Line Following Open</li>
+            <li>-P - Participanting</li>
+        </ul>
         <li>Next is institute/school name (max 14 char, in this case GMI)</li>
         <li>Last is the name of participant (max 12 char, in this case DANIEL)</li>
     </ul>
@@ -75,6 +85,7 @@ function searchData() {
         document.getElementById("school").textContent = result[2]; // School
         document.getElementById("part").textContent = result[3]; // Part
         certificateStatusElement.textContent = "Certificate Valid (Have record in system)";
+        certificateStatusElement.style.color = "green";
     } else {
         document.getElementById("ic").textContent = "Not Found";
         document.getElementById("school").textContent = "Not Found";
