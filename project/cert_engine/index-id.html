@@ -35,10 +35,10 @@ function loadJSON(url) {
 // Function to search data
 function searchData() {
     let searchId = document.getElementById("searchId").value;
-    let result = data.find(item => item[1] === searchId);
+    let result = data.find(item => item[0] === searchId);
 
     if (result) {
-        document.getElementById("ic").textContent = result[1]; // Displaying the ID
+        document.getElementById("ic").textContent = result[1]; // Displaying the numerical ID
         document.getElementById("school").textContent = result[2]; // School
         document.getElementById("part").textContent = result[3]; // Part
         document.getElementById("certificateStatus").textContent = "Certificate Valid";
