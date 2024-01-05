@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Search System</title>
-</head>
+    <head>
+        <meta name="robots" content="noindex">
+        <link rel="stylesheet" type="text/css" href="../../core/styles-theme.css">
+        <link rel="stylesheet" type="text/css" href="../../core/prism.css">
+        <style>
+        </style>
+      </head>
 <body>
-    <input type="text" id="searchId" placeholder="Enter ID">
-    <button onclick="searchData()">Search</button>
-    <div id="result">
-        <p>IC: <span id="ic"></span></p>
+    <div id="siteSetting" style="text-align: center;">
+        <button id="themeSetting">Theme Settings ⚙️</button>
+        <div id="themeButtons" style="display: none;">
+            <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+        </div>
+      </div>
+<hr>
+<h1 style="text-align:center;">Robattle 2023 Certificate Check</h1>
+<div>
+    <input type="text" id="searchId" placeholder="Enter CERT-ID">
+    <br>
+    <br>
+    <button onclick="searchData()" style="width: 300px; margin: 0 auto; text-align: center;">Search</button>
+
+    <div id="result" style="text-align: center;">
+        <p>IC (Last 4 Digit): <span id="ic"></span></p>
         <p>School: <span id="school"></span></p>
-        <p>Part: <span id="part"></span></p>
+        <p>Archivement / Join in: <span id="part"></span></p>
         <p>Certificate Status: <span id="certificateStatus"></span></p>
     </div>
-
+</div>
+<hr>
+    <p>Note: For privacy we only give snipped data only (no full IC/Name)</p>
     <script>
-
 let data = []; // This will hold the JSON data
 
 // Function to load and parse JSON file
@@ -38,7 +55,7 @@ function searchData() {
     let result = data.find(item => item[0] === searchId);
 
     if (result) {
-        document.getElementById("ic").textContent = result[1]; // Displaying the numerical ID
+        document.getElementById("ic").textContent = result[2]; // Displaying the numerical ID
         document.getElementById("school").textContent = result[2]; // School
         document.getElementById("part").textContent = result[3]; // Part
         document.getElementById("certificateStatus").textContent = "Certificate Valid";
@@ -48,10 +65,33 @@ function searchData() {
         document.getElementById("part").textContent = "Not Found";
         document.getElementById("certificateStatus").textContent = "Certificate Invalid";
     }
+/*
+    if (result) {
+        document.getElementById("name").textContent = result[1];
+        document.getElementById("ic").textContent = result[2]; // Displaying the numerical ID
+        document.getElementById("school").textContent = result[3]; // School
+        document.getElementById("part").textContent = result[4]; // Part
+        document.getElementById("certificateStatus").textContent = "Certificate Valid";
+    } else {
+        document.getElementById("name").textContent = "Not Found";
+        document.getElementById("ic").textContent = "Not Found";
+        document.getElementById("school").textContent = "Not Found";
+        document.getElementById("part").textContent = "Not Found";
+        document.getElementById("certificateStatus").textContent = "Certificate Invalid";
+    }
+
+    */
 }
 loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.json");
 
 
     </script>
+
+<script src="../../core/script-theme.js"></script>
+<script src="../../core/prism.js"></script>
+<hr>
+<footer style="text-align: center;">
+    <p>Powered by EDNA. Copyright DANP 2016-2023 | <a href="https://danielamani.com">https://danielamani.com</a></p>
+  </footer>
 </body>
 </html>
