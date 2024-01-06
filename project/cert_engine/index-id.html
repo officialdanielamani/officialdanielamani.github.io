@@ -22,7 +22,6 @@
     <br>
     <br>
     <p style="margin: 0 auto; text-align: center;"><button onclick="searchData()" style="width: 30%;">Search</button></p>
-
     <div id="result" style="text-align: center;">
         <h3>Detail of Certificate</h3>
         <p>Name (Snipped): <span id="name"></span></p>
@@ -30,6 +29,8 @@
         <p>School / Institute / Group: <span id="school"></span></p>
         <p>Achievement / Join in: <span id="part"></span></p>
         <p>Certificate Status: <span id="certificateStatus"></span></p>
+        <br>
+        <p style="text-align: center;">Note: the Cert-ID is Case Senstive meaning; "tEsT" is not equal to "test" or "Test"</p>
     </div>
 </div>
 <br>
@@ -108,7 +109,8 @@ function searchData() {
         aku x faham perasaan sijil dihilangkan atau lebab sampai hilang markah PAJSK, tapi aku pun baru dpt x samapai sehari dh kene
         start buat auto email, setup e-cert, buat system recheck in. Kepada yg terbaca ni lagi drp kalangan para peserta maafla
         klw aq hantar sijil slow, kene rate limit email dgn Google sebab di-flag sebagai spam
-    */
+*/
+
 }
 loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.json");
 
