@@ -24,6 +24,7 @@
 
     <div id="result" style="text-align: center;">
         <h3>Detail of Certificate</h3>
+        <p>Name (redacted): <span id="name"></span></p>
         <p>IC (Last 4 Digit): <span id="ic"></span></p>
         <p>School / Institute / Group: <span id="school"></span></p>
         <p>Achievement / Join in: <span id="part"></span></p>
@@ -81,13 +82,15 @@ function searchData() {
     let result = data.find(item => item[0] === searchId);
 
     if (result) {
-        document.getElementById("ic").textContent = result[1]; // Displaying the numerical ID
-        document.getElementById("school").textContent = result[2]; // School
-        document.getElementById("part").textContent = result[3]; // Part
+        document.getElementById("ic").textContent = result[1]; 
+        document.getElementById("name").textContent = result[2]; 
+        document.getElementById("school").textContent = result[3]; 
+        document.getElementById("part").textContent = result[4]; 
         certificateStatusElement.textContent = "Certificate Valid (Have record in system)";
         certificateStatusElement.style.color = "green";
     } else {
         document.getElementById("ic").textContent = "Not Found";
+        document.getElementById("name").textContent = "Not Found";
         document.getElementById("school").textContent = "Not Found";
         document.getElementById("part").textContent = "Not Found";
         certificateStatusElement.textContent = "Certificate Invalid";
@@ -98,21 +101,7 @@ function searchData() {
         mintak pdf dgn e-sign pun lembab ambik masa sebulan pastu pdf punya format pun lari. Ngarut semua, bukan
         aku x faham perasaan sijil dihilangkan atau lebab sampai hilang markah PAJSK, tapi aku pun baru dpt x samapai sehari dh kene
         start buat auto email, setup e-cert, buat system recheck in. Kepada yg terbaca ni lagi drp kalangan para peserta maafla
-        klw aq hantar sijil slow, kene rate limit email dgn Google sebab di-flag sebagai spam.
-    if (result) {
-        document.getElementById("name").textContent = result[1];
-        document.getElementById("ic").textContent = result[2]; // Displaying the numerical ID
-        document.getElementById("school").textContent = result[3]; // School
-        document.getElementById("part").textContent = result[4]; // Part
-        document.getElementById("certificateStatus").textContent = "Certificate Valid (Have record in system)";
-    } else {
-        document.getElementById("name").textContent = "Not Found";
-        document.getElementById("ic").textContent = "Not Found";
-        document.getElementById("school").textContent = "Not Found";
-        document.getElementById("part").textContent = "Not Found";
-        document.getElementById("certificateStatus").textContent = "Certificate Invalid";
-    }
-
+        klw aq hantar sijil slow, kene rate limit email dgn Google sebab di-flag sebagai spam
     */
 }
 loadJSON("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/project/cert_engine/data.json");
