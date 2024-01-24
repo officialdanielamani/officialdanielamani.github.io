@@ -1,102 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <title>Squeezelite-ESP32 installer</title>
-    <meta
-      name="description"
-      content="Easily allow users to install Squeezelite-ESP32 firmware on the web."
-    />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css" href="../../core/styles-theme.css">
+    <link rel="stylesheet" type="text/css" href="../../core/prism.css">
     <style>
-      body {
-        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Ubuntu, sans-serif;
-        padding: 0;
-        margin: 0;
-        line-height: 1.4;
-      }
-      .content {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 12px;
-      }
-      h2 {
-        margin-top: 2em;
-      }
-      h3 {
-        margin-top: 1.5em;
-      }
-      a {
-        color: #03a9f4;
-      }
-      .invisible {
-        visibility: hidden;
-      }
-      .hidden {
-        display: none;
-      }
-      esp-web-install-button[install-unsupported] {
-        visibility: inherit;
-      }
-      .content pre {
-        max-width: 100%;
-        overflow-y: scroll;
-      }
-      .footer {
-        margin-top: 24px;
-        border-top: 1px solid #ccc;
-        padding-top: 24px;
-        text-align: center;
-      }
-      .footer .initiative {
-        font-style: italic;
-        margin-top: 16px;
-      }
-      table {
-        border-spacing: 0;
-      }
-      td {
-        padding: 8px;
-        border-bottom: 1px solid #ccc;
-      }
-      .radios li {
-        list-style: none;
-        line-height: 2em;
-      }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #333;
-          color: #fff;
-        }
-        a {
-          color: #58a6ff;
-        }
-      }
     </style>
     <script type="module" src="https://unpkg.com/esp-web-tools@9.4.3/dist/web/install-button.js?module"></script>
   </head>
   <body>
     <div class="content">
-      <h1>Squeezelite-ESP32 installer</h1>
+      <h1>EDNA Project Installer</h1>
+      <div id="siteSetting" style="text-align: center;">
+        <button id="themeSetting">Theme Settings ⚙️</button>
+        <div id="themeButtons" style="display: none;">
+            <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
+        </div>
+      </div>
+
       <p>This is a prototype and not up-to-date. For latest installations, see the <a href="https://sle118.github.io/squeezelite-esp32-installer/">Squeezelite Web Installer</a>.</p>
-      <p>Select your product</p>
+      <p>Select the product (Support ESP8266 and ESP32)</p>
       <ul class="radios">
         <li>
-          <label><input type="radio" name="type" value="test" /> Test</label>
+          <label><input type="radio" name="type" value="wifi" />ESP Wifi</label>
         </li>
         <li>
-          <label><input type="radio" name="type" value="i2s" /> I2S</label>
+          <label><input type="radio" name="type" value="webauth" />ESP Wifi + WebAuth</label>
         </li>
         <li>
-          <label><input type="radio" name="type" value="muse" /> Muse</label>
+          <label><input type="radio" name="type" value="tele" />ESP Wifi + WebAuth + Telegram</label>
         </li>
         <li>
-          <label><input type="radio" name="type" value="muse_proto" /> Muse Proto</label>
+          <label><input type="radio" name="type" value="wifi_debug" />ESP Wifi (Debug)</label>
         </li>
         <li>
-          <label><input type="radio" name="type" value="squeezeamp" /> SqueezeAmp</label>
+          <label><input type="radio" name="type" value="webauth_debug" />ESP Wifi + WebAuth (Debug)</label>
+        </li>
+        <li>
+          <label><input type="radio" name="type" value="tele_debug" />ESP Wifi + WebAuth + Telegram (Debug)</label>
         </li>
       </ul>
       <p class="button-row" align="center">
@@ -118,5 +59,7 @@
         }
       ));
     </script>
+    <script src="../../core/script-theme.js"></script>
+    <script src="../../core/prism.js"></script>
   </body>
 </html>

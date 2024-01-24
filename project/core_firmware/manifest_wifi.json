@@ -1,10 +1,10 @@
 {
-  "name": "Test",
+  "name": "Wifi",
   "version": "1.5",
   "builds": [
     {
       "chipFamily": "ESP8266",
-      "parts": [{ "path": "firmware/test.bin", "offset": 0 }]
+      "parts": [{ "path": "firmware/wifi.bin", "offset": 0 }]
     }
   ]
 }
