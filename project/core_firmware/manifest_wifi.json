@@ -5,7 +5,12 @@
   "builds": [
     {
       "chipFamily": "ESP32",
-      "parts": [{ "path": "firmware/wifi_6_relay.bin", "offset": 0 }]
+      "parts": [
+        { "path": "firmware/wifi_module/bootloader.bin", "offset": 4096 },
+        { "path": "firmware/wifi_module/partition.bin", "offset": 32768 },
+        { "path": "firmware/wifi_module/boot.bin", "offset": 57344 },
+        { "path": "firmware/wifi_module/program.bin", "offset": 65536 }
+      ]
     }
   ]
 }
