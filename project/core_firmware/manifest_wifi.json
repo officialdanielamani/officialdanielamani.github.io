@@ -1,7 +1,7 @@
 {
-  "name": "Wifi",
-  "version": "1.5",
-  "new_install_prompt_erase": false,
+  "name": "Wifi 6 Relay",
+  "version": "0.1.5",
+  "new_install_prompt_erase": true,
   "builds": [
     {
       "chipFamily": "ESP32",
