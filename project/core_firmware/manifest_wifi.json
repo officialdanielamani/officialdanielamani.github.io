@@ -1,6 +1,7 @@
 {
   "name": "Wifi",
   "version": "1.5",
+  "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32",

@@ -2,6 +2,7 @@
   "name": "Squeezelite-ESP32 for SqueezeAmp",
   "version": "1.1023",
   "home_assistant_domain": "slim_player",
+
   "builds": [
     {
       "chipFamily": "ESP32",
