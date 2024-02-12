@@ -3,8 +3,8 @@
   "version": "1.5",
   "builds": [
     {
-      "chipFamily": "ESP8266",
-      "parts": [{ "path": "firmware/wifi.bin", "offset": 0 }]
+      "chipFamily": "ESP32",
+      "parts": [{ "path": "firmware/wifi_6_relay.bin", "offset": 0 }]
     }
   ]
 }
