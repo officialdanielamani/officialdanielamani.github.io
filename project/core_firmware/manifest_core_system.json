@@ -1,0 +1,22 @@
+{
+    "name": "Core-System",
+    "version": "0.0.2 Alpha",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "firmware/core_system/bootloader.bin", "offset": 4096 },
+          { "path": "firmware/core_system/partitions.bin", "offset": 32768 },
+          { "path": "firmware/core_system/boot.bin", "offset": 57344 },
+          { "path": "firmware/core_system/program.bin", "offset": 65536 }
+        ]
+      },
+      {
+        "chipFamily": "ESP8266",
+        "parts": [
+          { "path": "firmware/core_system/8266prog.bin", "offset": 0}
+        ]
+      }
+    ]
+  }
