@@ -1,0 +1,16 @@
+{
+    "name": "ESP32 Webconnect Smart Home (DHT11 + Relay + BME680)",
+    "version": "0.1.5",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "firmware/smarthome/bootloader.bin", "offset": 4096 },
+          { "path": "firmware/smarthome/partitions.bin", "offset": 32768 },
+          { "path": "firmware/smarthome/boot.bin", "offset": 57344 },
+          { "path": "firmware/smarthome/program.bin", "offset": 65536 }
+        ]
+      }
+    ]
+  }
