@@ -1,0 +1,16 @@
+{
+    "name": "ESP32 Webconnect Counter Example (Pin 16,17 Relay)",
+    "version": "0.1.0",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "firmware/counter/bootloader.bin", "offset": 4096 },
+          { "path": "firmware/counter/partitions.bin", "offset": 32768 },
+          { "path": "firmware/counter/boot.bin", "offset": 57344 },
+          { "path": "firmware/counter/program.bin", "offset": 65536 }
+        ]
+      }
+    ]
+  }
