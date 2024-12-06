@@ -6,8 +6,8 @@
         "Title": "4-Relay",
         "Info": "Control 4 relays with configurable timers.",
         "Version": "V1.2",
-        "URL": "https://example.com/firmware/4-relay.bin",
-        "MD5": "5d41402abc4b2a76b9719d911017c592"
+        "URL": "https://cdn.jsdelivr.net/gh/officialdanielamani/officialdanielamani.github.io@raw/refs/heads/main/project/core_firmware/firmware/smarthome/program.bin",
+        "MD5": "1144fb21356226340f5f5d2d742ee6a2"
     },
     {
         "Developer": "",
