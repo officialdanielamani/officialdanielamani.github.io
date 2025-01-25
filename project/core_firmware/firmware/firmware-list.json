@@ -6,7 +6,7 @@
         "Title": "Basic Smart Home",
         "Info": "Control 4 relays and sensor No-MQTT",
         "Version": "V1.2",
-        "URL": "https://rawcdn.githack.com/officialdanielamani/officialdanielamani.github.io/3c21fbdc0aa5d12b5cdbb1602f5c863e0eb17a9f/project/core_firmware/firmware/smarthome_basic/program.bin",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome%20_basic/program.bin",
         "MD5": "a5d9bc03c390f5c19dbca3a2f4aa742d"
     },
     {
@@ -17,7 +17,7 @@
         "Info": "Upgrading the thermostat based Espresso Machine to Sensor with PID",
         "Version": "V1.0.3-Beta",
         "URL": "https://example.com/firmware/home.bin",
-        "MD5": "https://rawcdn.githack.com/officialdanielamani/officialdanielamani.github.io/3c21fbdc0aa5d12b5cdbb1602f5c863e0eb17a9f/project/core_firmware/firmware/smartcoffee/program.bin"
+        "MD5": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smartcoffee/program.bin"
     },
     {
         "Developer": "GMI",
