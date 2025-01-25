@@ -6,7 +6,7 @@
         "Title": "Basic Smart Home",
         "Info": "Control 4 relays and sensor No-MQTT",
         "Version": "V1.2",
-        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome%20_basic/program.bin",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_basic/program.bin",
         "MD5": "a5d9bc03c390f5c19dbca3a2f4aa742d"
     },
     {
@@ -16,7 +16,7 @@
         "Title": "Smart Home + VFD",
         "Info": "Control 4 relays sensor and VFD display but No-MQTT",
         "Version": "V1.3",
-        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome%20_VFD/program.bin",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_VFD/program.bin",
         "MD5": "81bb4c95c5bf7f52aa399377221c3468"
     },    
     {
