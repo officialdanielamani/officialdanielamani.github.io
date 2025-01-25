@@ -1,0 +1,32 @@
+[
+    {
+        "Developer": "EDNA",
+        "Author": "",
+        "Image": "https://example.com/images/4-relay.png",
+        "Title": "4-Relay",
+        "Info": "Control 4 relays with configurable timers.",
+        "Version": "V1.2",
+        "URL": "https://rawcdn.githack.com/officialdanielamani/officialdanielamani.github.io/3c21fbdc0aa5d12b5cdbb1602f5c863e0eb17a9f/project/core_firmware/firmware/smarthome/program.bin",
+        "MD5": "1144fb21356226340f5f5d2d742ee6a2"
+    },
+    {
+        "Developer": "",
+        "Author": "Test",
+        "Image": "https://example.com/images/3-relay.png",
+        "Title": "3-Relay",
+        "Info": "Control 3 relays with enhanced logging.",
+        "Version": "0.2.1",
+        "URL": "https://example.com/firmware/3-relay.bin",
+        "MD5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+        "Developer": "Doyun",
+        "Author": "AuLink",
+        "Image": "https://example.com/images/home.png",
+        "Title": "Home",
+        "Info": "Basic home automation starter firmware.",
+        "Version": "0.1-Beta",
+        "URL": "https://example.com/firmware/home.bin",
+        "MD5": "9e107d9d372bb6826bd81d3542a419d6"
+    }
+]
