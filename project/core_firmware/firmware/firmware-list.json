@@ -6,9 +6,19 @@
         "Title": "Basic Smart Home",
         "Info": "Control 4 relays and sensor No-MQTT",
         "Version": "V1.2",
-        "URL": "https://rawcdn.githack.com/officialdanielamani/officialdanielamani.github.io/3c21fbdc0aa5d12b5cdbb1602f5c863e0eb17a9f/project/core_firmware/firmware/smarthome_basic/program.bin",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome%20_basic/program.bin",
         "MD5": "a5d9bc03c390f5c19dbca3a2f4aa742d"
     },
+    {
+        "Developer": "EDNA & DANP",
+        "Author": "Daniel Amani",
+        "Image": "",
+        "Title": "Smart Home + VFD",
+        "Info": "Control 4 relays sensor and VFD display but No-MQTT",
+        "Version": "V1.3",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome%20_VFD/program.bin",
+        "MD5": "81bb4c95c5bf7f52aa399377221c3468"
+    },    
     {
         "Developer": "Suberb Coffee",
         "Author": "Haziq Wafie",
@@ -16,8 +26,8 @@
         "Title": "PID Coffee Machine",
         "Info": "Upgrading the thermostat based Espresso Machine to Sensor with PID",
         "Version": "V1.0.3-Beta",
-        "URL": "https://example.com/firmware/home.bin",
-        "MD5": "https://rawcdn.githack.com/officialdanielamani/officialdanielamani.github.io/3c21fbdc0aa5d12b5cdbb1602f5c863e0eb17a9f/project/core_firmware/firmware/smartcoffee/program.bin"
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smartcoffee/program.bin",
+        "MD5": "bdad1099852c50e1cf5aa2d0311be2e5"
     },
     {
         "Developer": "GMI",
@@ -33,7 +43,7 @@
         "Developer": "EDNA",
         "Author": "Daniel Amani",
         "Image": "https://danielamani.com/image/SmartHome.png",
-        "Title": "PID Coffee Machine",
+        "Title": "MQTT Smart Home",
         "Info": "Full Fledge Smart-Home with MQTT and VFD Display",
         "Version": "V2.1.7-Beta",
         "URL": "https://example.com/firmware/SmartHome.bin",
