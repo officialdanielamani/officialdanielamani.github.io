@@ -1,0 +1,16 @@
+{
+    "name": "Smart Home with MQTT",
+    "version": "2.1.7",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "firmware/smarthome_mqtt/bootloader.bin", "offset": 4096 },
+          { "path": "firmware/smarthome_mqtt/partitions.bin", "offset": 32768 },
+          { "path": "firmware/smarthome_mqtt/boot.bin", "offset": 57344 },
+          { "path": "firmware/smarthome_mqtt/program.bin", "offset": 65536 }
+        ]
+      }
+    ]
+  }

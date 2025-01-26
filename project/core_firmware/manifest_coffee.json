@@ -1,0 +1,16 @@
+{
+    "name": "IoT Coffee Machine with PID",
+    "version": "1.0.3",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "firmware/smartcoffee/bootloader.bin", "offset": 4096 },
+          { "path": "firmware/smartcoffee/partitions.bin", "offset": 32768 },
+          { "path": "firmware/smartcoffee/boot.bin", "offset": 57344 },
+          { "path": "firmware/smartcoffee/program.bin", "offset": 65536 }
+        ]
+      }
+    ]
+  }
