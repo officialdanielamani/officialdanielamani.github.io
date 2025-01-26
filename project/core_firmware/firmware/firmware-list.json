@@ -4,10 +4,10 @@
         "Author": "Daniel Amani",
         "Image": "https://danielamani.com/image/logo.jpg",
         "Title": "Basic Smart Home",
-        "Info": "Control 4 relays and sensor No-MQTT",
+        "Info": "Control 4 relays only",
         "Version": "V1.2",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_basic/program.bin",
-        "MD5": "a5d9bc03c390f5c19dbca3a2f4aa742d"
+        "MD5": "c356421dc4ca935fc001efdb7b771a57"
     },
     {
         "Developer": "EDNA & DANP",
@@ -17,7 +17,7 @@
         "Info": "Control 4 relays sensor and VFD display but No-MQTT",
         "Version": "V1.3",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_VFD/program.bin",
-        "MD5": "81bb4c95c5bf7f52aa399377221c3468"
+        "MD5": "077a32b18944bdb468f539fe8bcce11b"
     },    
     {
         "Developer": "Suberb Coffee",
@@ -27,14 +27,14 @@
         "Info": "Upgrading the thermostat based Espresso Machine to Sensor with PID",
         "Version": "V1.0.3-Beta",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smartcoffee/program.bin",
-        "MD5": "bdad1099852c50e1cf5aa2d0311be2e5"
+        "MD5": "70657feb9e5775ad4256c04ffc29a459"
     },
     {
         "Developer": "GMI",
         "Author": "Azhad",
         "Image": "https://danielamani.com/image/GMI-Logo.png",
         "Title": "Basic Switch",
-        "Info": "Control 4 relays-basic",
+        "Info": "Control Green House",
         "Version": "0.2.1",
         "URL": "https://example.com/firmware/3-relay.bin",
         "MD5": "d41d8cd98f00b204e9800998ecf8427e"
@@ -46,7 +46,7 @@
         "Title": "MQTT Smart Home",
         "Info": "Full Fledge Smart-Home with MQTT and VFD Display",
         "Version": "V2.1.7-Beta",
-        "URL": "https://example.com/firmware/SmartHome.bin",
-        "MD5": "9e107d9d372bb6826bd81d3542a419d6"
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_mqtt/program.bin",
+        "MD5": "39325895be7d1a7afa7dba09f6c3e2d4"
     }
 ]
