@@ -5,9 +5,9 @@
         "Image": "https://danielamani.com/image/logo.jpg",
         "Title": "Basic Smart Home",
         "Info": "Control 4 relays only",
-        "Version": "V1.2",
+        "Version": "V0.2",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_basic/program.bin",
-        "MD5": "c356421dc4ca935fc001efdb7b771a57"
+        "MD5": "0bb82227bdafa3df7c9d77f59bfcf3d0"
     },
     {
         "Developer": "EDNA & DANP",
@@ -17,7 +17,7 @@
         "Info": "Control 4 relays sensor and VFD display but No-MQTT",
         "Version": "V1.3",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_VFD/program.bin",
-        "MD5": "077a32b18944bdb468f539fe8bcce11b"
+        "MD5": "ac0f1bf6afc5d18de9a821e2ec90b285"
     },    
     {
         "Developer": "Suberb Coffee",
@@ -47,6 +47,16 @@
         "Info": "Full Fledge Smart-Home with MQTT and VFD Display",
         "Version": "V2.1.7-Beta",
         "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_mqtt/program.bin",
-        "MD5": "39325895be7d1a7afa7dba09f6c3e2d4"
+        "MD5": "8c665759ccc2c50330b23645f46d239b"
+    },
+    {
+        "Developer": "DANP Technologies",
+        "Author": "Daniel Amani",
+        "Image": "https://danielamani.com/image/HomeThunder.jpg",
+        "Title": "PZEM with MQTT",
+        "Info": "Smart Home with Power Sensor PZEM 3.0",
+        "Version": "2.27",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/smarthome_pzem/program.bin",
+        "MD5": "2e787d9efd4fdb4e20a15a1f57096210"
     }
 ]
