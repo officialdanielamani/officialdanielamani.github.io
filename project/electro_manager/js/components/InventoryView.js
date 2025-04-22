@@ -80,7 +80,18 @@ window.App.components.InventoryView = ({
             React.createElement('td', { className: "px-3 py-2 text-center" },
                 React.createElement('input', { type: "checkbox", className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500", checked: isSelected, onChange: () => onToggleSelect(component.id) })
             ),
-
+            // Component Name/Category/Datasheet
+            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap" },
+                React.createElement('div', { className: "font-medium text-gray-900" }, component.name),
+                React.createElement('div', { className: "text-sm text-gray-500" }, component.category),
+                React.createElement('div', { className: "mt-1" },
+                    datasheetLinks.map((url, index) =>
+                        React.createElement('a', { key: index, href: url, target: "_blank", rel: "noopener noreferrer", className: "text-xs text-blue-500 hover:text-blue-700 hover:underline mr-2" }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
+                    )
+                )
+            ),
+            // Type
+            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.type),
             React.createElement('td', { className: "px-2 py-2 whitespace-nowrap" },
                 React.createElement('div', { className: "flex items-center space-x-1" },
                     // Favorite Icon/Button
@@ -102,7 +113,7 @@ window.App.components.InventoryView = ({
                             })
                         )
                     ),
-                    
+
                     // Bookmark Icon/Button
                     React.createElement('button', {
                         onClick: () => onToggleFavorite(component.id, 'bookmark'),
@@ -120,7 +131,7 @@ window.App.components.InventoryView = ({
                             })
                         )
                     ),
-                    
+
                     // Star Icon/Button
                     React.createElement('button', {
                         onClick: () => onToggleFavorite(component.id, 'star'),
@@ -140,20 +151,8 @@ window.App.components.InventoryView = ({
                     )
                 )
             ),
-            // Component Name/Category/Datasheet
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap" },
-                React.createElement('div', { className: "font-medium text-gray-900" }, component.name),
-                React.createElement('div', { className: "text-sm text-gray-500" }, component.category),
-                React.createElement('div', { className: "mt-1" },
-                    datasheetLinks.map((url, index) =>
-                        React.createElement('a', { key: index, href: url, target: "_blank", rel: "noopener noreferrer", className: "text-xs text-blue-500 hover:text-blue-700 hover:underline mr-2" }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
-                    )
-                )
-            ),
-            // Type
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.type),
             // Footprint
-             React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.footprint || '-'),
+            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.footprint || '-'),
             // Quantity
             React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-center" },
                 React.createElement('div', { className: "flex items-center justify-center space-x-1" },
@@ -193,13 +192,13 @@ window.App.components.InventoryView = ({
             ),
             // Image Area
             React.createElement('div', { className: "relative h-40 bg-gray-100 rounded-t-lg flex items-center justify-center overflow-hidden" },
-                 React.createElement('img', {
+                React.createElement('img', {
                     src: component.image || '', // Use component image if available
                     alt: component.name || 'Component Image',
                     className: "w-full h-full object-contain p-2",
                     // Fallback placeholder if image fails to load
                     onError: (e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x150/e2e8f0/94a3b8?text=No+Image`; }
-                 }),
+                }),
                 lowStock && React.createElement('span', { className: "absolute bottom-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded" }, "LOW")
             ),
             // Card Content
@@ -211,8 +210,8 @@ window.App.components.InventoryView = ({
                 ),
                 // Footprint
                 React.createElement('div', { className: "text-sm text-gray-600 mb-1 flex justify-between" },
-                     React.createElement('span', { className: "font-medium" }, "Footprint:"),
-                     component.footprint ?
+                    React.createElement('span', { className: "font-medium" }, "Footprint:"),
+                    component.footprint ?
                         React.createElement('span', { className: "bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded" }, component.footprint)
                         : React.createElement('span', { className: "text-gray-400" }, "-")
                 ),
@@ -226,8 +225,8 @@ window.App.components.InventoryView = ({
                     React.createElement('span', { className: `text-lg font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}` }, component.quantity || 0),
                     React.createElement('button', { onClick: () => onUpdateQuantity(component.id, 1), className: "text-green-500 hover:text-green-700 p-1 rounded-full hover:bg-green-100", title: "Increase Quantity" }, React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z", clipRule: "evenodd" })))
                 ),
-                 // Applications
-                 component.applications && React.createElement('p', { className: "text-sm text-gray-600 mb-2 truncate", title: component.applications }, React.createElement('span', { className: "font-medium" }, "Uses: "), component.applications),
+                // Applications
+                component.applications && React.createElement('p', { className: "text-sm text-gray-600 mb-2 truncate", title: component.applications }, React.createElement('span', { className: "font-medium" }, "Uses: "), component.applications),
                 // Datasheets
                 React.createElement('div', { className: "mb-3" },
                     datasheetLinks.map((url, index) =>
@@ -270,10 +269,10 @@ window.App.components.InventoryView = ({
                     React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "View Mode"),
                     React.createElement('div', { className: "flex rounded shadow-sm border border-gray-300" },
                         React.createElement('button', { title: "Table View", className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`, onClick: () => handleViewChange('table') },
-                             React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M3 10h18M3 14h18M4 6h16M4 18h16" })), " Table"
+                            React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M3 10h18M3 14h18M4 6h16M4 18h16" })), " Table"
                         ),
                         React.createElement('button', { title: "Card View", className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`, onClick: () => handleViewChange('card') },
-                             React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { d: "M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" })), " Cards"
+                            React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { d: "M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" })), " Cards"
                         )
                     )
                 )
@@ -347,36 +346,39 @@ window.App.components.InventoryView = ({
             // --- Components List (Table or Cards) ---
             viewMode === 'table' ? (
                 // Table View
-                React.createElement('div', { className: "bg-white rounded-lg shadow overflow-x-auto mb-6 border border-gray-200" },
-                    React.createElement('table', { className: "min-w-full divide-y divide-gray-200" },
-                        React.createElement('thead', { className: "bg-gray-50" },
-                            React.createElement('tr', null,
-                                // Select All Header Checkbox
-                                React.createElement('th', { className: "w-10 px-3 py-3 text-center" },
-                                    React.createElement('input', {
-                                        type: "checkbox", className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500",
-                                        checked: selectedComponents.length === filteredComponents.length && filteredComponents.length > 0,
-                                        onChange: onToggleSelectAll,
-                                        disabled: filteredComponents.length === 0,
-                                        title: selectedComponents.length === filteredComponents.length ? "Deselect All Visible" : "Select All Visible"
-                                    })
-                                ),
-                                // Other Headers
-                                React.createElement('th', { className: "px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Marks"),
-                                React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Component"),
-                                React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Type"),
-                                React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Footprint"),
-                                React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Quantity"),
-                                React.createElement('th', { className: "px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Price"),
-                                React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Applications"),
-                                React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Actions")
+                React.createElement('div', { className: "overflow-x-auto w-full bg-white rounded-lg shadow mb-6 border border-gray-200" },
+                    React.createElement('div', { className: "min-w-full" }, // Ensure minimum width fits content
+                        React.createElement('table', { className: "w-full divide-y divide-gray-200" },
+                            React.createElement('thead', { className: "bg-gray-50" },
+                                React.createElement('tr', null,
+                                    // Select All Header Checkbox
+                                    React.createElement('th', { className: "w-10 px-3 py-3 text-center" },
+                                        React.createElement('input', {
+                                            type: "checkbox", className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500",
+                                            checked: selectedComponents.length === filteredComponents.length && filteredComponents.length > 0,
+                                            onChange: onToggleSelectAll,
+                                            disabled: filteredComponents.length === 0,
+                                            title: selectedComponents.length === filteredComponents.length ? "Deselect All Visible" : "Select All Visible"
+                                        })
+                                    ),
+
+                                    // Other Headers
+                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Component"),
+                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Type"),
+                                    React.createElement('th', { className: "px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Marks"),
+                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Footprint"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Quantity"),
+                                    React.createElement('th', { className: "px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Price"),
+                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Applications"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Actions")
+                                )
+                            ),
+                            React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
+                                filteredComponents.length > 0 ? filteredComponents.map(renderTableRow) : null,
+                                // Empty/No Match Messages
+                                filteredComponents.length === 0 && totalComponents > 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500 italic" }, " No components match filters. ")),
+                                totalComponents === 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500" }, " Inventory empty. Add components. "))
                             )
-                        ),
-                        React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
-                            filteredComponents.length > 0 ? filteredComponents.map(renderTableRow) : null,
-                            // Empty/No Match Messages
-                            filteredComponents.length === 0 && totalComponents > 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500 italic" }, " No components match filters. ")),
-                            totalComponents === 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500" }, " Inventory empty. Add components. "))
                         )
                     )
                 )
@@ -384,7 +386,7 @@ window.App.components.InventoryView = ({
                 // Card View
                 React.createElement('div', null,
                     React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-6" },
-                         filteredComponents.length > 0 ? filteredComponents.map(renderCard) : null,
+                        filteredComponents.length > 0 ? filteredComponents.map(renderCard) : null,
                         // Empty/No Match Messages
                         filteredComponents.length === 0 && totalComponents > 0 && React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow italic" }, " No components match filters. "),
                         totalComponents === 0 && React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow" }, " Inventory empty. Add components. ")

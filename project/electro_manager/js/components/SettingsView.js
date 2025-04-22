@@ -175,7 +175,7 @@ window.App.components.SettingsView = ({
                         React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "Includes categories, settings. Import merges/overwrites.")
                     )
                 ),
-                
+
                 // Add Force Save Buttons here
                 React.createElement('div', { className: "border-t pt-4 mb-4" },
                     React.createElement('p', { className: "text-sm text-gray-600 mb-2" }, "Data is auto-saved. Use buttons below to force save or clear all data."),
