@@ -135,9 +135,9 @@
                 });
             }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints]);
 
-            useEffect(() => {
+           useEffect(() => {
                 saveConfigCallback();
-            }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, saveConfigCallback]);
+           }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, saveConfigCallback]);
             // Dependency array includes the callback itself
 
             // --- Helper Functions / Callbacks for Child Components ---
