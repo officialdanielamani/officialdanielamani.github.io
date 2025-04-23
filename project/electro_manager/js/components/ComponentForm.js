@@ -35,28 +35,49 @@ window.App.components.ComponentForm = ({
         setFormData(componentData);
     }, [componentData]);
 
-    // Initialize with proper structure
+    // Initialize proper structure for missing fields
+
     useEffect(() => {
-        // Initialize storageInfo if it doesn't exist
-        const storageInfo = componentData.storageInfo || { locationId: '', drawerId: '', cells: [] };
-        
-        // If component has existing storage info, set the selected cells
-        if (storageInfo && storageInfo.cells && Array.isArray(storageInfo.cells)) {
-            setSelectedCells(storageInfo.cells);
+
+
+        // Initialize storageInfo if it doesn't exist or is malformed
+        let storageInfo = componentData.storageInfo;
+        if (!storageInfo || typeof storageInfo === 'string' || storageInfo === '[object Object]') {
+            storageInfo = { locationId: '', drawerId: '', cells: [] };
+        } else {
+            // Ensure all fields exist in the storageInfo
+            storageInfo = {
+                locationId: storageInfo.locationId || '',
+                drawerId: storageInfo.drawerId || '',
+                cells: Array.isArray(storageInfo.cells) ? storageInfo.cells : []
+            };
+        }
+
+        // If component has existing storage info with cells, set the selected cells
+        let cellsToSelect = [];
+        if (storageInfo && Array.isArray(storageInfo.cells)) {
+            cellsToSelect = storageInfo.cells;
         } else if (storageInfo && storageInfo.cellId) {
             // Legacy format - convert single cellId to array of cells
-            setSelectedCells([storageInfo.cellId]);
+            cellsToSelect = [storageInfo.cellId];
         }
-        
+        setSelectedCells(cellsToSelect);
+
+        // Set selected drawer ID
         if (storageInfo && storageInfo.drawerId) {
             setSelectedDrawerId(storageInfo.drawerId);
         }
 
+        // Initialize locationInfo if it doesn't exist or is malformed
+        let locationInfo = componentData.locationInfo;
+        if (!locationInfo || typeof locationInfo === 'string' || locationInfo === '[object Object]') {
+            locationInfo = { locationId: '', details: '' };
+        }
+
         setFormData({
             ...componentData,
-            // Initialize with empty object if not present
-            locationInfo: componentData.locationInfo || { locationId: '', details: '' },
-            // Initialize storageInfo properly
+            // Initialize with properly formatted objects
+            locationInfo: locationInfo,
             storageInfo: storageInfo,
             favorite: componentData.favorite || false,
             bookmark: componentData.bookmark || false,
@@ -157,12 +178,12 @@ window.App.components.ComponentForm = ({
     // Handle storage location changes (drawer assignment)
     const handleStorageLocationChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Clear drawer and cells if location changes
         if (name === 'locationId' && value !== formData.storageInfo?.locationId) {
             setSelectedDrawerId('');
             setSelectedCells([]);
-            
+
             setFormData(prevData => ({
                 ...prevData,
                 storageInfo: {
@@ -186,10 +207,10 @@ window.App.components.ComponentForm = ({
     const handleDrawerChange = (e) => {
         const drawerId = e.target.value;
         setSelectedDrawerId(drawerId);
-        
+
         // Clear selected cells when drawer changes
         setSelectedCells([]);
-        
+
         setFormData(prevData => ({
             ...prevData,
             storageInfo: {
@@ -203,7 +224,7 @@ window.App.components.ComponentForm = ({
     // Handle cell selection/deselection
     const handleCellToggle = (cellId) => {
         let updatedCells;
-        
+
         if (selectedCells.includes(cellId)) {
             // Remove cell if already selected
             updatedCells = selectedCells.filter(id => id !== cellId);
@@ -211,9 +232,9 @@ window.App.components.ComponentForm = ({
             // Add cell if not already selected
             updatedCells = [...selectedCells, cellId];
         }
-        
+
         setSelectedCells(updatedCells);
-        
+
         setFormData(prevData => ({
             ...prevData,
             storageInfo: {
@@ -224,7 +245,7 @@ window.App.components.ComponentForm = ({
     };
 
     // Get filtered drawers based on selected location
-    const filteredDrawers = formData.storageInfo?.locationId 
+    const filteredDrawers = formData.storageInfo?.locationId
         ? drawers.filter(drawer => drawer.locationId === formData.storageInfo.locationId)
         : [];
 
@@ -245,12 +266,12 @@ window.App.components.ComponentForm = ({
     // Generate grid elements for drawer cells
     const generateCellGrid = () => {
         if (!selectedDrawer) return null;
-        
+
         const rows = selectedDrawer.grid?.rows || 3;
         const cols = selectedDrawer.grid?.cols || 3;
-        
+
         const gridElements = [];
-        
+
         // Generate column headers (A, B, C, ...)
         const headerRow = [React.createElement('div', { key: 'corner', className: "w-8 h-8 bg-gray-100 text-center font-medium" })];
         for (let c = 0; c < cols; c++) {
@@ -260,38 +281,38 @@ window.App.components.ComponentForm = ({
             );
         }
         gridElements.push(React.createElement('div', { key: 'header-row', className: "flex" }, headerRow));
-        
+
         // Generate rows with cells
         for (let r = 0; r < rows; r++) {
             const rowElements = [
                 // Row header (1, 2, 3, ...)
                 React.createElement('div', { key: `row-${r}`, className: "w-8 h-8 bg-gray-100 text-center font-medium flex items-center justify-center" }, r + 1)
             ];
-            
+
             // Generate cells for this row
             for (let c = 0; c < cols; c++) {
                 const coordinate = `${String.fromCharCode(65 + c)}${r + 1}`; // e.g., "A1", "B2"
                 const cell = filteredCells.find(cell => cell.coordinate === coordinate);
-                
+
                 // Cell might not exist in the database yet
                 const cellId = cell ? cell.id : null;
                 const isSelected = cellId && selectedCells.includes(cellId);
-                
+
                 rowElements.push(
                     React.createElement('div', {
                         key: `cell-${r}-${c}`,
                         className: `w-8 h-8 border flex items-center justify-center cursor-pointer ${isSelected ? 'bg-blue-200 border-blue-500' : 'bg-white hover:bg-gray-100'}`,
                         onClick: () => cellId && handleCellToggle(cellId),
                         title: cell?.nickname || coordinate
-                    }, 
-                    isSelected ? '✓' : ''
+                    },
+                        isSelected ? '✓' : ''
                     )
                 );
             }
-            
+
             gridElements.push(React.createElement('div', { key: `row-${r}`, className: "flex" }, rowElements));
         }
-        
+
         return gridElements;
     };
 
@@ -349,13 +370,13 @@ window.App.components.ComponentForm = ({
                         React.createElement('div', { className: "md:col-span-2 border-t pt-4 mt-2" },
                             React.createElement('div', { className: "flex justify-between items-center" },
                                 React.createElement('h3', { className: "text-md font-medium mb-3 text-gray-600" }, "Storage Location"),
-                                React.createElement('button', { 
-                                    type: "button", 
+                                React.createElement('button', {
+                                    type: "button",
                                     className: "text-blue-500 text-sm",
                                     onClick: () => setShowStorageSelector(!showStorageSelector)
                                 }, showStorageSelector ? "Hide Drawer Selector" : "Show Drawer Selector")
                             ),
-                            
+
                             // Basic Location Information
                             React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-3" },
                                 // Location Dropdown
@@ -386,11 +407,11 @@ window.App.components.ComponentForm = ({
                                     })
                                 )
                             ),
-                            
+
                             // Drawer Storage Section (expandable)
                             showStorageSelector && React.createElement('div', { className: "mb-4 p-3 border rounded bg-gray-50" },
                                 React.createElement('h4', { className: "text-sm font-medium mb-2 text-gray-700" }, "Drawer Storage Assignment"),
-                                
+
                                 // Location dropdown for storage
                                 React.createElement('div', { className: "mb-3" },
                                     React.createElement('label', { htmlFor: "storage-location", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Storage Location"),
@@ -405,11 +426,11 @@ window.App.components.ComponentForm = ({
                                         locations.map(loc => React.createElement('option', { key: loc.id, value: loc.id }, loc.name))
                                     )
                                 ),
-                                
+
                                 // Drawer dropdown (filtered by location)
                                 formData.storageInfo?.locationId && React.createElement('div', { className: "mb-3" },
                                     React.createElement('label', { htmlFor: "storage-drawer", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Drawer"),
-                                    filteredDrawers.length === 0 ? 
+                                    filteredDrawers.length === 0 ?
                                         React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No drawers found for this location.") :
                                         React.createElement('select', {
                                             id: "storage-drawer",
@@ -422,41 +443,41 @@ window.App.components.ComponentForm = ({
                                             filteredDrawers.map(drawer => React.createElement('option', { key: drawer.id, value: drawer.id }, drawer.name))
                                         )
                                 ),
-                                
+
                                 // Cell grid for selection (when drawer is selected)
                                 selectedDrawerId && React.createElement('div', { className: "mb-3" },
                                     React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Cell(s)"),
-                                    filteredCells.length === 0 ? 
+                                    filteredCells.length === 0 ?
                                         React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No cells defined for this drawer yet.") :
                                         React.createElement('div', null,
                                             // Cell selection instructions
                                             React.createElement('p', { className: "text-xs text-gray-500 mb-2" }, "Click on cells to select/deselect. Multiple cells can be selected."),
-                                            
+
                                             // Display the grid
                                             React.createElement('div', { className: "inline-block border border-gray-300 bg-white p-1" },
                                                 generateCellGrid()
                                             ),
-                                            
+
                                             // Selected cells display
                                             React.createElement('div', { className: "mt-2" },
                                                 React.createElement('p', { className: "text-xs text-gray-700" }, "Selected Cells: ",
-                                                    selectedCells.length === 0 
-                                                        ? React.createElement('span', { className: "italic text-gray-500" }, "None") 
+                                                    selectedCells.length === 0
+                                                        ? React.createElement('span', { className: "italic text-gray-500" }, "None")
                                                         : selectedCells.map(cellId => {
                                                             const cell = cells.find(c => c.id === cellId);
                                                             return cell ? (cell.nickname || cell.coordinate) : cellId;
-                                                          }).join(', ')
+                                                        }).join(', ')
                                                 )
                                             )
                                         )
                                 )
                             ),
-                            
+
                             React.createElement('p', { className: "text-xs text-gray-500 mt-1" },
                                 "Specify where this component is physically stored."
                             )
                         ),
-                        
+
                         // Footprint Select/Input
                         React.createElement('div', { className: "md:col-span-1" },
                             React.createElement('label', { htmlFor: "comp-footprint", className: "block mb-1 text-sm font-medium text-gray-700" }, "Footprint"),

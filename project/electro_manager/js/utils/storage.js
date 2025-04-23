@@ -18,12 +18,45 @@ window.App.utils.storage = {
             const savedComponents = localStorage.getItem('electronicsComponents');
             if (savedComponents) {
                 const parsedComponents = JSON.parse(savedComponents);
-                // Ensure price and quantity are numbers
-                const componentsWithValidValues = parsedComponents.map(comp => ({
-                    ...comp,
-                    price: typeof comp.price === 'number' ? comp.price : Number(comp.price) || 0,
-                    quantity: typeof comp.quantity === 'number' ? comp.quantity : Number(comp.quantity) || 0
-                }));
+                // Ensure all objects have proper structure and types
+                const componentsWithValidValues = parsedComponents.map(comp => {
+                    // Create base component with standard fields
+                    const updatedComp = {
+                        ...comp,
+                        price: typeof comp.price === 'number' ? comp.price : Number(comp.price) || 0,
+                        quantity: typeof comp.quantity === 'number' ? comp.quantity : Number(comp.quantity) || 0,
+                        // Initialize flag fields if they don't exist
+                        favorite: comp.favorite || false,
+                        bookmark: comp.bookmark || false,
+                        star: comp.star || false
+                    };
+    
+                    // Ensure locationInfo is properly formatted
+                    if (!comp.locationInfo || typeof comp.locationInfo === 'string' || comp.locationInfo === '[object Object]') {
+                        updatedComp.locationInfo = { locationId: '', details: '' };
+                    }
+    
+                    // Ensure storageInfo is properly formatted
+                    if (!comp.storageInfo || typeof comp.storageInfo === 'string' || comp.storageInfo === '[object Object]') {
+                        updatedComp.storageInfo = { locationId: '', drawerId: '', cells: [] };
+                    } else {
+                        // Handle partial storageInfo object (may be missing 'cells' array)
+                        updatedComp.storageInfo = {
+                            locationId: comp.storageInfo.locationId || '',
+                            drawerId: comp.storageInfo.drawerId || '',
+                            cells: Array.isArray(comp.storageInfo.cells) ? comp.storageInfo.cells : []
+                        };
+                        
+                        // Handle backward compatibility - if cellId exists but cells array doesn't include it
+                        if (comp.storageInfo.cellId && 
+                            !updatedComp.storageInfo.cells.includes(comp.storageInfo.cellId)) {
+                            updatedComp.storageInfo.cells.push(comp.storageInfo.cellId);
+                        }
+                    }
+    
+                    return updatedComp;
+                });
+                
                 console.log('Loaded components from localStorage:', componentsWithValidValues.length);
                 return componentsWithValidValues;
             }

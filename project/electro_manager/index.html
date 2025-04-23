@@ -135,9 +135,9 @@
                 });
             }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints]);
 
-           useEffect(() => {
+            useEffect(() => {
                 saveConfigCallback();
-           }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, saveConfigCallback]);
+            }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, saveConfigCallback]);
             // Dependency array includes the callback itself
 
             // --- Helper Functions / Callbacks for Child Components ---
@@ -162,30 +162,46 @@
             const handleEditComponent = (componentToEdit) => {
                 clearStatusMessages();
 
-                // Create a clean copy of the component without the problematic fields
-                // that might be in the parameters
+                // Create a deep copy of the component
                 const cleanComponent = { ...componentToEdit };
 
-                // Ensure locationInfo is an object, not a string or [object Object]
-                if (typeof cleanComponent.locationInfo === 'string' ||
+                // Ensure locationInfo is a proper object
+                if (!cleanComponent.locationInfo ||
+                    typeof cleanComponent.locationInfo === 'string' ||
                     cleanComponent.locationInfo === '[object Object]') {
                     cleanComponent.locationInfo = { locationId: '', details: '' };
                 }
 
-                // Ensure storageInfo is an object, not a string or [object Object]
-                if (typeof cleanComponent.storageInfo === 'string' ||
+                // Ensure storageInfo is a proper object
+                if (!cleanComponent.storageInfo ||
+                    typeof cleanComponent.storageInfo === 'string' ||
                     cleanComponent.storageInfo === '[object Object]') {
+                    cleanComponent.storageInfo = { locationId: '', drawerId: '', cells: [] };
+                } else {
+                    // Handle partial storageInfo objects that might be missing the cells array
                     cleanComponent.storageInfo = {
-                        locationId: '',
-                        drawerId: '',
-                        cells: Array.isArray(cleanComponent.storageInfo?.cells) ?
-                            cleanComponent.storageInfo.cells : []
+                        locationId: cleanComponent.storageInfo.locationId || '',
+                        drawerId: cleanComponent.storageInfo.drawerId || '',
+                        cells: Array.isArray(cleanComponent.storageInfo.cells)
+                            ? cleanComponent.storageInfo.cells
+                            : []
                     };
+
+                    // Handle backward compatibility - if cellId exists but cells array doesn't include it
+                    if (cleanComponent.storageInfo.cellId &&
+                        !cleanComponent.storageInfo.cells.includes(cleanComponent.storageInfo.cellId)) {
+                        cleanComponent.storageInfo.cells.push(cleanComponent.storageInfo.cellId);
+                    }
                 }
+
+                // Ensure flag fields exist
+                cleanComponent.favorite = cleanComponent.favorite || false;
+                cleanComponent.bookmark = cleanComponent.bookmark || false;
+                cleanComponent.star = cleanComponent.star || false;
 
                 // Determine if the footprint is custom
                 const isCustomFootprint = cleanComponent.footprint &&
-                    !helpers.commonFootprints.includes(cleanComponent.footprint);
+                    !footprints.includes(cleanComponent.footprint);
 
                 // Prepare data for the form, formatting parameters
                 setEditComponentData({
@@ -201,9 +217,7 @@
                 });
                 setShowForm(true);
             };
-
-            // Update to handleSaveComponent function in index.html
-
+            // Update to handleSaveComponent
             const handleSaveComponent = (componentDataFromForm) => {
                 clearStatusMessages();
                 let categoryToSave = componentDataFromForm.category;
@@ -244,8 +258,17 @@
                     return;
                 }
 
+                // Ensure locationInfo is properly formatted
+                let locationInfo = componentDataFromForm.locationInfo;
+                if (!locationInfo || typeof locationInfo === 'string' || locationInfo === '[object Object]') {
+                    locationInfo = { locationId: '', details: '' };
+                }
+
                 // Process the storage information
-                const storageInfo = componentDataFromForm.storageInfo || {};
+                let storageInfo = componentDataFromForm.storageInfo;
+                if (!storageInfo || typeof storageInfo === 'string' || storageInfo === '[object Object]') {
+                    storageInfo = { locationId: '', drawerId: '', cells: [] };
+                }
 
                 // Ensure we store storage information properly
                 const finalStorageInfo = {
@@ -275,9 +298,8 @@
                     applications: componentDataFromForm.applications.trim(),
                     datasheets: componentDataFromForm.datasheets.trim(),
                     image: componentDataFromForm.image.trim(),
-                    // Add location information
-                    locationInfo: componentDataFromForm.locationInfo || null,
-                    // Add storage information
+                    // Add location and storage information
+                    locationInfo: locationInfo,
                     storageInfo: finalStorageInfo
                 };
 
@@ -382,7 +404,6 @@
                 }
             };
 
-
             const handleBulkEdit = () => {
                 clearStatusMessages();
                 if (selectedComponents.length === 0) return;
@@ -394,21 +415,6 @@
                 let categoryToApply = bulkEditData.category;
                 let footprintToApply = bulkEditData.footprint;
                 let newCategoryAdded = false;
-
-                // Apply Favorite status (if defined)
-                if (bulkEditData.favorite !== null) {
-                    updates.favorite = bulkEditData.favorite;
-                }
-
-                // Apply Bookmark status (if defined)
-                if (bulkEditData.bookmark !== null) {
-                    updates.bookmark = bulkEditData.bookmark;
-                }
-
-                // Apply Star status (if defined)
-                if (bulkEditData.star !== null) {
-                    updates.star = bulkEditData.star;
-                }
 
                 // Handle custom category from bulk edit
                 if (bulkEditData.category === '__custom__' && bulkEditData.customCategory) {
@@ -430,7 +436,6 @@
                     footprintToApply = ''; // Treat empty custom as no change
                 }
 
-
                 setComponents(prevComponents => prevComponents.map(comp => {
                     // Apply changes only to selected components
                     if (selectedComponents.includes(comp.id)) {
@@ -441,14 +446,14 @@
                             updates.category = categoryToApply;
                         }
 
-                        // Apply Footprint (if specified and valid)
-                        if (footprintToApply && footprintToApply !== '__custom__') {
-                            updates.footprint = footprintToApply;
-                        }
-
                         // Apply Type (if specified)
                         if (bulkEditData.type.trim()) {
                             updates.type = bulkEditData.type.trim();
+                        }
+
+                        // Apply Footprint (if specified and valid)
+                        if (footprintToApply && footprintToApply !== '__custom__') {
+                            updates.footprint = footprintToApply;
                         }
 
                         // Apply Quantity Adjustment
@@ -477,6 +482,69 @@
                             }
                         }
 
+                        // Apply Favorite status (if defined)
+                        if (bulkEditData.favorite !== null) {
+                            updates.favorite = bulkEditData.favorite;
+                        }
+
+                        // Apply Bookmark status (if defined)
+                        if (bulkEditData.bookmark !== null) {
+                            updates.bookmark = bulkEditData.bookmark;
+                        }
+
+                        // Apply Star status (if defined)
+                        if (bulkEditData.star !== null) {
+                            updates.star = bulkEditData.star;
+                        }
+
+                        // --- Apply Location Updates ---
+
+                        // Initialize locationInfo if needed
+                        if (!comp.locationInfo || typeof comp.locationInfo === 'string' || comp.locationInfo === '[object Object]') {
+                            comp.locationInfo = { locationId: '', details: '' };
+                        }
+
+                        // Handle location changes
+                        if (bulkEditData.locationAction === 'clear') {
+                            // Clear location information
+                            updates.locationInfo = { locationId: '', details: '' };
+                        } else if (bulkEditData.locationAction === 'set' && bulkEditData.locationId) {
+                            // Set to a new location
+                            updates.locationInfo = {
+                                locationId: bulkEditData.locationId,
+                                details: bulkEditData.locationDetails || ''
+                            };
+                        }
+
+                        // --- Apply Storage/Drawer/Cell Updates ---
+
+                        // Initialize storageInfo if needed
+                        if (!comp.storageInfo || typeof comp.storageInfo === 'string' || comp.storageInfo === '[object Object]') {
+                            comp.storageInfo = { locationId: '', drawerId: '', cells: [] };
+                        } else if (!Array.isArray(comp.storageInfo.cells)) {
+                            comp.storageInfo.cells = [];
+                        }
+
+                        // Handle storage actions
+                        if (bulkEditData.storageAction === 'clear') {
+                            // Clear drawer assignment
+                            updates.storageInfo = {
+                                locationId: '',
+                                drawerId: '',
+                                cells: []
+                            };
+                        } else if (bulkEditData.storageAction === 'set') {
+                            // Set to new drawer and cells
+                            if (bulkEditData.storageLocationId) {
+                                const newStorageInfo = {
+                                    locationId: bulkEditData.storageLocationId,
+                                    drawerId: bulkEditData.drawerId || '',
+                                    cells: bulkEditData.drawerId ? bulkEditData.selectedCells : []
+                                };
+                                updates.storageInfo = newStorageInfo;
+                            }
+                        }
+
                         // Return the component with applied updates
                         return { ...comp, ...updates };
                     }
@@ -489,8 +557,6 @@
                 setSelectedComponents([]);
                 setExportMessage(`${selectedComponents.length} component(s) updated.`);
             };
-
-
             const handleBulkDelete = () => {
                 clearStatusMessages();
                 if (selectedComponents.length === 0) return;
@@ -1082,13 +1148,9 @@
                 }
             };
 
-
             // --- Local Storage Callbacks ---
             const handleSaveComponentsLS = () => {
                 clearStatusMessages();
-                let categoryToSave = componentDataFromForm.category;
-                let footprintToSave = componentDataFromForm.footprint;
-                let newCategoryAdded = false;
 
                 if (storage.saveComponents(components)) {
                     setExportMessage('Component data force-saved to local storage.');
@@ -1283,9 +1345,15 @@
                         onCancel: () => { setShowForm(false); setEditComponentData(null); },
                         isEditMode: !!editComponentData?.id
                     }),
+
+                    // Update this code in the render part of index.html where BulkEditForm is used
+
                     showBulkEditForm && React.createElement(BulkEditForm, {
                         categories: categories,
-                        footprints: footprints, // Replace commonFootprints with footprints
+                        commonFootprints: footprints,
+                        locations: locations,
+                        drawers: drawers,
+                        cells: cells,
                         selectedCount: selectedComponents.length,
                         onApply: handleApplyBulkEdit,
                         onCancel: () => setShowBulkEditForm(false)
