@@ -61,6 +61,41 @@ window.App.utils.storage = {
     },
 
     /**
+ * Load locations from localStorage.
+ * @returns {Array} Array of location objects or empty array if none found.
+ */
+    loadLocations: () => {
+        try {
+            const savedLocations = localStorage.getItem('electronicsLocations');
+            if (savedLocations) {
+                return JSON.parse(savedLocations);
+            }
+        } catch (e) {
+            console.error("Error parsing saved locations:", e);
+        }
+        return []; // Default to empty array if nothing valid found
+    },
+
+    /**
+     * Save locations to localStorage.
+     * @param {Array} locations Array of location objects to save.
+     * @returns {boolean} True if saved successfully, false otherwise.
+     */
+    saveLocations: (locations) => {
+        try {
+            if (Array.isArray(locations)) {
+                localStorage.setItem('electronicsLocations', JSON.stringify(locations));
+                console.log('Saved locations to localStorage:', locations.length);
+                return true;
+            }
+        } catch (e) {
+            console.error("Error saving locations to localStorage:", e);
+        }
+        return false;
+    },
+
+
+    /**
      * Load configuration (categories, view mode, etc.) from localStorage.
      * @returns {Object} Configuration object with default values if none found.
      */
@@ -74,7 +109,7 @@ window.App.utils.storage = {
             showTotalValue: false,
             footprints: []
         };
-        
+
         try {
             // Load categories
             const savedCategories = localStorage.getItem('electronicsCategories');
@@ -94,6 +129,12 @@ window.App.utils.storage = {
                 defaultConfig.lowStockConfig = JSON.parse(savedLowStockConfig);
             }
 
+            // Load locations
+            const savedLocations = localStorage.getItem('electronicsLocations');
+            if (savedLocations) {
+                defaultConfig.locations = JSON.parse(savedLocations);
+            }
+
             // Load currency symbol
             const savedCurrency = localStorage.getItem('electronicsCurrencySymbol');
             if (savedCurrency) {
@@ -103,7 +144,7 @@ window.App.utils.storage = {
             // Load footprints
             const savedFootprints = localStorage.getItem('electronicsFootprints');
             if (savedFootprints) {
-            defaultConfig.footprints = JSON.parse(savedFootprints);
+                defaultConfig.footprints = JSON.parse(savedFootprints);
             }
 
             // Load show total value setting
@@ -155,7 +196,7 @@ window.App.utils.storage = {
 
                 // Save footprints
                 if (Array.isArray(config.footprints)) {
-                localStorage.setItem('electronicsFootprints', JSON.stringify(config.footprints));
+                    localStorage.setItem('electronicsFootprints', JSON.stringify(config.footprints));
                 }
 
                 console.log('Saved config to localStorage');
@@ -163,6 +204,57 @@ window.App.utils.storage = {
             }
         } catch (e) {
             console.error("Error saving config to localStorage:", e);
+        }
+        return false;
+    },
+
+    // Add to window.App.utils.storage
+    loadDrawers: () => {
+        try {
+            const savedDrawers = localStorage.getItem('electronicsDrawers');
+            if (savedDrawers) {
+                return JSON.parse(savedDrawers);
+            }
+        } catch (e) {
+            console.error("Error parsing saved drawers:", e);
+        }
+        return []; // Default to empty array
+    },
+
+    saveDrawers: (drawers) => {
+        try {
+            if (Array.isArray(drawers)) {
+                localStorage.setItem('electronicsDrawers', JSON.stringify(drawers));
+                console.log('Saved drawers to localStorage:', drawers.length);
+                return true;
+            }
+        } catch (e) {
+            console.error("Error saving drawers to localStorage:", e);
+        }
+        return false;
+    },
+
+    loadCells: () => {
+        try {
+            const savedCells = localStorage.getItem('electronicsCells');
+            if (savedCells) {
+                return JSON.parse(savedCells);
+            }
+        } catch (e) {
+            console.error("Error parsing saved cells:", e);
+        }
+        return []; // Default to empty array
+    },
+
+    saveCells: (cells) => {
+        try {
+            if (Array.isArray(cells)) {
+                localStorage.setItem('electronicsCells', JSON.stringify(cells));
+                console.log('Saved cells to localStorage:', cells.length);
+                return true;
+            }
+        } catch (e) {
+            console.error("Error saving cells to localStorage:", e);
         }
         return false;
     },
@@ -181,6 +273,9 @@ window.App.utils.storage = {
             localStorage.removeItem('electronicsCurrencySymbol');
             localStorage.removeItem('electronicsShowTotalValue');
             localStorage.removeItem('electronicsFootprints');
+            localStorage.removeItem('electronicsLocations');
+            localStorage.removeItem('electronicsDrawers');
+            localStorage.removeItem('electronicsCells');
 
             console.log('All localStorage items cleared');
             return true;
@@ -202,6 +297,7 @@ window.App.utils.storage = {
             console.log('Low Stock Config:', localStorage.getItem('electronicsLowStockConfig'));
             console.log('Currency Symbol:', localStorage.getItem('electronicsCurrencySymbol'));
             console.log('Show Total Value:', localStorage.getItem('electronicsShowTotalValue'));
+            console.log('Locations:', localStorage.getItem('electronicsLocations'));
             console.log('=================================================');
         } catch (e) {
             console.error("Error debugging localStorage:", e);

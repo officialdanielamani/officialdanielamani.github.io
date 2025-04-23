@@ -91,6 +91,14 @@ window.App.utils.helpers = {
             if (separatorIndex > 0) { // Ensure colon exists and is not the first character
                 const key = line.substring(0, separatorIndex).trim();
                 const value = line.substring(separatorIndex + 1).trim();
+                
+                // Skip special values that should be handled separately
+                if (key === 'locationInfo' || key === 'storageInfo' || 
+                    key === 'favorite' || key === 'bookmark' || key === 'star' ||
+                    key === '<object>' || value === '<object>') {
+                    return;
+                }
+                
                 if (key) { // Ensure key is not empty
                     params[key] = value;
                 }
@@ -111,12 +119,21 @@ window.App.utils.helpers = {
         const standardFields = [
             'id', 'name', 'category', 'type', 'quantity', 'price',
             'footprint', 'applications', 'datasheets', 'image',
-            'customCategory', 'customFootprint' // Include temporary fields if they exist
+            'customCategory', 'customFootprint', // Include temporary fields if they exist
+            'favorite', 'bookmark', 'star', // Add flag fields
+            'locationInfo', 'storageInfo', // Add location/storage info fields
+            'cells', 'cellId', 'drawerId' // Add drawer-related fields
         ];
         return Object.entries(component)
             // Filter out standard fields and the 'parameters' field itself if it was added incorrectly
             .filter(([key]) => !standardFields.includes(key) && key !== 'parameters')
-            .map(([key, value]) => `${key}: ${value}`) // Format as "key: value"
+            .map(([key, value]) => {
+                // Ensure values are properly formatted as strings
+                if (typeof value === 'object') {
+                    return `${key}: <object>`;  // Replace objects with placeholder
+                }
+                return `${key}: ${value}`;
+            })
             .join('\n'); // Join lines with newline
     },
 

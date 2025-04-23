@@ -17,7 +17,8 @@ window.App.components.SettingsView = ({
     importError, // String: Error or success message after import
     exportMessage, // String: Message after export/save attempt
     localStorageStatus, // Object: Status of localStorage items { key: boolean }
-
+    locations,
+    components,
     // Callbacks
     onExportComponents, // Function: Called when Export Components button is clicked
     onExportConfig, // Function: Called when Export Config button is clicked
@@ -40,9 +41,15 @@ window.App.components.SettingsView = ({
     onEditFootprint, // Function(oldFootprint, newFootprint): Called to rename a footprint
     onDeleteFootprint, // Function(footprint): Called to delete a footprint
     onRestoreDefaultFootprints, // Function: Called to restore default footprints
+    onAddLocation,
+    onEditLocation,
+    onDeleteLocation,
+    onEditComponent,
+
 }) => {
     const { useState } = React;
     const { FootprintManager } = window.App.components;
+    const { LocationManager } = window.App.components;
 
     // Internal state for settings form controls
     const [editingCategory, setEditingCategory] = useState(null); // Category being edited
@@ -178,7 +185,8 @@ window.App.components.SettingsView = ({
 
                 // Add Force Save Buttons here
                 React.createElement('div', { className: "border-t pt-4 mb-4" },
-                    React.createElement('p', { className: "text-sm text-gray-600 mb-2" }, "Data is auto-saved. Use buttons below to force save or clear all data."),
+                    React.createElement('h4', { className: "font-medium mb-2 text-gray-600" }, "Local Storage"),
+                    React.createElement('p', { className: "text-xs text-red-500 mt-2" }, "Warn: The data is stored on browser session, if you clear browser data or incognito mode, this will wipe the data."),
                     React.createElement('div', { className: "flex flex-wrap gap-3" },
                         React.createElement('button', {
                             onClick: onSaveComponentsLS,
@@ -188,7 +196,8 @@ window.App.components.SettingsView = ({
                             onClick: onSaveConfigLS,
                             className: "px-4 py-2 bg-indigo-500 text-white text-sm rounded shadow hover:bg-indigo-600 transition duration-150"
                         }, "Force Save Configuration")
-                    )
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "Data is auto-saved. Use buttons above to force save.")
                 ),
 
 
@@ -221,45 +230,7 @@ window.App.components.SettingsView = ({
                 )
             ), // End Import/Export Section
 
-            // --- Display Settings Section ---
-            React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
-                React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700 border-b pb-2" }, "Display Settings"),
-                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
-                    // Currency Symbol Input
-                    React.createElement('div', null,
-                        React.createElement('label', {
-                            htmlFor: "currency-symbol",
-                            className: "block mb-1 text-sm font-medium text-gray-700"
-                        }, "Currency Symbol"),
-                        React.createElement('input', {
-                            id: "currency-symbol",
-                            type: "text",
-                            value: currencySymbol,
-                            onChange: onChangeCurrency,
-                            className: "w-full md:w-1/2 p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
-                            placeholder: "e.g., $, €, MYR, SDG"
-                        }),
-                        React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Symbol used for displaying prices.")
-                    ),
-                    // Show Total Value Toggle
-                    React.createElement('div', null,
-                        React.createElement('label', {
-                            htmlFor: "show-total-value",
-                            className: "flex items-center space-x-2 text-sm font-medium text-gray-700 cursor-pointer"
-                        },
-                            React.createElement('input', {
-                                id: "show-total-value",
-                                type: "checkbox",
-                                checked: showTotalValue,
-                                onChange: onChangeShowTotalValue,
-                                className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                            }),
-                            React.createElement('span', null, "Show Total Inventory Value in Summary")
-                        ),
-                        React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Calculates and displays the sum of (price * quantity) for all components.")
-                    )
-                )
-            ), // End Display Settings Section
+
 
             // --- Category Management Section ---
             React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
@@ -360,8 +331,6 @@ window.App.components.SettingsView = ({
                 })
             ), // End Footprint Management Section
 
-
-
             // --- Low Stock Configuration Section ---
             React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
                 React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700 border-b pb-2" }, "Low Stock Thresholds"),
@@ -449,6 +418,46 @@ window.App.components.SettingsView = ({
                     )
                 )
             ),
+
+            // --- Display Settings Section ---
+            React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
+                React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700 border-b pb-2" }, "Display Settings"),
+                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
+                    // Currency Symbol Input
+                    React.createElement('div', null,
+                        React.createElement('label', {
+                            htmlFor: "currency-symbol",
+                            className: "block mb-1 text-sm font-medium text-gray-700"
+                        }, "Currency Symbol"),
+                        React.createElement('input', {
+                            id: "currency-symbol",
+                            type: "text",
+                            value: currencySymbol,
+                            onChange: onChangeCurrency,
+                            className: "w-full md:w-1/2 p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                            placeholder: "e.g., $, €, MYR, SDG"
+                        }),
+                        React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Symbol used for displaying prices.")
+                    ),
+                    // Show Total Value Toggle
+                    React.createElement('div', null,
+                        React.createElement('label', {
+                            htmlFor: "show-total-value",
+                            className: "flex items-center space-x-2 text-sm font-medium text-gray-700 cursor-pointer"
+                        },
+                            React.createElement('input', {
+                                id: "show-total-value",
+                                type: "checkbox",
+                                checked: showTotalValue,
+                                onChange: onChangeShowTotalValue,
+                                className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            }),
+                            React.createElement('span', null, "Show Total Inventory Value in Summary")
+                        ),
+                        React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Calculates and displays the sum of (price * quantity) for all components.")
+                    )
+                )
+            ), // End Display Settings Section
 
             // --- Local Storage Management Section ---
             React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
