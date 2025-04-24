@@ -184,13 +184,21 @@ window.App.components.SettingsView = ({
                         )
                     )
                 ),*/
-
+                React.createElement('div', { className: "mb-4 pt-4 border-t border-gray-200 text-sm text-gray-600" },
+                    React.createElement('h4', { className: "font-medium mb-2 text-gray-700" }, "Info:"),
+                    React.createElement('ul', { className: "list-disc list-inside text-sm text-red-700 space-y-1 ml-2" },
+                        React.createElement('li', null, "All data is store on your browser session, not save in cloud or 3rd party"),
+                        React.createElement('li', null, "Clear data, change browser profile or incognito will effect your file"),
+                        React.createElement('li', null, "Please export the JSON data of Component and Location for your own backup"),
+                        React.createElement('li', null, "This software is BETA development, don't use for mission critical application"),
+                        React.createElement('li', null, "We don't held responsibilities for any data loss, harm or damage while and if using this application"),
+                    ),
+                ),
                 // Credits & Info
                 React.createElement('div', { className: "mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600" },
                     React.createElement('p', null, "Electro Manager an Electronics Inventory System by DANP-EDNA"),
                     React.createElement('p', { className: "mt-1" }, "Built with React and TailwindCSS"),
-                    React.createElement('p', { className: "mt-1 text-xs" }, "Data stored locally in your browser")
-                )
+                ),
             ),
             //-- End of System Info
             // --- Import/Export Section ---
@@ -204,6 +212,7 @@ window.App.components.SettingsView = ({
                     className: "p-3 bg-blue-100 text-blue-800 rounded mb-4 text-sm border border-blue-200"
                 }, exportMessage),
                 // Components & Config Export/Import Buttons
+                React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "Plese save the JSON file for backup as you may accidently clear all data"),
                 React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" },
                     // Components Data Section
                     React.createElement('div', null,
@@ -607,7 +616,7 @@ window.App.components.SettingsView = ({
                         onClick: onClearLS,
                         className: "px-4 py-2 bg-red-600 text-white text-sm rounded shadow hover:bg-red-700 transition duration-150"
                     }, "Clear All Local Storage Data"),
-                    React.createElement('p', { className: "text-xs text-red-600 mt-1" }, "Warning: Deletes all components, categories, and settings.")
+                    React.createElement('p', { className: "text-xs text-red-600 mt-1" }, "Warning: Deletes all components, categories, and settings. There is no way back")
                 )
             )
         )
