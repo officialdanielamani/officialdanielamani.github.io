@@ -727,6 +727,12 @@
                 }
             };
 
+            const handleNavigateToDrawer = (drawerId) => {
+                setCurrentPage('drawers'); // Change to drawer page
+                // You need to expose this state variable to the DrawerPage
+                setViewingDrawerId(drawerId);
+            };
+
             //-- Footprint Management---
             const handleAddFootprint = (newFootprint) => {
                 clearStatusMessages();
@@ -1223,13 +1229,6 @@
                 event.target.value = null;
             };
 
-            //--
-            const handleNavigateToDrawer = (drawerId) => {
-                setCurrentPage('drawers'); // Change to drawer page
-                // You need to expose this state variable to the DrawerPage
-                setViewingDrawerId(drawerId);
-            };
-
             // --- Local Storage Callbacks ---
             const handleSaveComponentsLS = () => {
                 clearStatusMessages();
@@ -1300,24 +1299,25 @@
                     React.createElement('h4', { className: "text font-bold mb-6 text-center text-gray-700" }, "DANP-EDNA V0.1.4beta"),
                     React.createElement('p', { className: "text font mb-6 text-center text-gray-700" }, "Adding support for Location and drawers"),
                     // --- Navigation Tabs ---
-                    React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300" },
+                    React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300 overflow-x-auto" },
                         React.createElement('button', {
                             onClick: () => setCurrentPage('inventory'),
-                            className: `py-2 px-6 text-lg ${currentPage === 'inventory' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, " Inventory "),
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'inventory' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                        }, "Inventory"),
                         React.createElement('button', {
                             onClick: () => setCurrentPage('data'),
-                            className: `py-2 px-6 text-lg ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, " Settings & Data "),
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                        }, "Settings & Data"),
                         React.createElement('button', {
                             onClick: () => setCurrentPage('locations'),
-                            className: `py-2 px-6 text-lg ${currentPage === 'locations' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'locations' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
                         }, "Locations"),
                         React.createElement('button', {
                             onClick: () => setCurrentPage('drawers'),
-                            className: `py-2 px-6 text-lg ${currentPage === 'drawers' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, "Drawers"),
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'drawers' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                        }, "Drawers")
                     ),
+
 
                     // --- Conditional Page Rendering ---
                     currentPage === 'inventory' && React.createElement(InventoryView, {
@@ -1405,6 +1405,7 @@
 
                     // Add to the conditional page rendering section
                     currentPage === 'drawers' && React.createElement(DrawerPage, {
+                        locations: locations,
                         locations: locations,
                         drawers: drawers,
                         cells: cells,
