@@ -502,10 +502,10 @@ window.App.components.ComponentForm = ({
                                 required: true
                             })
                         ),
-                        // Applications Input
+                        // Info Input
                         React.createElement('div', { className: "md:col-span-2" },
-                            React.createElement('label', { htmlFor: "comp-applications", className: "block mb-1 text-sm font-medium text-gray-700" }, "Applications"),
-                            React.createElement('input', { id: "comp-applications", name: "applications", type: "text", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.applications || '', onChange: handleChange, placeholder: "e.g., Voltage regulation" })
+                            React.createElement('label', { htmlFor: "comp-info", className: "block mb-1 text-sm font-medium text-gray-700" }, "Info"),
+                            React.createElement('input', { id: "comp-info", name: "info", type: "text", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.info || '', onChange: handleChange, placeholder: "e.g., Voltage regulation" })
                         ),
                         // Datasheets Textarea
                         React.createElement('div', { className: "md:col-span-2" },

@@ -24,7 +24,7 @@ window.App.components.DrawerPage = ({
     onEditComponent, // Function: Pass-through to edit component
     initialDrawerId,
 }) => {
-    const { useState } = React;
+    const { useState, useEffect } = React;
     const { DrawerManager, DrawerView } = window.App.components;
 
     // Internal state
@@ -77,12 +77,25 @@ window.App.components.DrawerPage = ({
             onDeleteCell(cellId);
         }
     };
-
+    
+    // Reset the viewing drawer when initialDrawerId changes or when navigating to the page
     useEffect(() => {
         if (initialDrawerId) {
             setViewingDrawerId(initialDrawerId);
+        } else {
+            // Reset to drawer list when returning to the page without an initialDrawerId
+            setViewingDrawerId(null);
         }
     }, [initialDrawerId]);
+    
+    // Additional hook to reset viewingDrawerId when the page changes
+    useEffect(() => {
+        // This will run on component mount and cleanup
+        return () => {
+            // Reset when leaving the DrawerPage
+            setViewingDrawerId(null);
+        };
+    }, []);
 
     // Render
     return React.createElement('div', { className: "space-y-6" },
@@ -108,7 +121,8 @@ window.App.components.DrawerPage = ({
                 onEditDrawer: onEditDrawer,
                 onDeleteDrawer: handleDeleteDrawer,
                 onViewDrawer: handleViewDrawer,
-                onEditComponent: onEditComponent
+                onEditComponent: onEditComponent,
+                onBackToDrawers: () => setViewingDrawerId(null)
             })
     );
 };

@@ -118,7 +118,7 @@ window.App.utils.helpers = {
         // List of standard fields managed by specific inputs in the form
         const standardFields = [
             'id', 'name', 'category', 'type', 'quantity', 'price',
-            'footprint', 'applications', 'datasheets', 'image',
+            'footprint', 'info', 'datasheets', 'image',
             'customCategory', 'customFootprint', // Include temporary fields if they exist
             'favorite', 'bookmark', 'star', // Add flag fields
             'locationInfo', 'storageInfo', // Add location/storage info fields

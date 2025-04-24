@@ -245,6 +245,7 @@ window.App.components.DrawerView = ({
 
         return gridElements;
     };
+
     // Selected cell details
     const selectedCell = drawerCells.find(cell => cell.id === selectedCellId);
     const selectedCellComponents = selectedCell ? getComponentsForCell(selectedCell.id) : [];
@@ -275,6 +276,7 @@ window.App.components.DrawerView = ({
                     })
                 ),
                 "Back to Drawers"
+                
             )
         ),
 

@@ -57,7 +57,8 @@ window.App.components.LocationPage = ({
             onEditLocation,
             onDeleteLocation,
             onEditComponent,
-            onNavigateToDrawer: handleViewDrawer
+            onNavigateToDrawer: handleViewDrawer,
+            handleBackToLocations, 
         })
     );
 };

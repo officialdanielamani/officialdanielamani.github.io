@@ -46,7 +46,6 @@ window.App.components.SettingsView = ({
 }) => {
     const { useState } = React;
     const { FootprintManager } = window.App.components;
-    const { LocationManager } = window.App.components;
 
     // Internal state for settings form controls
     const [editingCategory, setEditingCategory] = useState(null); // Category being edited

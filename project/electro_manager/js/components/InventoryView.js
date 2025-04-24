@@ -41,12 +41,12 @@ window.App.components.InventoryView = ({
     const filteredComponents = components.filter(component => {
         const matchesCategory = selectedCategory === 'all' || component.category === selectedCategory;
         const lowerSearchTerm = searchTerm.toLowerCase();
-        // Check against name, type, category, and applications
+        // Check against name, type, category, and info
         const matchesSearch = !searchTerm ||
             (component.name && component.name.toLowerCase().includes(lowerSearchTerm)) ||
             (component.type && component.type.toLowerCase().includes(lowerSearchTerm)) ||
             (component.category && component.category.toLowerCase().includes(lowerSearchTerm)) ||
-            (component.applications && component.applications.toLowerCase().includes(lowerSearchTerm));
+            (component.info && component.info.toLowerCase().includes(lowerSearchTerm));
 
         return matchesCategory && matchesSearch;
     });
@@ -164,8 +164,8 @@ window.App.components.InventoryView = ({
             ),
             // Price
             React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-800 text-right" }, formattedPrice),
-            // Applications
-            React.createElement('td', { className: "px-4 py-2 max-w-xs text-sm text-gray-700 truncate", title: component.applications }, component.applications),
+            // Info
+            React.createElement('td', { className: "px-4 py-2 max-w-xs text-sm text-gray-700 truncate", title: component.info }, component.info),
             // Actions
             React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-center text-sm font-medium" },
                 React.createElement('button', { onClick: () => onEditComponent(component), className: "text-indigo-600 hover:text-indigo-900 mr-3", title: "Edit Component" }, "Edit"),
@@ -225,8 +225,8 @@ window.App.components.InventoryView = ({
                     React.createElement('span', { className: `text-lg font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}` }, component.quantity || 0),
                     React.createElement('button', { onClick: () => onUpdateQuantity(component.id, 1), className: "text-green-500 hover:text-green-700 p-1 rounded-full hover:bg-green-100", title: "Increase Quantity" }, React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z", clipRule: "evenodd" })))
                 ),
-                // Applications
-                component.applications && React.createElement('p', { className: "text-sm text-gray-600 mb-2 truncate", title: component.applications }, React.createElement('span', { className: "font-medium" }, "Uses: "), component.applications),
+                // Info
+                component.info && React.createElement('p', { className: "text-sm text-gray-600 mb-2 truncate", title: component.info }, React.createElement('span', { className: "font-medium" }, "Uses: "), component.info),
                 // Datasheets
                 React.createElement('div', { className: "mb-3" },
                     datasheetLinks.map((url, index) =>
@@ -363,13 +363,13 @@ window.App.components.InventoryView = ({
                                     ),
 
                                     // Other Headers
-                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Component"),
-                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Type"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Component"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Type"),
                                     React.createElement('th', { className: "px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Marks"),
-                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Footprint"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Footprint"),
                                     React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Quantity"),
-                                    React.createElement('th', { className: "px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Price"),
-                                    React.createElement('th', { className: "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Applications"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Price"),
+                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Info"),
                                     React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Actions")
                                 )
                             ),

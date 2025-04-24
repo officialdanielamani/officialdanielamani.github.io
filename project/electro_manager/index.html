@@ -156,7 +156,7 @@
                 // Prepare initial data for the form (empty component)
                 setEditComponentData({
                     id: '', name: '', category: '', customCategory: '', type: '', quantity: 0, price: 0,
-                    footprint: '', customFootprint: '', parameters: '', applications: '', datasheets: '', image: ''
+                    footprint: '', customFootprint: '', parameters: '', info: '', datasheets: '', image: ''
                 });
                 setShowForm(true);
             };
@@ -297,7 +297,7 @@
                     quantity: parseInt(componentDataFromForm.quantity, 10) || 0,
                     price: parseFloat(componentDataFromForm.price) || 0,
                     footprint: footprintToSave,
-                    applications: componentDataFromForm.applications.trim(),
+                    info: componentDataFromForm.info.trim(),
                     datasheets: componentDataFromForm.datasheets.trim(),
                     image: componentDataFromForm.image.trim(),
                     // Add location and storage information
@@ -392,7 +392,7 @@
                             (component.name && component.name.toLowerCase().includes(lowerSearchTerm)) ||
                             (component.type && component.type.toLowerCase().includes(lowerSearchTerm)) ||
                             (component.category && component.category.toLowerCase().includes(lowerSearchTerm)) ||
-                            (component.applications && component.applications.toLowerCase().includes(lowerSearchTerm));
+                            (component.info && component.info.toLowerCase().includes(lowerSearchTerm));
                         return matchesCategory && matchesSearch;
                     })
                     .map(comp => comp.id);
@@ -1301,24 +1301,34 @@
                     // --- Navigation Tabs ---
                     React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300 overflow-x-auto" },
                         React.createElement('button', {
-                            onClick: () => setCurrentPage('inventory'),
+                            onClick: () => {
+                                setCurrentPage('inventory');
+                                setViewingDrawerId(null); // Reset drawer view when changing page
+                            },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'inventory' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
                         }, "Inventory"),
                         React.createElement('button', {
-                            onClick: () => setCurrentPage('data'),
+                            onClick: () => {
+                                setCurrentPage('data');
+                                setViewingDrawerId(null); // Reset drawer view when changing page
+                            },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
                         }, "Settings & Data"),
                         React.createElement('button', {
-                            onClick: () => setCurrentPage('locations'),
+                            onClick: () => {
+                                setCurrentPage('locations');
+                                setViewingDrawerId(null); // Reset drawer view when changing page
+                            },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'locations' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
                         }, "Locations"),
                         React.createElement('button', {
-                            onClick: () => setCurrentPage('drawers'),
+                            onClick: () => {
+                                setCurrentPage('drawers');
+                                setViewingDrawerId(null); // Reset drawer view when changing page
+                            },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'drawers' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
                         }, "Drawers")
                     ),
-
-
                     // --- Conditional Page Rendering ---
                     currentPage === 'inventory' && React.createElement(InventoryView, {
                         // Pass state
@@ -1418,6 +1428,7 @@
                         onEditCell: handleEditCell,
                         onDeleteCell: handleDeleteCell,
                         onEditComponent: handleEditComponent,
+                        onNavigateToDrawer: (drawerId) => setViewingDrawerId(drawerId),
                     }),
 
                     // --- Modals (Rendered conditionally based on state) ---
