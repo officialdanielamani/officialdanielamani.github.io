@@ -311,7 +311,7 @@
                     quantity: parseInt(componentDataFromForm.quantity, 10) || 0,
                     price: parseFloat(componentDataFromForm.price) || 0,
                     footprint: footprintToSave,
-                    info: componentDataFromForm.info.trim(),
+                    info: (componentDataFromForm.info || '').trim(),
                     datasheets: componentDataFromForm.datasheets.trim(),
                     image: componentDataFromForm.image.trim(),
                     // Add location and storage information
