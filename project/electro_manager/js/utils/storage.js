@@ -271,7 +271,12 @@ window.App.utils.storage = {
         try {
             const savedCells = localStorage.getItem('electronicsCells');
             if (savedCells) {
-                return JSON.parse(savedCells);
+                const parsedCells = JSON.parse(savedCells);
+                // Set default availability for any cell that doesn't have it
+                return parsedCells.map(cell => ({
+                    ...cell,
+                    available: cell.available !== undefined ? cell.available : true
+                }));
             }
         } catch (e) {
             console.error("Error parsing saved cells:", e);

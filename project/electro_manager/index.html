@@ -83,6 +83,12 @@
                 setFootprints(config.footprints || []);
                 setLocations(storage.loadLocations() || []);
 
+                // Load drawers from localStorage
+                setDrawers(storage.loadDrawers() || []);
+
+                // Load cells from localStorage 
+                setCells(storage.loadCells() || []);
+
                 // Fallback: If categories are empty but components exist, derive from components
                 if (config.categories.length === 0) {
                     const loadedComponents = storage.loadComponents(); // Load again or use already loaded
@@ -98,9 +104,17 @@
                 }
                 console.log("Initial load complete.");
             }, []); // Runs only once on mount
+
             useEffect(() => {
-                setDrawers(storage.loadDrawers() || []);
-                setCells(storage.loadCells() || []);
+                let cells = storage.loadCells() || [];
+
+                // Set default availability for cells that don't have it set
+                cells = cells.map(cell => ({
+                    ...cell,
+                    available: cell.available !== undefined ? cell.available : true
+                }));
+
+                setCells(cells);
             }, []);
 
             useEffect(() => {
@@ -688,6 +702,7 @@
                 setCells(prev => prev.map(cell =>
                     cell.id === cellId ? updatedCell : cell
                 ));
+                //available: existingCell.available !== undefined ? existingCell.available : true
                 setExportMessage('Cell updated.');
             };
 
@@ -1296,8 +1311,7 @@
             return (
                 React.createElement('div', { className: "container mx-auto p-4 font-sans" },
                     React.createElement('h1', { className: "text-3xl font-bold mb-6 text-center text-gray-700" }, "Electronics Component Inventory"),
-                    React.createElement('h4', { className: "text font-bold mb-6 text-center text-gray-700" }, "DANP-EDNA V0.1.4beta"),
-                    React.createElement('p', { className: "text font mb-6 text-center text-gray-700" }, "Adding support for Location and drawers"),
+                    React.createElement('h4', { className: "text font-bold mb-6 text-center text-gray-700" }, "DANP-EDNA V0.1.5beta"),
                     // --- Navigation Tabs ---
                     React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300 overflow-x-auto" },
                         React.createElement('button', {
@@ -1306,14 +1320,7 @@
                                 setViewingDrawerId(null); // Reset drawer view when changing page
                             },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'inventory' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, "Inventory"),
-                        React.createElement('button', {
-                            onClick: () => {
-                                setCurrentPage('data');
-                                setViewingDrawerId(null); // Reset drawer view when changing page
-                            },
-                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, "Settings & Data"),
+                        }, "Inventory List"),
                         React.createElement('button', {
                             onClick: () => {
                                 setCurrentPage('locations');
@@ -1327,7 +1334,14 @@
                                 setViewingDrawerId(null); // Reset drawer view when changing page
                             },
                             className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'drawers' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, "Drawers")
+                        }, "Drawers"),
+                        React.createElement('button', {
+                            onClick: () => {
+                                setCurrentPage('data');
+                                setViewingDrawerId(null); // Reset drawer view when changing page
+                            },
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                        }, "Settings"),
                     ),
                     // --- Conditional Page Rendering ---
                     currentPage === 'inventory' && React.createElement(InventoryView, {

@@ -121,6 +121,78 @@ window.App.components.SettingsView = ({
     // --- Render ---
     return (
         React.createElement('div', { className: "space-y-8" },
+
+            // --- Systen Info Section ---
+            React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
+                React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700 border-b pb-2" }, "System Information"),
+
+                // Version information
+                React.createElement('div', { className: "mb-4" },
+                    React.createElement('h3', { className: "text-lg font-medium mb-2 text-gray-700" }, "Electro Manager"),
+                    React.createElement('div', { className: "flex items-center mb-3" },
+                        React.createElement('span', { className: "text-md font-semibold text-blue-600" }, "Version 0.1.5beta"),
+                        React.createElement('span', { className: "ml-2 px-2 py-1 bg-green-100 text-white-800 text-xs rounded-full" }, "Latest Update")
+                    ),
+
+                    // Update date
+                    //React.createElement('div', { className: "text-sm text-gray-600 mb-3" }, 
+                    "Updated: 24April 2025"
+                    // )
+                ),
+
+                // Changes in this version 
+                React.createElement('div', { className: "mb-4" },
+                    React.createElement('h4', { className: "font-medium mb-2 text-gray-700" }, "Changes in this version:"),
+                    React.createElement('ul', { className: "list-disc list-inside text-sm text-gray-700 space-y-1 ml-2" },
+                        React.createElement('li', null, "Add function to assign component Location and Drawers"),
+                        React.createElement('li', null, "Import and Export the location and drawers data"),
+                        React.createElement('li', null, "Fixed error on save data for drawers and cells"),
+                        React.createElement('li', null, "Added ability to mark cells as unavailable in drawers"),
+                        React.createElement('li', null, "Added function to clear all components from a cell at once"),
+                        React.createElement('li', null, "Added view of drawer list for specific locations")
+                    )
+                ),
+
+                // System Statistics Not In use
+                /*
+                React.createElement('div', { className: "mt-6" },
+                    React.createElement('h4', { className: "font-medium mb-2 text-gray-700" }, "System Statistics"),
+                    React.createElement('div', { className: "grid grid-cols-2 gap-3 mt-2" },
+                        React.createElement('div', { className: "bg-gray-50 p-3 rounded border border-gray-200" },
+                            React.createElement('div', { className: "text-xs text-gray-500" }, "Total Components"),
+                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, 
+                                components ? components.length : "0"
+                            )
+                        ),
+                        React.createElement('div', { className: "bg-gray-50 p-3 rounded border border-gray-200" },
+                            React.createElement('div', { className: "text-xs text-gray-500" }, "Categories"),
+                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, 
+                                categories ? categories.length : "0"
+                            )
+                        ),
+                        React.createElement('div', { className: "bg-gray-50 p-3 rounded border border-gray-200" },
+                            React.createElement('div', { className: "text-xs text-gray-500" }, "Locations"),
+                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, 
+                                locations ? locations.length : "0"
+                            )
+                        ),
+                        React.createElement('div', { className: "bg-gray-50 p-3 rounded border border-gray-200" },
+                            React.createElement('div', { className: "text-xs text-gray-500" }, "Drawers"),
+                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, 
+                                drawers ? drawers.length : "0"
+                            )
+                        )
+                    )
+                ),*/
+
+                // Credits & Info
+                React.createElement('div', { className: "mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600" },
+                    React.createElement('p', null, "Electro Manager an Electronics Inventory System by DANP-EDNA"),
+                    React.createElement('p', { className: "mt-1" }, "Built with React and TailwindCSS"),
+                    React.createElement('p', { className: "mt-1 text-xs" }, "Data stored locally in your browser")
+                )
+            ),
+            //-- End of System Info
             // --- Import/Export Section ---
             React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },
                 React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700 border-b pb-2" }, "Import / Export Data"),
@@ -248,8 +320,6 @@ window.App.components.SettingsView = ({
                     )
                 )
             ), // End Import/Export Section
-
-
 
             // --- Category Management Section ---
             React.createElement('div', { className: "bg-white p-6 rounded-lg shadow border border-gray-200" },

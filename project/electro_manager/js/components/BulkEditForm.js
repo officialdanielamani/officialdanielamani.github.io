@@ -136,6 +136,14 @@ window.App.components.BulkEditForm = ({
 
     // Handle cell selection/deselection
     const handleCellToggle = (cellId) => {
+        // Find the cell from filtered cells
+        const cell = filteredCells.find(c => c.id === cellId);
+        
+        // Don't allow toggling unavailable cells
+        if (!cell || cell.available === false) {
+            return;
+        }
+        
         setBulkData(prevData => {
             const updatedCells = [...prevData.selectedCells];
             
@@ -204,12 +212,17 @@ window.App.components.BulkEditForm = ({
                 const cellId = cell ? cell.id : null;
                 const isSelected = cellId && bulkData.selectedCells.includes(cellId);
                 
+                // Safely check available property with a default to true
+                const isAvailable = cell ? (cell.available !== false) : true;
+                
                 rowElements.push(
                     React.createElement('div', {
                         key: `cell-${r}-${c}`,
-                        className: `w-8 h-8 border flex items-center justify-center cursor-pointer ${isSelected ? 'bg-blue-200 border-blue-500' : 'bg-white hover:bg-gray-100'}`,
-                        onClick: () => cellId && handleCellToggle(cellId),
-                        title: cell?.nickname || coordinate
+                        className: `w-8 h-8 border flex items-center justify-center 
+                            ${isSelected ? 'bg-blue-200 border-blue-500' : 'bg-white hover:bg-gray-100'} 
+                            ${!isAvailable ? 'bg-gray-300 opacity-70 cursor-not-allowed' : 'cursor-pointer'}`,
+                        onClick: () => cellId && isAvailable && handleCellToggle(cellId),
+                        title: cell ? (cell.nickname || coordinate) + (isAvailable ? '' : ' (Unavailable)') : coordinate
                     }, 
                     isSelected ? '✓' : ''
                     )
@@ -228,8 +241,12 @@ window.App.components.BulkEditForm = ({
         
         return bulkData.selectedCells.map(cellId => {
             const cell = cells.find(c => c.id === cellId);
-            return cell ? (cell.nickname || cell.coordinate) : cellId;
-        }).join(", ");
+            // Only include available cells in the info
+            if (cell && cell.available !== false) {
+                return cell.nickname || cell.coordinate;
+            }
+            return cellId;
+        }).filter(Boolean).join(", "); // Filter out any undefined values
     };
 
     // --- Render ---

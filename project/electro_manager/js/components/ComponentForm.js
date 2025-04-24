@@ -223,8 +223,16 @@ window.App.components.ComponentForm = ({
 
     // Handle cell selection/deselection
     const handleCellToggle = (cellId) => {
+        // Find the cell from filtered cells
+        const cell = filteredCells.find(c => c.id === cellId);
+        
+        // Safely check if cell is unavailable before proceeding
+        if (!cell || cell.available === false) {
+            return; // Don't toggle unavailable cells
+        }
+        
         let updatedCells;
-
+    
         if (selectedCells.includes(cellId)) {
             // Remove cell if already selected
             updatedCells = selectedCells.filter(id => id !== cellId);
@@ -232,9 +240,9 @@ window.App.components.ComponentForm = ({
             // Add cell if not already selected
             updatedCells = [...selectedCells, cellId];
         }
-
+    
         setSelectedCells(updatedCells);
-
+    
         setFormData(prevData => ({
             ...prevData,
             storageInfo: {
@@ -266,12 +274,12 @@ window.App.components.ComponentForm = ({
     // Generate grid elements for drawer cells
     const generateCellGrid = () => {
         if (!selectedDrawer) return null;
-
+    
         const rows = selectedDrawer.grid?.rows || 3;
         const cols = selectedDrawer.grid?.cols || 3;
-
+    
         const gridElements = [];
-
+    
         // Generate column headers (A, B, C, ...)
         const headerRow = [React.createElement('div', { key: 'corner', className: "w-8 h-8 bg-gray-100 text-center font-medium" })];
         for (let c = 0; c < cols; c++) {
@@ -281,38 +289,43 @@ window.App.components.ComponentForm = ({
             );
         }
         gridElements.push(React.createElement('div', { key: 'header-row', className: "flex" }, headerRow));
-
+    
         // Generate rows with cells
         for (let r = 0; r < rows; r++) {
             const rowElements = [
                 // Row header (1, 2, 3, ...)
                 React.createElement('div', { key: `row-${r}`, className: "w-8 h-8 bg-gray-100 text-center font-medium flex items-center justify-center" }, r + 1)
             ];
-
+    
             // Generate cells for this row
             for (let c = 0; c < cols; c++) {
                 const coordinate = `${String.fromCharCode(65 + c)}${r + 1}`; // e.g., "A1", "B2"
                 const cell = filteredCells.find(cell => cell.coordinate === coordinate);
-
+            
                 // Cell might not exist in the database yet
                 const cellId = cell ? cell.id : null;
                 const isSelected = cellId && selectedCells.includes(cellId);
-
+                
+                // Add this line to safely check the available property - default to true if undefined
+                const isAvailable = cell ? (cell.available !== false) : true;
+                
                 rowElements.push(
                     React.createElement('div', {
                         key: `cell-${r}-${c}`,
-                        className: `w-8 h-8 border flex items-center justify-center cursor-pointer ${isSelected ? 'bg-blue-200 border-blue-500' : 'bg-white hover:bg-gray-100'}`,
-                        onClick: () => cellId && handleCellToggle(cellId),
-                        title: cell?.nickname || coordinate
-                    },
-                        isSelected ? '✓' : ''
+                        className: `w-8 h-8 border flex items-center justify-center cursor-pointer 
+                            ${isSelected ? 'bg-blue-200 border-blue-500' : 'bg-white hover:bg-gray-100'}
+                            ${!isAvailable ? 'bg-gray-300 opacity-70 cursor-not-allowed' : ''}`, // Add styling for unavailable cells
+                        onClick: () => cellId && isAvailable && handleCellToggle(cellId), // Only allow click on available cells
+                        title: cell ? (cell.nickname || coordinate) + (isAvailable ? '' : ' (Unavailable)') : coordinate
+                    }, 
+                    isSelected ? '✓' : ''
                     )
                 );
             }
-
+    
             gridElements.push(React.createElement('div', { key: `row-${r}`, className: "flex" }, rowElements));
         }
-
+    
         return gridElements;
     };
 
