@@ -22,12 +22,13 @@ window.App.components.DrawerPage = ({
     onEditCell, // Function(cellId, updatedCell): Called to edit a cell
     onDeleteCell, // Function(cellId): Called to delete a cell
     onEditComponent, // Function: Pass-through to edit component
+    initialDrawerId,
 }) => {
     const { useState } = React;
     const { DrawerManager, DrawerView } = window.App.components;
 
     // Internal state
-    const [viewingDrawerId, setViewingDrawerId] = useState(null);
+    const [viewingDrawerId, setViewingDrawerId] = useState(initialDrawerId || null);
     
     // Find the current drawer and its location if viewing a drawer
     const currentDrawer = drawers.find(drawer => drawer.id === viewingDrawerId);
@@ -76,6 +77,12 @@ window.App.components.DrawerPage = ({
             onDeleteCell(cellId);
         }
     };
+
+    useEffect(() => {
+        if (initialDrawerId) {
+            setViewingDrawerId(initialDrawerId);
+        }
+    }, [initialDrawerId]);
 
     // Render
     return React.createElement('div', { className: "space-y-6" },

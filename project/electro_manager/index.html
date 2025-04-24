@@ -65,6 +65,8 @@
             const [footprints, setFootprints] = useState([]);
             const [drawers, setDrawers] = useState([]);
             const [cells, setCells] = useState([]);
+            const [viewingDrawerId, setViewingDrawerId] = useState(null);
+            //const [showAddDrawerForm, setShowAddDrawerForm] = useState(false);
 
             // --- Effects ---
 
@@ -1148,6 +1150,86 @@
                 }
             };
 
+            // --- Export Location & Drawers ---
+            const handleExportLocations = () => {
+                clearStatusMessages();
+                try {
+                    const locationsData = {
+                        locations: locations,
+                        drawers: drawers,
+                        cells: cells
+                    };
+                    setJsonData(JSON.stringify(locationsData, null, 2));
+                    setExportMessage('Locations and drawers data ready in text area below. Copy or download.');
+                } catch (err) {
+                    console.error("Error exporting locations:", err);
+                    setImportError(`Error exporting locations: ${err.message}`);
+                }
+            };
+
+            const importLocationsData = (jsonDataToImport) => {
+                try {
+                    const data = JSON.parse(jsonDataToImport);
+
+                    // Validate the imported data structure
+                    if (!data.locations || !Array.isArray(data.locations)) {
+                        throw new Error('Invalid locations data format.');
+                    }
+
+                    // Import locations
+                    if (data.locations && Array.isArray(data.locations)) {
+                        setLocations(data.locations);
+                    }
+
+                    // Import drawers if available
+                    if (data.drawers && Array.isArray(data.drawers)) {
+                        setDrawers(data.drawers);
+                    }
+
+                    // Import cells if available
+                    if (data.cells && Array.isArray(data.cells)) {
+                        setCells(data.cells);
+                    }
+
+                    setImportError('Locations, drawers, and cells imported successfully!');
+                } catch (err) {
+                    console.error("Error importing locations data:", err);
+                    throw new Error(`Invalid JSON format or data structure: ${err.message}`);
+                }
+            };
+
+            const handleLocationsFileImport = (event) => {
+                clearStatusMessages();
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    setJsonData(text); // Show loaded JSON in textarea
+                    try {
+                        importLocationsData(text);
+                    } catch (err) {
+                        setImportError(`Import failed: ${err.message}`);
+                    }
+                };
+                reader.onerror = (e) => {
+                    console.error("Error reading file:", e.target.error);
+                    setImportError(`Error reading file: ${e.target.error}`);
+                };
+                reader.readAsText(file);
+
+                // Reset file input to allow importing the same file again
+                event.target.value = null;
+            };
+
+            //--
+            const handleNavigateToDrawer = (drawerId) => {
+                setCurrentPage('drawers'); // Change to drawer page
+                // You need to expose this state variable to the DrawerPage
+                setViewingDrawerId(drawerId);
+            };
+
             // --- Local Storage Callbacks ---
             const handleSaveComponentsLS = () => {
                 clearStatusMessages();
@@ -1289,6 +1371,8 @@
                         onImportComponentsFile: (e) => handleFileImport(e, 'components'),
                         onImportConfigFile: (e) => handleFileImport(e, 'config'),
                         onDownloadJson: handleDownloadJson,
+                        onExportLocations: handleExportLocations,
+                        onImportLocationsFile: handleLocationsFileImport,
                         onCopyJson: handleCopyJson,
                         onClearJsonArea: () => { setJsonData(''); clearStatusMessages(); },
                         onChangeCurrency: (e) => { setCurrencySymbol(e.target.value); clearStatusMessages(); },
@@ -1311,10 +1395,12 @@
                     currentPage === 'locations' && React.createElement(LocationPage, {
                         locations: locations,
                         components: components,
+                        drawers: drawers,
                         onAddLocation: handleAddLocation,
                         onEditLocation: handleEditLocation,
                         onDeleteLocation: handleDeleteLocation,
                         onEditComponent: handleEditComponent,
+                        onNavigateToDrawer: handleNavigateToDrawer // Add this prop
                     }),
 
                     // Add to the conditional page rendering section
@@ -1323,6 +1409,7 @@
                         drawers: drawers,
                         cells: cells,
                         components: components,
+                        initialDrawerId: viewingDrawerId, // Add this prop
                         onAddDrawer: handleAddDrawer,
                         onEditDrawer: handleEditDrawer,
                         onDeleteDrawer: handleDeleteDrawer,

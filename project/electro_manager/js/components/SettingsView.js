@@ -40,12 +40,9 @@ window.App.components.SettingsView = ({
     onAddFootprint, // Function(newFootprint): Called to add a new footprint
     onEditFootprint, // Function(oldFootprint, newFootprint): Called to rename a footprint
     onDeleteFootprint, // Function(footprint): Called to delete a footprint
+    onExportLocations, // Function: Called when Export Locations button is clicked
+    onImportLocationsFile, // Function(event): Called when locations file is selected for import
     onRestoreDefaultFootprints, // Function: Called to restore default footprints
-    onAddLocation,
-    onEditLocation,
-    onDeleteLocation,
-    onEditComponent,
-
 }) => {
     const { useState } = React;
     const { FootprintManager } = window.App.components;
@@ -181,6 +178,29 @@ window.App.components.SettingsView = ({
                         ),
                         React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "Includes categories, settings. Import merges/overwrites.")
                     )
+                ),
+
+                //Import/Export Location & Drawers
+                React.createElement('div', null,
+                    React.createElement('h4', { className: "font-medium mb-2 text-gray-600" }, "Locations & Drawers"),
+                    React.createElement('div', { className: "flex flex-wrap gap-2" },
+                        React.createElement('button', {
+                            onClick: onExportLocations,
+                            className: "px-4 py-2 bg-yellow-500 text-white text-sm rounded shadow hover:bg-yellow-600 transition duration-150"
+                        }, "Export Locations & Drawers"),
+                        React.createElement('input', {
+                            type: "file",
+                            id: "import-locations-file",
+                            accept: ".json",
+                            onChange: onImportLocationsFile,
+                            className: "hidden"
+                        }),
+                        React.createElement('label', {
+                            htmlFor: "import-locations-file",
+                            className: "cursor-pointer px-4 py-2 bg-amber-500 text-white text-sm rounded shadow hover:bg-amber-600 transition duration-150"
+                        }, "Import Locations & Drawers")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "Export/import locations, drawers and cells.")
                 ),
 
                 // Add Force Save Buttons here

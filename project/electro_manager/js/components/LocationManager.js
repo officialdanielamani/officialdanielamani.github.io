@@ -11,11 +11,13 @@ window.App.components.LocationManager = ({
     // Props
     locations, // Array: List of location objects
     components, // Array: All component objects
+    drawers, // Array: List of drawer objects
     // Callbacks
     onAddLocation, // Function(newLocation): Called to add a new location
     onEditLocation, // Function(oldLocationId, updatedLocation): Called to edit a location
     onDeleteLocation, // Function(locationId): Called to delete a location
     onEditComponent, // Function: Pass-through to edit component
+    onNavigateToDrawer, // Function: Navigate to drawer view
 }) => {
     const { useState } = React;
 
@@ -26,6 +28,7 @@ window.App.components.LocationManager = ({
     const [editLocationName, setEditLocationName] = useState('');
     const [editLocationDescription, setEditLocationDescription] = useState('');
     const [expandedLocations, setExpandedLocations] = useState({});
+    const [showAddLocationForm, setShowAddLocationForm] = useState(false);
 
     // Handle adding a new location
     const handleAddSubmit = (e) => {
@@ -111,47 +114,81 @@ window.App.components.LocationManager = ({
         );
     };
 
+    // Get drawers for a specific location
+    const getDrawersForLocation = (locationId) => {
+        return drawers.filter(drawer => drawer.locationId === locationId);
+    };
+
     return React.createElement('div', { className: "space-y-6" },
         // Add new location form
         React.createElement('div', { className: "mb-6 bg-white p-4 rounded-lg shadow border border-gray-200" },
-            React.createElement('h4', { className: "font-medium mb-3 text-gray-700" }, "Add New Location"),
-            React.createElement('form', { onSubmit: handleAddSubmit, className: "space-y-3" },
-                // Name input
-                React.createElement('div', null,
-                    React.createElement('label', { 
-                        htmlFor: "new-location-name", 
-                        className: "block mb-1 text-sm font-medium text-gray-700" 
-                    }, "Location Name"),
-                    React.createElement('input', {
-                        id: "new-location-name",
-                        type: "text",
-                        value: newLocationName,
-                        onChange: (e) => setNewLocationName(e.target.value),
-                        placeholder: "e.g., Lab Room 101",
-                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    })
-                ),
-                // Description input
-                React.createElement('div', null,
-                    React.createElement('label', { 
-                        htmlFor: "new-location-description", 
-                        className: "block mb-1 text-sm font-medium text-gray-700" 
-                    }, "Description (Optional)"),
-                    React.createElement('input', {
-                        id: "new-location-description",
-                        type: "text",
-                        value: newLocationDescription,
-                        onChange: (e) => setNewLocationDescription(e.target.value),
-                        placeholder: "e.g., Main electronics workbench",
-                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    })
-                ),
-                // Submit button
-                React.createElement('div', null,
-                    React.createElement('button', {
-                        type: "submit",
-                        className: "px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150 ease-in-out"
-                    }, "Add Location")
+            // Clickable header with toggle arrow
+            React.createElement('div', { 
+                className: "flex justify-between items-center cursor-pointer",
+                onClick: () => {
+                    console.log("Toggle location form visibility", !showAddLocationForm);
+                    setShowAddLocationForm(!showAddLocationForm);
+                }
+            },
+                React.createElement('h4', { className: "font-medium text-gray-700" }, "Add New Location"),
+                React.createElement('span', { className: "text-gray-500" },
+                    React.createElement('svg', {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        className: `h-5 w-5 transition-transform ${showAddLocationForm ? 'transform rotate-180' : ''}`,
+                        fill: "none",
+                        viewBox: "0 0 24 24",
+                        stroke: "currentColor"
+                    },
+                        React.createElement('path', {
+                            strokeLinecap: "round",
+                            strokeLinejoin: "round",
+                            strokeWidth: 2,
+                            d: showAddLocationForm ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"
+                        })
+                    )
+                )
+            ),
+            
+            // Form (conditionally rendered based on state)
+            showAddLocationForm && React.createElement('div', { className: "mt-3" },
+                React.createElement('form', { onSubmit: handleAddSubmit, className: "space-y-3" },
+                    // Name input
+                    React.createElement('div', null,
+                        React.createElement('label', { 
+                            htmlFor: "new-location-name", 
+                            className: "block mb-1 text-sm font-medium text-gray-700" 
+                        }, "Location Name"),
+                        React.createElement('input', {
+                            id: "new-location-name",
+                            type: "text",
+                            value: newLocationName,
+                            onChange: (e) => setNewLocationName(e.target.value),
+                            placeholder: "e.g., Lab Room 101",
+                            className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        })
+                    ),
+                    // Description input
+                    React.createElement('div', null,
+                        React.createElement('label', { 
+                            htmlFor: "new-location-description", 
+                            className: "block mb-1 text-sm font-medium text-gray-700" 
+                        }, "Description (Optional)"),
+                        React.createElement('input', {
+                            id: "new-location-description",
+                            type: "text",
+                            value: newLocationDescription,
+                            onChange: (e) => setNewLocationDescription(e.target.value),
+                            placeholder: "e.g., Main electronics workbench",
+                            className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        })
+                    ),
+                    // Submit button
+                    React.createElement('div', null,
+                        React.createElement('button', {
+                            type: "submit",
+                            className: "px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150 ease-in-out"
+                        }, "Add Location")
+                    )
                 )
             )
         ),
@@ -169,6 +206,7 @@ window.App.components.LocationManager = ({
                         const isEditing = editingLocationId === location.id;
                         const isExpanded = expandedLocations[location.id];
                         const locationComponents = getComponentsForLocation(location.id);
+                        const locationDrawers = getDrawersForLocation(location.id);
                         
                         return React.createElement('div', { 
                             key: location.id, 
@@ -254,19 +292,20 @@ window.App.components.LocationManager = ({
                                 )
                             ),
                             
-                            // Components in this location (collapsible)
+                            // Components and drawers in this location (collapsible)
                             isExpanded && !isEditing && React.createElement('div', { 
                                 className: "mt-2 ml-7 pl-2 border-l-2 border-gray-200"
                             },
+                                // Components Section
                                 React.createElement('h5', { className: "text-sm font-medium text-gray-700 mb-1" }, 
                                     `Components in this location (${locationComponents.length})`
                                 ),
                                 locationComponents.length === 0 ?
-                                    React.createElement('p', { className: "text-sm text-gray-500 italic" }, 
+                                    React.createElement('p', { className: "text-sm text-gray-500 italic mb-3" }, 
                                         "No components assigned to this location."
                                     ) :
-                                    React.createElement('ul', { className: "space-y-1" },
-                                        locationComponents.map(comp => 
+                                    React.createElement('ul', { className: "space-y-1 mb-3" },
+                                        locationComponents.slice(0, 5).map(comp => 
                                             React.createElement('li', { key: comp.id, className: "flex justify-between items-center" },
                                                 React.createElement('span', { className: "text-sm" }, comp.name),
                                                 React.createElement('button', {
@@ -274,6 +313,35 @@ window.App.components.LocationManager = ({
                                                     className: "text-xs text-blue-500 hover:text-blue-700",
                                                     title: "Edit Component"
                                                 }, "Edit")
+                                            )
+                                        ),
+                                        locationComponents.length > 5 && React.createElement('li', { className: "text-xs text-gray-500 italic" },
+                                            `... and ${locationComponents.length - 5} more component(s)`
+                                        )
+                                    ),
+                                
+                                // Drawers Section
+                                React.createElement('h5', { className: "text-sm font-medium text-gray-700 mb-1 mt-3" }, 
+                                    `Drawers in this location (${locationDrawers.length})`
+                                ),
+                                locationDrawers.length === 0 ?
+                                    React.createElement('p', { className: "text-sm text-gray-500 italic" }, 
+                                        "No drawers defined for this location."
+                                    ) :
+                                    React.createElement('ul', { className: "space-y-1" },
+                                        locationDrawers.map(drawer => 
+                                            React.createElement('li', { key: drawer.id, className: "flex justify-between items-center" },
+                                                React.createElement('div', { className: "flex items-center" },
+                                                    React.createElement('span', { className: "text-sm" }, drawer.name),
+                                                    drawer.description && React.createElement('span', { className: "text-xs text-gray-500 ml-2" }, 
+                                                        `(${drawer.description})`
+                                                    )
+                                                ),
+                                                React.createElement('button', {
+                                                    onClick: () => onNavigateToDrawer(drawer.id),
+                                                    className: "px-2 py-1 bg-green-500 text-white text-xs rounded shadow hover:bg-green-600",
+                                                    title: "View Drawer"
+                                                }, "View")
                                             )
                                         )
                                     )
