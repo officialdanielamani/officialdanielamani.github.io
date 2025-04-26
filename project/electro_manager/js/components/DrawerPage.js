@@ -100,6 +100,11 @@ window.App.components.DrawerPage = ({
 
     // Render
     return React.createElement('div', { className: "space-y-6" },
+        React.createElement('h2', { className: UI.typography.heading.h2 }, "Drawer Management"),
+        React.createElement('p', { className: UI.typography.body },
+            "Imagine you have rack, drawer or cabinate. This way you can visualise the location of the component more accurate"
+        ),
+
         viewingDrawerId && currentDrawer
             // Render drawer view if a drawer is selected
             ? React.createElement(DrawerView, {

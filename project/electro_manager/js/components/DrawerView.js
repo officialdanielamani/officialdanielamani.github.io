@@ -70,7 +70,7 @@ window.App.components.DrawerView = ({
             return comp.storageInfo.cellId === cellId;
         });
     };
-
+    /*
     // Get or create cell for a coordinate
     const getOrCreateCell = (rowIndex, colIndex) => {
         const coordinate = `${getColLabel(colIndex)}${rowIndex + 1}`; // e.g., "A1", "B2"
@@ -89,6 +89,7 @@ window.App.components.DrawerView = ({
             available: true // Add this property
         };
     };
+    */
 
     // Handle editing a cell nickname
     const handleEditCellNickname = (cell) => {

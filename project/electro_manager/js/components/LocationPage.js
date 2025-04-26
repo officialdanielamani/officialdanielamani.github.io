@@ -27,6 +27,7 @@ window.App.components.LocationPage = ({
 
     // Find the current drawer and its location if viewing a drawer
     const currentDrawer = drawers.find(drawer => drawer.id === viewingDrawerId);
+    
     const currentLocation = currentDrawer
         ? locations.find(loc => loc.id === currentDrawer.locationId)
         : null;
@@ -45,8 +46,8 @@ window.App.components.LocationPage = ({
 
     // Render logic for the LocationPage component
     return React.createElement('div', { className: "space-y-6" },
-        React.createElement('h2', { className: "text-xl font-semibold mb-4 text-gray-700" }, "Location Management"),
-        React.createElement('p', { className: "mb-4 text-sm text-gray-600" },
+        React.createElement('h2', { className: UI.typography.heading.h2 }, "Location Management"),
+        React.createElement('p', { className: UI.typography.body },
             "Manage physical storage locations for your components."
         ),
 
