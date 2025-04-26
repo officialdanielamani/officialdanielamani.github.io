@@ -34,7 +34,8 @@ window.App.components.InventoryView = ({
     onChangeSearchTerm, // Function(term): Called when search input changes
     onToggleFavorite, // Function(id, property): Called when favorite/bookmark/star is toggled
 }) => {
-    const { helpers } = window.App.utils; // Get helper functions
+    // Get UI constants and helper functions
+    const { helpers, UI } = window.App.utils;
 
     // --- Filtering Logic ---
     // Filter components based on search term and selected category
@@ -55,6 +56,7 @@ window.App.components.InventoryView = ({
     const totalComponents = components.length;
     const totalItems = components.reduce((sum, comp) => sum + (Number(comp.quantity) || 0), 0);
     const totalValue = helpers.calculateTotalInventoryValue(components);
+
     const lowStockCount = components.filter(comp => helpers.isLowStock(comp, lowStockConfig)).length;
     const categoryCounts = helpers.calculateCategoryCounts(components);
 
@@ -74,24 +76,37 @@ window.App.components.InventoryView = ({
 
         return React.createElement('tr', {
             key: component.id,
-            className: `hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''} ${lowStock ? 'bg-red-50 hover:bg-red-100' : ''}`
+            className: `${UI.tables.body.row} ${isSelected ? 'bg-blue-50' : ''} ${lowStock ? 'bg-red-50 hover:bg-red-100' : ''}`
         },
             // Checkbox
             React.createElement('td', { className: "px-3 py-2 text-center" },
-                React.createElement('input', { type: "checkbox", className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500", checked: isSelected, onChange: () => onToggleSelect(component.id) })
+                React.createElement('input', {
+                    type: "checkbox",
+                    className: UI.forms.checkbox,
+                    checked: isSelected,
+                    onChange: () => onToggleSelect(component.id)
+                })
             ),
             // Component Name/Category/Datasheet
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap" },
-                React.createElement('div', { className: "font-medium text-gray-900" }, component.name),
-                React.createElement('div', { className: "text-sm text-gray-500" }, component.category),
+            React.createElement('td', { className: UI.tables.body.cell },
+                React.createElement('div', { className: UI.typography.heading.h5 }, component.name),
+                React.createElement('div', { className: UI.typography.small }, component.category),
                 React.createElement('div', { className: "mt-1" },
                     datasheetLinks.map((url, index) =>
-                        React.createElement('a', { key: index, href: url, target: "_blank", rel: "noopener noreferrer", className: "text-xs text-blue-500 hover:text-blue-700 hover:underline mr-2" }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
+                        React.createElement('a', {
+                            key: index,
+                            href: url,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "text-xs text-blue-500 hover:text-blue-700 hover:underline mr-2"
+                        }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
                     )
                 )
             ),
             // Type
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.type),
+            React.createElement('td', { className: UI.tables.body.cell }, component.type),
+
+            // Bookmark/Favorite/Star column
             React.createElement('td', { className: "px-2 py-2 whitespace-nowrap" },
                 React.createElement('div', { className: "flex items-center space-x-1" },
                     // Favorite Icon/Button
@@ -152,24 +167,42 @@ window.App.components.InventoryView = ({
                 )
             ),
             // Footprint
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-700" }, component.footprint || '-'),
+            React.createElement('td', { className: UI.tables.body.cell }, component.footprint || '-'),
             // Quantity
             React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-center" },
                 React.createElement('div', { className: "flex items-center justify-center space-x-1" },
-                    React.createElement('button', { onClick: () => onUpdateQuantity(component.id, -1), className: "text-red-500 hover:text-red-700 p-1", title: "Decrease Quantity" }, "-"),
-                    React.createElement('span', { className: `text-sm font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}` }, component.quantity || 0),
-                    React.createElement('button', { onClick: () => onUpdateQuantity(component.id, 1), className: "text-green-500 hover:text-green-700 p-1", title: "Increase Quantity" }, "+")
+                    React.createElement('button', {
+                        onClick: () => onUpdateQuantity(component.id, -1),
+                        className: UI.buttons.icon.danger,
+                        title: "Decrease Quantity"
+                    }, "-"),
+                    React.createElement('span', {
+                        className: `text-sm font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}`
+                    }, component.quantity || 0),
+                    React.createElement('button', {
+                        onClick: () => onUpdateQuantity(component.id, 1),
+                        className: UI.buttons.icon.success,
+                        title: "Increase Quantity"
+                    }, "+")
                 ),
-                lowStock && React.createElement('div', { className: "text-xs text-red-500 mt-1" }, "Low Stock")
+                lowStock && React.createElement('div', { className: UI.tags.red }, "Low Stock")
             ),
             // Price
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-sm text-gray-800 text-right" }, formattedPrice),
+            React.createElement('td', { className: UI.tables.body.cell + " text-right" }, formattedPrice),
             // Info
             React.createElement('td', { className: "px-4 py-2 max-w-xs text-sm text-gray-700 truncate", title: component.info }, component.info),
             // Actions
-            React.createElement('td', { className: "px-4 py-2 whitespace-nowrap text-center text-sm font-medium" },
-                React.createElement('button', { onClick: () => onEditComponent(component), className: "text-indigo-600 hover:text-indigo-900 mr-3", title: "Edit Component" }, "Edit"),
-                React.createElement('button', { onClick: () => onDeleteComponent(component.id), className: "text-red-600 hover:text-red-900", title: "Delete Component" }, "Delete")
+            React.createElement('td', { className: UI.tables.body.cellAction },
+                React.createElement('button', {
+                    onClick: () => onEditComponent(component),
+                    className: "text-indigo-600 hover:text-indigo-900 mr-3",
+                    title: "Edit Component"
+                }, "Edit"),
+                React.createElement('button', {
+                    onClick: () => onDeleteComponent(component.id),
+                    className: "text-red-600 hover:text-red-900",
+                    title: "Delete Component"
+                }, "Delete")
             )
         );
     };
@@ -184,11 +217,17 @@ window.App.components.InventoryView = ({
 
         return React.createElement('div', {
             key: component.id,
-            className: `relative bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow duration-150 ${isSelected ? 'ring-2 ring-offset-1 ring-blue-500' : ''} ${lowStock ? 'border-l-4 border-red-400' : ''}`
+            className: `${UI.cards.container} ${isSelected ? 'ring-2 ring-offset-1 ring-blue-500' : ''} ${lowStock ? 'border-l-4 border-red-400' : ''}`
         },
             // Select Checkbox
             React.createElement('div', { className: "absolute top-2 left-2 z-10" },
-                React.createElement('input', { type: "checkbox", checked: isSelected, onChange: () => onToggleSelect(component.id), className: "h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 bg-white bg-opacity-75", title: "Select component" })
+                React.createElement('input', {
+                    type: "checkbox",
+                    checked: isSelected,
+                    onChange: () => onToggleSelect(component.id),
+                    className: UI.forms.checkbox + " bg-white bg-opacity-75",
+                    title: "Select component"
+                })
             ),
             // Image Area
             React.createElement('div', { className: "relative h-40 bg-gray-100 rounded-t-lg flex items-center justify-center overflow-hidden" },
@@ -199,44 +238,73 @@ window.App.components.InventoryView = ({
                     // Fallback placeholder if image fails to load
                     onError: (e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x150/e2e8f0/94a3b8?text=No+Image`; }
                 }),
-                lowStock && React.createElement('span', { className: "absolute bottom-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded" }, "LOW")
+                lowStock && React.createElement('span', { className: UI.tags.red + " absolute bottom-1 right-1" }, "LOW")
             ),
             // Card Content
-            React.createElement('div', { className: "p-4" },
+            React.createElement('div', { className: UI.cards.body },
                 // Name & Type
                 React.createElement('div', { className: "flex justify-between items-start mb-2" },
-                    React.createElement('h3', { className: "font-bold text-lg text-gray-800 truncate mr-2", title: component.name }, component.name),
-                    component.type && React.createElement('span', { className: "flex-shrink-0 bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full" }, component.type)
+                    React.createElement('h3', { className: UI.typography.heading.h4 + " truncate mr-2", title: component.name }, component.name),
+                    component.type && React.createElement('span', { className: UI.tags.gray }, component.type)
                 ),
                 // Footprint
                 React.createElement('div', { className: "text-sm text-gray-600 mb-1 flex justify-between" },
                     React.createElement('span', { className: "font-medium" }, "Footprint:"),
                     component.footprint ?
-                        React.createElement('span', { className: "bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded" }, component.footprint)
+                        React.createElement('span', { className: UI.tags.gray }, component.footprint)
                         : React.createElement('span', { className: "text-gray-400" }, "-")
                 ),
                 // Category
-                React.createElement('div', { className: "text-sm text-gray-500 mb-1" }, component.category),
+                React.createElement('div', { className: UI.typography.small + " mb-1" }, component.category),
                 // Price
                 React.createElement('div', { className: "text-md font-semibold text-green-700 mb-3" }, formattedPrice),
                 // Quantity Controls
                 React.createElement('div', { className: "flex items-center justify-center space-x-2 mb-3 border-t border-b py-2 border-gray-100" },
-                    React.createElement('button', { onClick: () => onUpdateQuantity(component.id, -1), className: "text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100", title: "Decrease Quantity" }, React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z", clipRule: "evenodd" }))),
+                    React.createElement('button', {
+                        onClick: () => onUpdateQuantity(component.id, -1),
+                        className: UI.buttons.icon.danger,
+                        title: "Decrease Quantity"
+                    },
+                        React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+                            React.createElement('path', { fillRule: "evenodd", d: "M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z", clipRule: "evenodd" }))),
+
                     React.createElement('span', { className: `text-lg font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}` }, component.quantity || 0),
-                    React.createElement('button', { onClick: () => onUpdateQuantity(component.id, 1), className: "text-green-500 hover:text-green-700 p-1 rounded-full hover:bg-green-100", title: "Increase Quantity" }, React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z", clipRule: "evenodd" })))
+
+                    React.createElement('button', {
+                        onClick: () => onUpdateQuantity(component.id, 1),
+                        className: UI.buttons.icon.success,
+                        title: "Increase Quantity"
+                    },
+                        React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+                            React.createElement('path', { fillRule: "evenodd", d: "M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z", clipRule: "evenodd" })))
                 ),
                 // Info
-                component.info && React.createElement('p', { className: "text-sm text-gray-600 mb-2 truncate", title: component.info }, React.createElement('span', { className: "font-medium" }, "Uses: "), component.info),
+                component.info && React.createElement('p', { className: UI.typography.small + " mb-2 truncate", title: component.info },
+                    React.createElement('span', { className: "font-medium" }, "Uses: "), component.info),
                 // Datasheets
                 React.createElement('div', { className: "mb-3" },
                     datasheetLinks.map((url, index) =>
-                        React.createElement('a', { key: index, href: url, target: "_blank", rel: "noopener noreferrer", className: "text-sm text-blue-500 hover:text-blue-700 hover:underline mr-2 inline-block" }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
+                        React.createElement('a', {
+                            key: index,
+                            href: url,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "text-sm text-blue-500 hover:text-blue-700 hover:underline mr-2 inline-block"
+                        }, `Datasheet ${datasheetLinks.length > 1 ? index + 1 : ''}`)
                     )
                 ),
                 // Action Buttons
                 React.createElement('div', { className: "flex justify-end space-x-2 border-t border-gray-100 pt-3" },
-                    React.createElement('button', { onClick: () => onEditComponent(component), className: "px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-medium rounded hover:bg-indigo-200 transition duration-150", title: "Edit Component" }, "Edit"),
-                    React.createElement('button', { onClick: () => onDeleteComponent(component.id), className: "px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded hover:bg-red-200 transition duration-150", title: "Delete Component" }, "Delete")
+                    React.createElement('button', {
+                        onClick: () => onEditComponent(component),
+                        className: UI.buttons.small.info,
+                        title: "Edit Component"
+                    }, "Edit"),
+                    React.createElement('button', {
+                        onClick: () => onDeleteComponent(component.id),
+                        className: UI.buttons.small.danger,
+                        title: "Delete Component"
+                    }, "Delete")
                 )
             )
         );
@@ -246,89 +314,139 @@ window.App.components.InventoryView = ({
     return (
         React.createElement('div', null,
             // --- Control buttons and Filters Row ---
-            React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 items-end" },
+            React.createElement('div', { className: UI.grid.container + " " + UI.grid.cols4 + " mb-6 items-end" },
                 // Add Component Button
                 React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('button', { onClick: onAddComponent, className: "w-full px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition duration-150 ease-in-out" }, "+ Add Component")
+                    React.createElement('button', {
+                        onClick: onAddComponent,
+                        className: UI.buttons.success
+                    }, "+ Add Component")
                 ),
                 // Category Filter
                 React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', { htmlFor: "category-filter", className: "block mb-1 text-sm font-medium text-gray-700" }, "Filter by Category"),
-                    React.createElement('select', { id: "category-filter", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: selectedCategory, onChange: handleCategoryChange },
+                    React.createElement('label', {
+                        htmlFor: "category-filter",
+                        className: UI.forms.label
+                    }, "Filter by Category"),
+                    React.createElement('select', {
+                        id: "category-filter",
+                        className: UI.forms.select,
+                        value: selectedCategory,
+                        onChange: handleCategoryChange
+                    },
                         React.createElement('option', { value: "all" }, "All Categories"),
                         (categories || []).sort().map(category => React.createElement('option', { key: category, value: category }, category))
                     )
                 ),
                 // Search Input
                 React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', { htmlFor: "search-input", className: "block mb-1 text-sm font-medium text-gray-700" }, "Search"),
-                    React.createElement('input', { id: "search-input", type: "text", placeholder: "Name, type, category...", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: searchTerm, onChange: handleSearchChange })
+                    React.createElement('label', {
+                        htmlFor: "search-input",
+                        className: UI.forms.label
+                    }, "Search"),
+                    React.createElement('input', {
+                        id: "search-input",
+                        type: "text",
+                        placeholder: "Name, type, category...",
+                        className: UI.forms.input,
+                        value: searchTerm,
+                        onChange: handleSearchChange
+                    })
                 ),
                 // View Mode Toggle
                 React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "View Mode"),
+                    React.createElement('label', { className: UI.forms.label }, "View Mode"),
                     React.createElement('div', { className: "flex rounded shadow-sm border border-gray-300" },
-                        React.createElement('button', { title: "Table View", className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`, onClick: () => handleViewChange('table') },
-                            React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M3 10h18M3 14h18M4 6h16M4 18h16" })), " Table"
+                        React.createElement('button', {
+                            title: "Table View",
+                            className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
+                            onClick: () => handleViewChange('table')
+                        },
+                            React.createElement('svg', {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                className: "h-5 w-5 inline mr-1",
+                                fill: "none",
+                                viewBox: "0 0 24 24",
+                                stroke: "currentColor"
+                            },
+                                React.createElement('path', {
+                                    strokeLinecap: "round",
+                                    strokeLinejoin: "round",
+                                    strokeWidth: 2,
+                                    d: "M3 10h18M3 14h18M4 6h16M4 18h16"
+                                })), " Table"
                         ),
-                        React.createElement('button', { title: "Card View", className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`, onClick: () => handleViewChange('card') },
-                            React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 inline mr-1", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { d: "M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" })), " Cards"
+                        React.createElement('button', {
+                            title: "Card View",
+                            className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
+                            onClick: () => handleViewChange('card')
+                        },
+                            React.createElement('svg', {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                className: "h-5 w-5 inline mr-1",
+                                viewBox: "0 0 20 20",
+                                fill: "currentColor"
+                            },
+                                React.createElement('path', {
+                                    d: "M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                                })), " Cards"
                         )
                     )
                 )
             ), // End Filters Row
 
             // --- Inventory Summary Stats ---
-            React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg shadow border border-gray-200 mb-6" },
-                React.createElement('h2', { className: "text-lg font-semibold mb-3 text-gray-700" }, "Inventory Summary"),
+            React.createElement('div', { className: UI.layout.sectionAlt + " mb-6" },
+                React.createElement('h2', { className: UI.typography.subtitle + " mb-3" }, "Inventory Summary"),
                 React.createElement('div', { className: "grid grid-cols-2 md:grid-cols-5 gap-4 text-center mb-4" }, // 5 cols for potential total value
                     // Total Components Stat
                     React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: "text-sm font-medium text-gray-500" }, "Components"),
+                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Components"),
                         React.createElement('p', { className: "text-2xl font-semibold text-blue-600" }, totalComponents)
                     ),
                     // Total Items Stat
                     React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: "text-sm font-medium text-gray-500" }, "Total Items"),
+                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Total Items"),
                         React.createElement('p', { className: "text-2xl font-semibold text-green-600" }, totalItems)
                     ),
                     // Total Value Stat (Conditional)
                     showTotalValue && React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: "text-sm font-medium text-gray-500" }, "Total Value"),
+                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Total Value"),
                         React.createElement('p', { className: "text-2xl font-semibold text-purple-600" }, helpers.formatCurrency(totalValue, currencySymbol))
                     ),
                     // Categories Stat
                     React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: "text-sm font-medium text-gray-500" }, "Categories"),
+                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Categories"),
                         React.createElement('p', { className: "text-2xl font-semibold text-indigo-600" }, (categories || []).length)
                     ),
                     // Low Stock Stat
                     React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: "text-sm font-medium text-gray-500" }, "Low Stock"),
+                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Low Stock"),
                         React.createElement('p', { className: `text-2xl font-semibold ${lowStockCount > 0 ? 'text-red-600' : 'text-gray-600'}` }, lowStockCount)
-                    )
+                    ),
                 ),
                 // Category Counts Section
-                totalComponents > 0 && React.createElement('div', { className: "border-t border-gray-200 pt-3 mt-3" },
-                    React.createElement('h3', { className: "text-md font-semibold text-gray-600 mb-2" }, "Item Counts by Category"),
+                totalComponents > 0 && React.createElement('div', { className: UI.utils.borderTop + " pt-3 mt-3" },
+                    React.createElement('h3', { className: UI.typography.subtitle + " mb-2" }, "Item Counts by Category"),
                     React.createElement('div', { className: "flex flex-wrap gap-3" },
                         categoryCounts.length > 0 ? categoryCounts.map(([category, count]) =>
                             React.createElement('div', { key: category, className: "bg-white border border-gray-200 rounded-md px-3 py-1 shadow-sm" },
                                 React.createElement('span', { className: "text-sm font-medium text-gray-700" }, category, ":"),
                                 React.createElement('span', { className: "text-sm font-semibold text-blue-700 ml-1" }, count)
                             )
-                        ) : React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No items with categories found.")
+                        ) : React.createElement('p', { className: UI.typography.small + " italic" }, "No items with categories found.")
                     )
                 )
             ), // End Summary Stats
 
             // --- Bulk Action Bar (Conditional) ---
-            selectedComponents.length > 0 && React.createElement('div', { className: "bg-blue-50 border border-blue-200 p-3 rounded shadow-sm mb-4 flex flex-wrap justify-between items-center gap-2" },
+            selectedComponents.length > 0 && React.createElement('div', { className: UI.status.info + " mb-4 flex flex-wrap justify-between items-center gap-2" },
                 // Select All Checkbox & Count
                 React.createElement('div', { className: "flex items-center" },
                     React.createElement('input', {
-                        type: "checkbox", id: "select-all-filtered-bulk",
-                        className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2",
+                        type: "checkbox",
+                        id: "select-all-filtered-bulk",
+                        className: UI.forms.checkbox + " mr-2",
                         checked: selectedComponents.length === filteredComponents.length && filteredComponents.length > 0,
                         onChange: onToggleSelectAll,
                         title: selectedComponents.length === filteredComponents.length ? "Deselect All Visible" : "Select All Visible",
@@ -338,23 +456,24 @@ window.App.components.InventoryView = ({
                 ),
                 // Bulk Action Buttons
                 React.createElement('div', { className: "flex gap-2" },
-                    React.createElement('button', { onClick: onBulkEdit, className: "px-3 py-1 bg-blue-500 text-white text-sm rounded shadow hover:bg-blue-600 transition duration-150" }, "Edit Selected"),
-                    React.createElement('button', { onClick: onBulkDelete, className: "px-3 py-1 bg-red-500 text-white text-sm rounded shadow hover:bg-red-600 transition duration-150" }, "Delete Selected")
+                    React.createElement('button', { onClick: onBulkEdit, className: UI.buttons.small.primary }, "Edit Selected"),
+                    React.createElement('button', { onClick: onBulkDelete, className: UI.buttons.small.danger }, "Delete Selected")
                 )
             ), // End Bulk Action Bar
 
             // --- Components List (Table or Cards) ---
             viewMode === 'table' ? (
                 // Table View
-                React.createElement('div', { className: "overflow-x-auto w-full bg-white rounded-lg shadow mb-6 border border-gray-200" },
+                React.createElement('div', { className: UI.tables.container + " overflow-x-auto w-full mb-6" },
                     React.createElement('div', { className: "min-w-full" }, // Ensure minimum width fits content
                         React.createElement('table', { className: "w-full divide-y divide-gray-200" },
-                            React.createElement('thead', { className: "bg-gray-50" },
+                            React.createElement('thead', { className: UI.tables.header.row },
                                 React.createElement('tr', null,
                                     // Select All Header Checkbox
                                     React.createElement('th', { className: "w-10 px-3 py-3 text-center" },
                                         React.createElement('input', {
-                                            type: "checkbox", className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500",
+                                            type: "checkbox",
+                                            className: UI.forms.checkbox,
                                             checked: selectedComponents.length === filteredComponents.length && filteredComponents.length > 0,
                                             onChange: onToggleSelectAll,
                                             disabled: filteredComponents.length === 0,
@@ -363,21 +482,29 @@ window.App.components.InventoryView = ({
                                     ),
 
                                     // Other Headers
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Component"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Type"),
-                                    React.createElement('th', { className: "px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Marks"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Footprint"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Quantity"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Price"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Info"),
-                                    React.createElement('th', { className: "px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Actions")
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Component"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Type"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Marks"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Footprint"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Quantity"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Price"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Info"),
+                                    React.createElement('th', { className: UI.tables.header.cell }, "Actions")
                                 )
                             ),
                             React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
                                 filteredComponents.length > 0 ? filteredComponents.map(renderTableRow) : null,
                                 // Empty/No Match Messages
-                                filteredComponents.length === 0 && totalComponents > 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500 italic" }, " No components match filters. ")),
-                                totalComponents === 0 && React.createElement('tr', null, React.createElement('td', { colSpan: "8", className: "px-4 py-8 text-center text-gray-500" }, " Inventory empty. Add components. "))
+                                filteredComponents.length === 0 && totalComponents > 0 && React.createElement('tr', null,
+                                    React.createElement('td', { colSpan: "9", className: "px-4 py-8 text-center text-gray-500 italic" },
+                                        "No components match filters."
+                                    )
+                                ),
+                                totalComponents === 0 && React.createElement('tr', null,
+                                    React.createElement('td', { colSpan: "9", className: "px-4 py-8 text-center text-gray-500" },
+                                        "Inventory empty. Add components."
+                                    )
+                                )
                             )
                         )
                     )
@@ -388,8 +515,14 @@ window.App.components.InventoryView = ({
                     React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-6" },
                         filteredComponents.length > 0 ? filteredComponents.map(renderCard) : null,
                         // Empty/No Match Messages
-                        filteredComponents.length === 0 && totalComponents > 0 && React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow italic" }, " No components match filters. "),
-                        totalComponents === 0 && React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow" }, " Inventory empty. Add components. ")
+                        filteredComponents.length === 0 && totalComponents > 0 &&
+                        React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow italic" },
+                            "No components match filters."
+                        ),
+                        totalComponents === 0 &&
+                        React.createElement('div', { className: "col-span-full p-8 text-center text-gray-500 bg-white rounded shadow" },
+                            "Inventory empty. Add components."
+                        )
                     )
                 )
             ) // End Conditional View Rendering
@@ -397,5 +530,4 @@ window.App.components.InventoryView = ({
     );
 };
 
-console.log("InventoryView component loaded."); // For debugging
-
+console.log("InventoryView component loaded with UI constants."); // For debugging

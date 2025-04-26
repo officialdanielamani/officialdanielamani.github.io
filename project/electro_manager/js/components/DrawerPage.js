@@ -24,6 +24,7 @@ window.App.components.DrawerPage = ({
     onEditComponent, // Function: Pass-through to edit component
     initialDrawerId,
 }) => {
+    const { UI } = window.App.utils;
     const { useState, useEffect } = React;
     const { DrawerManager, DrawerView } = window.App.components;
 

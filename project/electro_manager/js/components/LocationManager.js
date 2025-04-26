@@ -20,6 +20,7 @@ window.App.components.LocationManager = ({
     onNavigateToDrawer, // Function: Navigate to drawer view
 }) => {
     const { useState } = React;
+    const { UI } = window.App.utils;
 
     // Internal state
     const [newLocationName, setNewLocationName] = useState('');
@@ -195,7 +196,7 @@ window.App.components.LocationManager = ({
         
         // Locations list
         React.createElement('div', { className: "bg-white p-4 rounded-lg shadow border border-gray-200" },
-            React.createElement('h4', { className: "font-medium mb-3 text-gray-700" }, "Location List"),
+            React.createElement('h4', { className: UI.typography.sectionTitle }, "Location List"),
             
             locations.length === 0 ?
                 React.createElement('p', { className: "text-gray-500 italic" }, "No locations defined yet.") :
@@ -268,12 +269,12 @@ window.App.components.LocationManager = ({
                                         React.createElement(React.Fragment, null,
                                             React.createElement('button', {
                                                 onClick: () => handleStartEdit(location),
-                                                className: "px-2 py-1 bg-blue-500 text-white text-xs rounded shadow hover:bg-blue-600",
+                                                className: UI.buttons.small.primary,
                                                 title: "Edit Location"
                                             }, "Edit"),
                                             React.createElement('button', {
                                                 onClick: () => onDeleteLocation(location.id),
-                                                className: "px-2 py-1 bg-red-500 text-white text-xs rounded shadow hover:bg-red-600",
+                                                className: UI.buttons.small.danger,
                                                 title: "Delete Location"
                                             }, "Delete")
                                         ) :

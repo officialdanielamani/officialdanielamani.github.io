@@ -19,6 +19,7 @@ window.App.components.LocationPage = ({
     onEditComponent, // Function: Pass-through to edit component
     onNavigateToDrawer, // Function to navigate to the drawer page with a specific drawer
 }) => {
+    const { UI } = window.App.utils;
     const { useState, useEffect } = React;
     const { LocationManager } = window.App.components;
 

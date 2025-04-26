@@ -18,6 +18,8 @@ window.App.components.BulkEditForm = ({
     onApply, // Function: Callback when apply button clicked, passes bulk edit data
     onCancel // Function: Callback when cancel button or close icon clicked
 }) => {
+    // Get UI constants
+    const { UI } = window.App.utils;
     const { useState, useEffect } = React;
 
     // Internal state for the bulk edit form fields
@@ -272,59 +274,59 @@ window.App.components.BulkEditForm = ({
                     React.createElement('div', { className: "space-y-4" },
                         // Category
                         React.createElement('div', null,
-                            React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Change Category To"),
-                            React.createElement('select', { name: "category", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-2", value: bulkData.category, onChange: handleCategoryChange },
+                            React.createElement('label', { className: UI.forms.label }, "Change Category To"),
+                            React.createElement('select', { name: "category", className: UI.forms.select, value: bulkData.category, onChange: handleCategoryChange },
                                 React.createElement('option', { value: "" }, "-- Keep existing category --"),
                                 (categories || []).sort().map(cat => React.createElement('option', { key: cat, value: cat }, cat)),
                                 React.createElement('option', { value: "__custom__" }, "Add new category...")
                             ),
                             bulkData.category === '__custom__' && React.createElement('input', {
-                                name: "customCategory", type: "text", placeholder: "Enter new category name", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.customCategory || '', onChange: handleChange
+                                name: "customCategory", type: "text", placeholder: "Enter new category name", className: UI.forms.input , value: bulkData.customCategory || '', onChange: handleChange
                             })
                         ),
                         // Type
                         React.createElement('div', null,
-                            React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Change Type To"),
-                            React.createElement('input', { name: "type", type: "text", placeholder: "Leave blank to keep existing type", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.type, onChange: handleChange })
+                            React.createElement('label', { className: UI.forms.label }, "Change Type To"),
+                            React.createElement('input', { name: "type", type: "text", placeholder: "Leave blank to keep existing type", className: UI.forms.input, value: bulkData.type, onChange: handleChange })
                         ),
                         // Quantity Adjustment
                         React.createElement('div', null,
-                            React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Adjust Quantity"),
+                            React.createElement('label', { className: UI.forms.label }, "Adjust Quantity"),
                             React.createElement('div', { className: "flex space-x-2" },
-                                React.createElement('select', { name: "quantityAction", className: "p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.quantityAction, onChange: handleChange },
+                                React.createElement('select', { name: "quantityAction", className: UI.forms.select, value: bulkData.quantityAction, onChange: handleChange },
                                     React.createElement('option', { value: "set" }, "Set quantity to"),
                                     React.createElement('option', { value: "increment" }, "Add quantity"),
                                     React.createElement('option', { value: "decrement" }, "Subtract quantity")
                                 ),
-                                React.createElement('input', { name: "quantity", type: "number", min: "0", placeholder: "Value", className: "flex-1 p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.quantity, onChange: handleChange })
+                                React.createElement('input', { name: "quantity", type: "number", min: "0", placeholder: "Value", className: UI.forms.input, value: bulkData.quantity, onChange: handleChange })
                             ),
                             React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Leave value blank for no quantity change.")
                         ),
                         // Price Adjustment
                         React.createElement('div', null,
-                            React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Adjust Price"),
+                            React.createElement('label', { className: UI.forms.label }, "Adjust Price"),
                             React.createElement('div', { className: "flex space-x-2" },
-                                React.createElement('select', { name: "priceAction", className: "p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.priceAction, onChange: handleChange },
+                                React.createElement('select', { name: "priceAction", className: UI.forms.select, value: bulkData.priceAction, onChange: handleChange },
                                     React.createElement('option', { value: "set" }, "Set price to"),
                                     React.createElement('option', { value: "increase" }, "Increase price by"),
                                     React.createElement('option', { value: "decrease" }, "Decrease price by")
                                 ),
-                                React.createElement('input', { name: "price", type: "number", min: "0", step: "0.01", placeholder: "Value", className: "flex-1 p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.price, onChange: handleChange })
+                                React.createElement('input', { name: "price", type: "number", min: "0", step: "0.01", placeholder: "Value", className: UI.forms.input, value: bulkData.price, onChange: handleChange })
                             ),
                             React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Leave value blank for no price change.")
                         ),
                         // Footprint Adjustment
                         React.createElement('div', null,
-                            React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Change Footprint To"),
+                            React.createElement('label', { className: UI.forms.label }, "Change Footprint To"),
                             React.createElement('select', {
-                                name: "footprint", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-2", value: bulkData.footprint, onChange: handleFootprintChange
+                                name: "footprint", className: UI.forms.select, value: bulkData.footprint, onChange: handleFootprintChange
                             },
-                                React.createElement('option', { value: "" }, "-- Keep existing footprint --"),
-                                (commonFootprints || []).map(fp => React.createElement('option', { key: fp, value: fp }, fp)),
-                                React.createElement('option', { value: "__custom__" }, "Custom footprint...")
-                            ),
+                            React.createElement('option', { value: "" }, "-- Keep existing footprint --"),
+                            React.createElement('option', { value: "__custom__" }, "Custom footprint..."),
+                            (commonFootprints || []).map(fp => React.createElement('option', { key: fp, value: fp }, fp)),
+                        ),
                             bulkData.footprint === '__custom__' && React.createElement('input', {
-                                name: "customFootprint", type: "text", placeholder: "Enter custom footprint", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: bulkData.customFootprint || '', onChange: handleChange
+                                name: "customFootprint", type: "text", placeholder: "Enter custom footprint", className: UI.forms.input , value: bulkData.customFootprint || '', onChange: handleChange
                             })
                         ),
 
@@ -341,10 +343,10 @@ window.App.components.BulkEditForm = ({
                             
                             // Location Action
                             React.createElement('div', { className: "mb-3" },
-                                React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Location Action"),
+                                React.createElement('label', { className: UI.forms.label }, "Location Action"),
                                 React.createElement('select', {
                                     name: "locationAction",
-                                    className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                    className: UI.forms.select,
                                     value: bulkData.locationAction,
                                     onChange: handleChange
                                 },
@@ -358,10 +360,10 @@ window.App.components.BulkEditForm = ({
                             bulkData.locationAction === 'set' && React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-3" },
                                 // Location Dropdown
                                 React.createElement('div', null,
-                                    React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Location"),
+                                    React.createElement('label', { className: UI.forms.label }, "Location"),
                                     React.createElement('select', {
                                         name: "locationId",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.select,
                                         value: bulkData.locationId,
                                         onChange: handleChange
                                     },
@@ -371,12 +373,12 @@ window.App.components.BulkEditForm = ({
                                 ),
                                 // Location Details
                                 React.createElement('div', null,
-                                    React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Location Details (Optional)"),
+                                    React.createElement('label', { className: UI.forms.label }, "Location Details (Optional)"),
                                     React.createElement('input', {
                                         name: "locationDetails",
                                         type: "text",
                                         placeholder: "e.g., Shelf 3, Box A",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.input,
                                         value: bulkData.locationDetails,
                                         onChange: handleChange
                                     })
@@ -389,10 +391,10 @@ window.App.components.BulkEditForm = ({
                                 
                                 // Storage Action
                                 React.createElement('div', { className: "mb-3" },
-                                    React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Drawer Action"),
+                                    React.createElement('label', { className: UI.forms.label }, "Drawer Action"),
                                     React.createElement('select', {
                                         name: "storageAction",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.select,
                                         value: bulkData.storageAction,
                                         onChange: handleChange
                                     },
@@ -406,11 +408,11 @@ window.App.components.BulkEditForm = ({
                                 bulkData.storageAction === 'set' && React.createElement('div', null,
                                     // Location dropdown for storage
                                     React.createElement('div', { className: "mb-3" },
-                                        React.createElement('label', { htmlFor: "storage-location", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Storage Location"),
+                                        React.createElement('label', { htmlFor: "storage-location", className: UI.forms.label }, "Select Storage Location"),
                                         React.createElement('select', {
                                             id: "storage-location",
                                             name: "storageLocationId",
-                                            className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                            className: UI.forms.select,
                                             value: bulkData.storageLocationId,
                                             onChange: handleChange
                                         },
@@ -421,13 +423,13 @@ window.App.components.BulkEditForm = ({
                                     
                                     // Drawer dropdown (filtered by location)
                                     bulkData.storageLocationId && React.createElement('div', { className: "mb-3" },
-                                        React.createElement('label', { htmlFor: "storage-drawer", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Drawer"),
+                                        React.createElement('label', { htmlFor: "storage-drawer", className: UI.forms.label }, "Select Drawer"),
                                         filteredDrawers.length === 0 ? 
                                             React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No drawers found for this location.") :
                                             React.createElement('select', {
                                                 id: "storage-drawer",
                                                 name: "drawerId",
-                                                className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                                className: UI.forms.select,
                                                 value: bulkData.drawerId,
                                                 onChange: handleChange
                                             },
@@ -438,7 +440,7 @@ window.App.components.BulkEditForm = ({
                                     
                                     // Cell grid for selection (when drawer is selected)
                                     bulkData.drawerId && React.createElement('div', { className: "mb-3" },
-                                        React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Cell(s)"),
+                                        React.createElement('label', { className: UI.forms.label }, "Select Cell(s)"),
                                         React.createElement('p', { className: "text-xs text-gray-500 mb-2" }, "Click on cells to select/deselect. Multiple cells can be selected."),
                                         filteredCells.length === 0 ? 
                                             React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No cells defined for this drawer yet.") :
@@ -485,7 +487,7 @@ window.App.components.BulkEditForm = ({
                                     ),
                                     React.createElement('select', {
                                         name: "favorite",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-red-500 focus:border-red-500",
+                                        className: UI.forms.select,
                                         value: bulkData.favorite === null ? '' : bulkData.favorite.toString(),
                                         onChange: (e) => {
                                             const value = e.target.value;
@@ -518,7 +520,7 @@ window.App.components.BulkEditForm = ({
                                     ),
                                     React.createElement('select', {
                                         name: "bookmark",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.select,
                                         value: bulkData.bookmark === null ? '' : bulkData.bookmark.toString(),
                                         onChange: (e) => {
                                             const value = e.target.value;
@@ -551,7 +553,7 @@ window.App.components.BulkEditForm = ({
                                     ),
                                     React.createElement('select', {
                                         name: "star",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-yellow-500 focus:border-yellow-500",
+                                        className: UI.forms.select,
                                         value: bulkData.star === null ? '' : bulkData.star.toString(),
                                         onChange: (e) => {
                                             const value = e.target.value;
@@ -573,8 +575,8 @@ window.App.components.BulkEditForm = ({
                 
                 // Action Buttons (Fixed at bottom)
                 React.createElement('div', { className: "flex justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg flex-shrink-0" },
-                    React.createElement('button', { className: "px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition duration-150", onClick: onCancel }, "Cancel"),
-                    React.createElement('button', { className: "px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150", onClick: handleApply }, "Apply Changes")
+                    React.createElement('button', { className: UI.buttons.secondary, onClick: onCancel }, "Cancel"),
+                    React.createElement('button', { className: UI.buttons.primary, onClick: handleApply }, "Apply Changes")
                 )
             ) // End Modal Content
         ) // End Modal Backdrop

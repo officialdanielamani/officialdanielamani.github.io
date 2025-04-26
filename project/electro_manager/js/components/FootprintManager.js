@@ -16,6 +16,7 @@ window.App.components.FootprintManager = ({
     onDeleteFootprint, // Function(footprint): Called to delete a footprint
     onRestoreDefaults, // Function: Called to restore default footprints
 }) => {
+    const { UI } = window.App.utils;
     const { useState } = React;
 
     // Internal state

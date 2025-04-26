@@ -20,6 +20,7 @@ window.App.components.DrawerManager = ({
     onEditComponent, // Function: Pass-through to edit component
 }) => {
     const { useState } = React;
+    const { UI } = window.App.utils;
 
     // Internal state
     const [selectedLocationId, setSelectedLocationId] = useState('');
@@ -311,7 +312,7 @@ window.App.components.DrawerManager = ({
 
         // Drawers list
         React.createElement('div', { className: "bg-white p-4 rounded-lg shadow border border-gray-200" },
-            React.createElement('h4', { className: "font-medium mb-3 text-gray-700" },
+            React.createElement('h4', { className: UI.typography.sectionTitle },
                 selectedLocationId
                     ? `Drawers in ${getLocationName(selectedLocationId)}`
                     : "All Drawers"
@@ -423,12 +424,12 @@ window.App.components.DrawerManager = ({
                                             }, "View"),
                                             React.createElement('button', {
                                                 onClick: () => handleStartEdit(drawer),
-                                                className: "px-2 py-1 bg-blue-500 text-white text-xs rounded shadow hover:bg-blue-600",
+                                                className: UI.buttons.small.primary,
                                                 title: "Edit Drawer"
                                             }, "Edit"),
                                             React.createElement('button', {
                                                 onClick: () => onDeleteDrawer(drawer.id),
-                                                className: "px-2 py-1 bg-red-500 text-white text-xs rounded shadow hover:bg-red-600",
+                                                className: UI.buttons.small.danger,
                                                 title: "Delete Drawer"
                                             }, "Delete")
                                         ) :

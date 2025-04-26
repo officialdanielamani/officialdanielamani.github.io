@@ -5,13 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electronics Inventory (Modular)</title>
+    <!--
+    <script src="js/external/tailwind.js"></script>
+    <script src="js/external/react18.development.js"></script>
+    <script src="js/external/react-dom18.development.js"></script>
+    <script src="js/external/babel.min.js"></script>
+    -->
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    
     <script src="js/utils/helpers.js"></script>
     <script src="js/utils/storage.js"></script>
+    <script src="js/utils/ui-constants.js"></script>
 
     <script src="js/components/ComponentForm.js"></script>
     <script src="js/components/BulkEditForm.js"></script>
@@ -36,11 +44,11 @@
         window.App.components = window.App.components || {};
 
         // Destructure React hooks and loaded components/utils for easier use
-        // Destructure React hooks and loaded components/utils for easier use
         const { useState, useEffect, useCallback } = React;
         const { helpers } = window.App.utils;
         const { storage } = window.App.utils;
         const { ComponentForm, BulkEditForm, InventoryView, SettingsView, DrawerPage, LocationPage } = window.App.components;
+
         // --- Main Application Component ---
         const ElectronicsInventory = () => {
             // --- State Variables ---

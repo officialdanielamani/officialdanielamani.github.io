@@ -21,6 +21,8 @@ window.App.components.DrawerView = ({
     onEditComponent, // Function(component): Called to edit a component
     onBackToDrawers, // Function: Called when "Back to Drawers" button is clicked
 }) => {
+    // Get UI constants
+    const { UI } = window.App.utils;
     const { useState, useEffect } = React;
 
     // Internal state

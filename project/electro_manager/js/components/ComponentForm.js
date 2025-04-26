@@ -21,6 +21,9 @@ window.App.components.ComponentForm = ({
     drawers = [], //  Array: List of drawers
     cells = [],  //  Array: List of drawers cells
 }) => {
+    // Get UI constants
+    const { UI } = window.App.utils;
+
     // Use React hooks for local form state management
     const { useState, useEffect } = React;
 
@@ -36,10 +39,7 @@ window.App.components.ComponentForm = ({
     }, [componentData]);
 
     // Initialize proper structure for missing fields
-
     useEffect(() => {
-
-
         // Initialize storageInfo if it doesn't exist or is malformed
         let storageInfo = componentData.storageInfo;
         if (!storageInfo || typeof storageInfo === 'string' || storageInfo === '[object Object]') {
@@ -225,14 +225,14 @@ window.App.components.ComponentForm = ({
     const handleCellToggle = (cellId) => {
         // Find the cell from filtered cells
         const cell = filteredCells.find(c => c.id === cellId);
-        
+
         // Safely check if cell is unavailable before proceeding
         if (!cell || cell.available === false) {
             return; // Don't toggle unavailable cells
         }
-        
+
         let updatedCells;
-    
+
         if (selectedCells.includes(cellId)) {
             // Remove cell if already selected
             updatedCells = selectedCells.filter(id => id !== cellId);
@@ -240,9 +240,9 @@ window.App.components.ComponentForm = ({
             // Add cell if not already selected
             updatedCells = [...selectedCells, cellId];
         }
-    
+
         setSelectedCells(updatedCells);
-    
+
         setFormData(prevData => ({
             ...prevData,
             storageInfo: {
@@ -274,12 +274,12 @@ window.App.components.ComponentForm = ({
     // Generate grid elements for drawer cells
     const generateCellGrid = () => {
         if (!selectedDrawer) return null;
-    
+
         const rows = selectedDrawer.grid?.rows || 3;
         const cols = selectedDrawer.grid?.cols || 3;
-    
+
         const gridElements = [];
-    
+
         // Generate column headers (A, B, C, ...)
         const headerRow = [React.createElement('div', { key: 'corner', className: "w-8 h-8 bg-gray-100 text-center font-medium" })];
         for (let c = 0; c < cols; c++) {
@@ -289,26 +289,26 @@ window.App.components.ComponentForm = ({
             );
         }
         gridElements.push(React.createElement('div', { key: 'header-row', className: "flex" }, headerRow));
-    
+
         // Generate rows with cells
         for (let r = 0; r < rows; r++) {
             const rowElements = [
                 // Row header (1, 2, 3, ...)
                 React.createElement('div', { key: `row-${r}`, className: "w-8 h-8 bg-gray-100 text-center font-medium flex items-center justify-center" }, r + 1)
             ];
-    
+
             // Generate cells for this row
             for (let c = 0; c < cols; c++) {
                 const coordinate = `${String.fromCharCode(65 + c)}${r + 1}`; // e.g., "A1", "B2"
                 const cell = filteredCells.find(cell => cell.coordinate === coordinate);
-            
+
                 // Cell might not exist in the database yet
                 const cellId = cell ? cell.id : null;
                 const isSelected = cellId && selectedCells.includes(cellId);
-                
+
                 // Add this line to safely check the available property - default to true if undefined
                 const isAvailable = cell ? (cell.available !== false) : true;
-                
+
                 rowElements.push(
                     React.createElement('div', {
                         key: `cell-${r}-${c}`,
@@ -317,25 +317,25 @@ window.App.components.ComponentForm = ({
                             ${!isAvailable ? 'bg-gray-300 opacity-70 cursor-not-allowed' : ''}`, // Add styling for unavailable cells
                         onClick: () => cellId && isAvailable && handleCellToggle(cellId), // Only allow click on available cells
                         title: cell ? (cell.nickname || coordinate) + (isAvailable ? '' : ' (Unavailable)') : coordinate
-                    }, 
-                    isSelected ? '✓' : ''
+                    },
+                        isSelected ? '✓' : ''
                     )
                 );
             }
-    
+
             gridElements.push(React.createElement('div', { key: `row-${r}`, className: "flex" }, rowElements));
         }
-    
+
         return gridElements;
     };
 
     // --- Render ---
     return (
-        React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-30" },
-            React.createElement('div', { className: "bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col" },
+        React.createElement('div', { className: UI.modals.backdrop },
+            React.createElement('div', { className: UI.modals.container },
                 // Header
-                React.createElement('div', { className: "flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0" },
-                    React.createElement('h2', { className: "text-xl font-semibold text-gray-800" }, isEditMode ? 'Edit Component' : 'Add New Component'),
+                React.createElement('div', { className: UI.modals.header },
+                    React.createElement('h2', { className: UI.typography.title }, isEditMode ? 'Edit Component' : 'Add New Component'),
                     React.createElement('button', { onClick: onCancel, className: "text-gray-400 hover:text-gray-600", title: "Close" },
                         // Close Icon SVG
                         React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" },
@@ -344,39 +344,39 @@ window.App.components.ComponentForm = ({
                     )
                 ),
                 // Form Body (Scrollable)
-                React.createElement('form', { onSubmit: handleSubmit, className: "p-6 overflow-y-auto flex-grow" },
+                React.createElement('form', { onSubmit: handleSubmit, className: UI.modals.body },
                     React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4" },
                         // Name Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-name", className: "block mb-1 text-sm font-medium text-gray-700" }, "Name ", React.createElement('span', { className: "text-red-500" }, "*")),
-                            React.createElement('input', { id: "comp-name", name: "name", type: "text", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.name || '', onChange: handleChange, required: true })
+                            React.createElement('label', { htmlFor: "comp-name", className: UI.forms.label }, "Name ", React.createElement('span', { className: "text-red-500" }, "*")),
+                            React.createElement('input', { id: "comp-name", name: "name", type: "text", className: UI.forms.input, value: formData.name || '', onChange: handleChange, required: true })
                         ),
                         // Category Select/Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-category", className: "block mb-1 text-sm font-medium text-gray-700" }, "Category ", React.createElement('span', { className: "text-red-500" }, "*")),
-                            React.createElement('select', { id: "comp-category", name: "category", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-2", value: formData.category || '', onChange: handleCategoryChange, required: true },
+                            React.createElement('label', { htmlFor: "comp-category", className: UI.forms.label }, "Category ", React.createElement('span', { className: "text-red-500" }, "*")),
+                            React.createElement('select', { id: "comp-category", name: "category", className: UI.forms.select, value: formData.category || '', onChange: handleCategoryChange, required: true },
                                 React.createElement('option', { value: "" }, "-- Select category --"),
                                 (categories || []).sort().map(cat => React.createElement('option', { key: cat, value: cat }, cat)),
                                 React.createElement('option', { value: "__custom__" }, "Add new...")
                             ),
                             formData.category === '__custom__' && React.createElement('input', {
-                                name: "customCategory", type: "text", placeholder: "New category name", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.customCategory || '', onChange: handleChange, required: true
+                                name: "customCategory", type: "text", placeholder: "New category name", className: UI.forms.input, value: formData.customCategory || '', onChange: handleChange, required: true
                             })
                         ),
                         // Type Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-type", className: "block mb-1 text-sm font-medium text-gray-700" }, "Type / Model"),
-                            React.createElement('input', { id: "comp-type", name: "type", type: "text", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.type || '', onChange: handleChange, placeholder: "e.g., Resistor, LM7805" })
+                            React.createElement('label', { htmlFor: "comp-type", className: UI.forms.label }, "Type / Model"),
+                            React.createElement('input', { id: "comp-type", name: "type", type: "text", className: UI.forms.input, value: formData.type || '', onChange: handleChange, placeholder: "e.g., Resistor, LM7805" })
                         ),
                         // Quantity Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-quantity", className: "block mb-1 text-sm font-medium text-gray-700" }, "Quantity"),
-                            React.createElement('input', { id: "comp-quantity", name: "quantity", type: "number", min: "0", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.quantity || 0, onChange: handleChange })
+                            React.createElement('label', { htmlFor: "comp-quantity", className: UI.forms.label }, "Quantity"),
+                            React.createElement('input', { id: "comp-quantity", name: "quantity", type: "number", min: "0", className: UI.forms.input, value: formData.quantity || 0, onChange: handleChange })
                         ),
                         // Price Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-price", className: "block mb-1 text-sm font-medium text-gray-700" }, `Price (${currencySymbol || '$'})`),
-                            React.createElement('input', { id: "comp-price", name: "price", type: "number", min: "0", step: "0.01", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.price || 0, onChange: handleChange, placeholder: "0.00" })
+                            React.createElement('label', { htmlFor: "comp-price", className: UI.forms.label }, `Price (${currencySymbol || '$'})`),
+                            React.createElement('input', { id: "comp-price", name: "price", type: "number", min: "0", step: "0.01", className: UI.forms.input, value: formData.price || 0, onChange: handleChange, placeholder: "0.00" })
                         ),
 
                         // Storage Location Section
@@ -394,11 +394,11 @@ window.App.components.ComponentForm = ({
                             React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-3" },
                                 // Location Dropdown
                                 React.createElement('div', null,
-                                    React.createElement('label', { htmlFor: "comp-location", className: "block mb-1 text-sm font-medium text-gray-700" }, "Location"),
+                                    React.createElement('label', { htmlFor: "comp-location", className: UI.forms.label }, "Location"),
                                     React.createElement('select', {
                                         id: "comp-location",
                                         name: "locationId",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.select,
                                         value: formData.locationInfo?.locationId || '',
                                         onChange: handleLocationChange
                                     },
@@ -408,12 +408,12 @@ window.App.components.ComponentForm = ({
                                 ),
                                 // Location Details (e.g., shelf, box)
                                 React.createElement('div', null,
-                                    React.createElement('label', { htmlFor: "comp-location-details", className: "block mb-1 text-sm font-medium text-gray-700" }, "Location Details (Optional)"),
+                                    React.createElement('label', { htmlFor: "comp-location-details", className: UI.forms.label }, "Location Details (Optional)"),
                                     React.createElement('input', {
                                         id: "comp-location-details",
                                         name: "details",
                                         type: "text",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.input,
                                         value: formData.locationInfo?.details || '',
                                         onChange: handleLocationChange,
                                         placeholder: "e.g., Shelf 3, Box A"
@@ -427,11 +427,11 @@ window.App.components.ComponentForm = ({
 
                                 // Location dropdown for storage
                                 React.createElement('div', { className: "mb-3" },
-                                    React.createElement('label', { htmlFor: "storage-location", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Storage Location"),
+                                    React.createElement('label', { htmlFor: "storage-location", className: UI.forms.label }, "Select Storage Location"),
                                     React.createElement('select', {
                                         id: "storage-location",
                                         name: "locationId",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                        className: UI.forms.select,
                                         value: formData.storageInfo?.locationId || '',
                                         onChange: handleStorageLocationChange
                                     },
@@ -442,13 +442,13 @@ window.App.components.ComponentForm = ({
 
                                 // Drawer dropdown (filtered by location)
                                 formData.storageInfo?.locationId && React.createElement('div', { className: "mb-3" },
-                                    React.createElement('label', { htmlFor: "storage-drawer", className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Drawer"),
+                                    React.createElement('label', { htmlFor: "storage-drawer", className: UI.forms.label }, "Select Drawer"),
                                     filteredDrawers.length === 0 ?
                                         React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No drawers found for this location.") :
                                         React.createElement('select', {
                                             id: "storage-drawer",
                                             name: "drawerId",
-                                            className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                            className: UI.forms.select,
                                             value: selectedDrawerId,
                                             onChange: handleDrawerChange
                                         },
@@ -459,7 +459,7 @@ window.App.components.ComponentForm = ({
 
                                 // Cell grid for selection (when drawer is selected)
                                 selectedDrawerId && React.createElement('div', { className: "mb-3" },
-                                    React.createElement('label', { className: "block mb-1 text-sm font-medium text-gray-700" }, "Select Cell(s)"),
+                                    React.createElement('label', { className: UI.forms.label }, "Select Cell(s)"),
                                     filteredCells.length === 0 ?
                                         React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No cells defined for this drawer yet.") :
                                         React.createElement('div', null,
@@ -486,18 +486,18 @@ window.App.components.ComponentForm = ({
                                 )
                             ),
 
-                            React.createElement('p', { className: "text-xs text-gray-500 mt-1" },
+                            React.createElement('p', { className: UI.forms.hint },
                                 "Specify where this component is physically stored."
                             )
                         ),
-
+                        
                         // Footprint Select/Input
                         React.createElement('div', { className: "md:col-span-1" },
-                            React.createElement('label', { htmlFor: "comp-footprint", className: "block mb-1 text-sm font-medium text-gray-700" }, "Footprint"),
+                            React.createElement('label', { htmlFor: "comp-footprint", className: UI.forms.label }, "Footprint"),
                             React.createElement('select', {
                                 id: "comp-footprint",
                                 name: "footprint",
-                                className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-2",
+                                className: UI.forms.select,
                                 value: formData.footprint || '',
                                 onChange: handleFootprintChange
                             },
@@ -509,7 +509,7 @@ window.App.components.ComponentForm = ({
                                 name: "customFootprint",
                                 type: "text",
                                 placeholder: "Enter custom footprint",
-                                className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                className: UI.forms.input,
                                 value: formData.customFootprint || '',
                                 onChange: handleChange,
                                 required: true
@@ -517,30 +517,30 @@ window.App.components.ComponentForm = ({
                         ),
                         // Info Input
                         React.createElement('div', { className: "md:col-span-2" },
-                            React.createElement('label', { htmlFor: "comp-info", className: "block mb-1 text-sm font-medium text-gray-700" }, "Info"),
-                            React.createElement('input', { id: "comp-info", name: "info", type: "text", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500", value: formData.info || '', onChange: handleChange, placeholder: "e.g., Voltage regulation" })
+                            React.createElement('label', { htmlFor: "comp-info", className: UI.forms.label }, "Info"),
+                            React.createElement('input', { id: "comp-info", name: "info", type: "text", className: UI.forms.input, value: formData.info || '', onChange: handleChange, placeholder: "e.g., Voltage regulation" })
                         ),
                         // Datasheets Textarea
                         React.createElement('div', { className: "md:col-span-2" },
-                            React.createElement('label', { htmlFor: "comp-datasheets", className: "block mb-1 text-sm font-medium text-gray-700" }, "Datasheet URLs"),
-                            React.createElement('textarea', { id: "comp-datasheets", name: "datasheets", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono text-xs", rows: "3", value: formData.datasheets || '', onChange: handleChange, placeholder: "One URL per line or comma-separated..." }),
-                            React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Enter full URLs (http:// or https://).")
+                            React.createElement('label', { htmlFor: "comp-datasheets", className: UI.forms.label }, "Datasheet URLs"),
+                            React.createElement('textarea', { id: "comp-datasheets", name: "datasheets", className: UI.forms.textarea, rows: "3", value: formData.datasheets || '', onChange: handleChange, placeholder: "One URL per line or comma-separated..." }),
+                            React.createElement('p', { className: UI.forms.hint }, "Enter full URLs (http:// or https://).")
                         ),
                         // Image URL Input + Preview
                         React.createElement('div', { className: "md:col-span-2" },
-                            React.createElement('label', { htmlFor: "comp-image", className: "block mb-1 text-sm font-medium text-gray-700" }, "Image URL"),
+                            React.createElement('label', { htmlFor: "comp-image", className: UI.forms.label }, "Image URL"),
                             React.createElement('div', { className: "flex flex-col md:flex-row gap-4" },
                                 React.createElement('div', { className: "flex-grow" },
                                     React.createElement('input', {
                                         id: "comp-image",
                                         name: "image",
                                         type: "text",
-                                        className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono text-xs",
+                                        className: UI.forms.input,
                                         value: formData.image || '',
                                         onChange: handleImageUrlChange,
                                         placeholder: "https://example.com/image.jpg"
                                     }),
-                                    React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Optional direct link to image.")
+                                    React.createElement('p', { className: UI.forms.hint }, "Optional direct link to image.")
                                 ),
                                 formData.image && React.createElement('div', { className: "md:w-40 h-40 border border-gray-300 rounded flex items-center justify-center bg-gray-100" },
                                     imagePreview.loading && React.createElement('div', { className: "text-sm text-gray-500" }, "Loading..."),
@@ -557,9 +557,9 @@ window.App.components.ComponentForm = ({
                         ),
                         // Parameters Textarea
                         React.createElement('div', { className: "md:col-span-2" },
-                            React.createElement('label', { htmlFor: "comp-parameters", className: "block mb-1 text-sm font-medium text-gray-700" }, "Additional Parameters"),
-                            React.createElement('textarea', { id: "comp-parameters", name: "parameters", className: "w-full p-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono text-sm", rows: "5", value: formData.parameters || '', onChange: handleChange, placeholder: "One per line:\nVoltage: 5V\nTolerance: 5%" }),
-                            React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, "Format: \"Name: Value\".")
+                            React.createElement('label', { htmlFor: "comp-parameters", className: UI.forms.label }, "Additional Parameters"),
+                            React.createElement('textarea', { id: "comp-parameters", name: "parameters", className: UI.forms.textarea, rows: "5", value: formData.parameters || '', onChange: handleChange, placeholder: "One per line:\nVoltage: 5V\nTolerance: 5%" }),
+                            React.createElement('p', { className: UI.forms.hint }, "Format: \"Name: Value\".")
                         ),
                         // --- Favorite, Bookmark, Star Toggles ---
                         React.createElement('div', { className: "md:col-span-2 mt-4 border-t pt-4" },
@@ -578,7 +578,7 @@ window.App.components.ComponentForm = ({
                                         onChange: (e) => handleChange({
                                             target: { name: "favorite", value: e.target.checked }
                                         }),
-                                        className: "h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                                        className: UI.forms.checkbox
                                     }),
                                     React.createElement('span', { className: "text-gray-700 flex items-center" },
                                         React.createElement('svg', {
@@ -609,7 +609,7 @@ window.App.components.ComponentForm = ({
                                         onChange: (e) => handleChange({
                                             target: { name: "bookmark", value: e.target.checked }
                                         }),
-                                        className: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        className: UI.forms.checkbox
                                     }),
                                     React.createElement('span', { className: "text-gray-700 flex items-center" },
                                         React.createElement('svg', {
@@ -638,36 +638,45 @@ window.App.components.ComponentForm = ({
                                         onChange: (e) => handleChange({
                                             target: { name: "star", value: e.target.checked }
                                         }),
-                                        className: "h-4 w-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+                                        className: UI.forms.checkbox
                                     }),
-                                    React.createElement('span', { className: "text-gray-700 flex items-center" },
-                                        React.createElement('svg', {
-                                            xmlns: "http://www.w3.org/2000/svg",
-                                            className: "h-5 w-5 mr-1 text-yellow-500",
-                                            viewBox: "0 0 20 20",
-                                            fill: "currentColor"
-                                        },
-                                            React.createElement('path', {
-                                                d: "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                            })
-                                        ),
-                                        "Star"
-                                    )
-                                )
-                            )
-                        )
+                                    React.createElement('svg', {
+                                        xmlns: "http://www.w3.org/2000/svg",
+                                        className: "h-5 w-5 mr-1 text-yellow-500",
+                                        viewBox: "0 0 20 20",
+                                        fill: "currentColor"
+                                    },
+                                        React.createElement('path', {
+                                            d: "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        })
+                                    ),
+                                    "Star"
+                                ),
 
-                    ) // End grid
-                ), // End Form Body
+                            )
+                        ),
+                    )
+                ), // End grid
+
                 // Footer (Action Buttons)
-                React.createElement('div', { className: "flex justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg flex-shrink-0" },
-                    React.createElement('button', { type: "button", className: "px-4 py-2 bg-gray-200 text-gray-800 rounded shadow-sm hover:bg-gray-300 transition duration-150", onClick: onCancel }, "Cancel"),
+                React.createElement('div', { className: UI.modals.footer },
+                    React.createElement('button', {
+                        type: "button",
+                        className: UI.buttons.secondary,
+                        onClick: onCancel
+                    }, "Cancel"),
+
                     // Use button type="submit" to trigger the form's onSubmit
-                    React.createElement('button', { type: "submit", formNoValidate: true, onClick: handleSubmit, className: "px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-150" }, isEditMode ? 'Save Changes' : 'Add Component')
-                )
-            ) // End Modal Content
-        ) // End Modal Backdrop
-    );
+                    React.createElement('button', {
+                        type: "submit",
+                        formNoValidate: true,
+                        onClick: handleSubmit,
+                        className: UI.buttons.primary
+                    }, isEditMode ? 'Save Changes' : 'Add Component')
+                ),
+            ), // End Form Body
+        ) // End Modal Content
+    ) // End Modal Backdrop
 };
 
-console.log("ComponentForm component loaded."); // For debugging
+console.log("ComponentForm component loaded with UI constants."); // For debugging
