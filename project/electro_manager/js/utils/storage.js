@@ -138,9 +138,10 @@ window.App.utils.storage = {
             categories: [],
             viewMode: 'table',
             lowStockConfig: {},
-            currencySymbol: '$',
+            currencySymbol: 'RM',
             showTotalValue: false,
-            footprints: []
+            footprints: [],
+            itemsPerPage: 'all' 
         };
 
         try {
@@ -178,6 +179,12 @@ window.App.utils.storage = {
             const savedFootprints = localStorage.getItem('electronicsFootprints');
             if (savedFootprints) {
                 defaultConfig.footprints = JSON.parse(savedFootprints);
+            }
+
+            // Load items per page setting
+            const savedItemsPerPage = localStorage.getItem('electronicsItemsPerPage');
+            if (savedItemsPerPage) {
+                defaultConfig.itemsPerPage = JSON.parse(savedItemsPerPage);
             }
 
             // Load show total value setting
@@ -230,6 +237,11 @@ window.App.utils.storage = {
                 // Save footprints
                 if (Array.isArray(config.footprints)) {
                     localStorage.setItem('electronicsFootprints', JSON.stringify(config.footprints));
+                }
+
+                // Save items per page setting
+                if (config.itemsPerPage !== undefined) {
+                    localStorage.setItem('electronicsItemsPerPage', JSON.stringify(config.itemsPerPage));
                 }
 
                 console.log('Saved config to localStorage');

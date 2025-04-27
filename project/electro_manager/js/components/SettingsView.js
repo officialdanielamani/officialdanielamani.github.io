@@ -131,7 +131,7 @@ window.App.components.SettingsView = ({
                 React.createElement('div', { className: UI.cards.body },
                     React.createElement('h3', { className: UI.typography.heading.h3 }, "Electro Manager"),
                     React.createElement('div', { className: "flex items-center mb-3" },
-                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.1.6beta"),
+                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.1.7beta"),
                         React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.success.light} text-white-800 text-xs rounded-full` }, "Latest Update")
                     ),
                     // Update date
@@ -141,13 +141,15 @@ window.App.components.SettingsView = ({
                     React.createElement('div', { className: "mb-4 mt-4" },
                         React.createElement('h4', { className: UI.typography.sectionTitle }, "Changes in this version:"),
                         React.createElement('ul', { className: "list-disc list-inside text-sm text-gray-700 space-y-1 ml-2" },
+                            React.createElement('li', null, "Adding advanced filtering option for better search"),
                             React.createElement('li', null, "Remap some UI for more consistancy"),
                             React.createElement('li', null, "Add function to assign component Location and Drawers"),
                             React.createElement('li', null, "Import and Export the location and drawers data"),
                             React.createElement('li', null, "Fixed error on save data for drawers and cells"),
                             React.createElement('li', null, "Added ability to mark cells as unavailable in drawers"),
                             React.createElement('li', null, "Added function to clear all components from a cell at once"),
-                            React.createElement('li', null, "Added view of drawer list for specific locations")
+                            React.createElement('li', null, "Added view of drawer list for specific locations"),
+                            React.createElement('li', null, "Note: Card View in holding development"),
                         )
                     ),
 

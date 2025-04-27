@@ -11,15 +11,20 @@ window.App.utils = window.App.utils || {}; // Ensure utils namespace exists
  */
 window.App.components.InventoryView = ({
     // Props
-    components, // Array: All component objects
-    categories, // Array: List of category strings
+    components = [], // Array: All component objects
+    categories = [], // Array: List of category strings
     viewMode, // String: 'table' or 'card'
     selectedCategory, // String: Currently selected category filter
     searchTerm, // String: Current search term
     lowStockConfig, // Object: Low stock thresholds { category: threshold }
     currencySymbol, // String: Currency symbol
     showTotalValue, // Boolean: Whether to show total value in summary
-    selectedComponents, // Array: IDs of selected components for bulk actions
+    selectedComponents = [], // Array: IDs of selected components for bulk actions
+    locations = [], // Array: List of location objects
+    footprints = [], // Array: List of footprint strings
+    itemsPerPage, // 
+    onItemsPerPageChange, // 
+
     // Callbacks
     onAddComponent, // Function: Called when 'Add Component' button clicked
     onEditComponent, // Function(component): Called to edit a specific component
@@ -36,21 +41,128 @@ window.App.components.InventoryView = ({
 }) => {
     // Get UI constants and helper functions
     const { helpers, UI } = window.App.utils;
+    const { useState, useEffect, useCallback } = React;
+
+    // --- Advanced Filter States ---
+    const [advancedFiltersExpanded, setAdvancedFiltersExpanded] = useState(false);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedTypes, setSelectedTypes] = useState([]);
+    const [selectedMarks, setSelectedMarks] = useState([]);
+    const [selectedLocations, setSelectedLocations] = useState([]);
+    const [selectedFootprints, setSelectedFootprints] = useState([]);
+    const [quantityRange, setQuantityRange] = useState(null);
+    const [priceRange, setPriceRange] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Clear advanced filters if simple category/search filters change
+    useEffect(() => {
+        // If category dropdown changes and we have selected categories in advanced filter,
+        // align them by setting the advanced filter to match the dropdown
+        if (selectedCategory !== 'all' && selectedCategories.length > 0) {
+            setSelectedCategories([selectedCategory]);
+        }
+    }, [selectedCategory, selectedCategories]);
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedCategories, selectedTypes, selectedMarks, selectedLocations,
+        selectedFootprints, quantityRange, priceRange, searchTerm, selectedCategory]);
+
+    // Clear all advanced filters
+    const handleClearAdvancedFilters = useCallback(() => {
+        setSelectedCategories([]);
+        setSelectedTypes([]);
+        setSelectedMarks([]);
+        setSelectedLocations([]);
+        setSelectedFootprints([]);
+        setQuantityRange(null);
+        setPriceRange(null);
+        setCurrentPage(1);
+    }, []);
 
     // --- Filtering Logic ---
-    // Filter components based on search term and selected category
+    // Filter components based on search term, selected category, and advanced filters
     const filteredComponents = components.filter(component => {
+        // Basic filters (search and category dropdown)
         const matchesCategory = selectedCategory === 'all' || component.category === selectedCategory;
         const lowerSearchTerm = searchTerm.toLowerCase();
-        // Check against name, type, category, and info
         const matchesSearch = !searchTerm ||
             (component.name && component.name.toLowerCase().includes(lowerSearchTerm)) ||
             (component.type && component.type.toLowerCase().includes(lowerSearchTerm)) ||
             (component.category && component.category.toLowerCase().includes(lowerSearchTerm)) ||
             (component.info && component.info.toLowerCase().includes(lowerSearchTerm));
 
-        return matchesCategory && matchesSearch;
+        // Advanced filters
+        // Category filter
+        const matchesAdvancedCategory = selectedCategories.length === 0 ||
+            selectedCategories.includes(component.category);
+
+        // Type filter
+        const matchesType = selectedTypes.length === 0 ||
+            (component.type && selectedTypes.includes(component.type));
+
+        // Marks filter (favorite, bookmark, star)
+        const matchesMarks = selectedMarks.length === 0 ||
+            selectedMarks.some(mark => component[mark]);
+
+        // Location filter
+        const matchesLocation = selectedLocations.length === 0 ||
+            (component.locationInfo && component.locationInfo.locationId &&
+                locations.some(loc =>
+                    selectedLocations.includes(loc.name) &&
+                    loc.id === component.locationInfo.locationId
+                ));
+
+        // Footprint filter
+        const matchesFootprint = selectedFootprints.length === 0 ||
+            (component.footprint && selectedFootprints.includes(component.footprint));
+
+        // Quantity range filter
+        const componentQuantity = component.quantity || 0;
+        const matchesQuantity = !quantityRange || (
+            // If min and max are defined and equal, filter for exact match
+            (quantityRange.min !== null && quantityRange.max !== null && quantityRange.min === quantityRange.max)
+                ? (componentQuantity === quantityRange.min)
+                // Otherwise, filter only by minimum value (max is ignored unless used for exact match)
+                // Ensure component quantity is greater than or equal to the minimum filter value
+                : (quantityRange.min === null || componentQuantity >= quantityRange.min)
+        );
+
+        // Component range filter
+        const componentPrice = component.price || 0;
+        const matchesPrice = !priceRange || (
+            // If min and max are defined and equal, filter for exact match
+            (priceRange.min !== null && priceRange.max !== null && priceRange.min === priceRange.max)
+                ? (componentPrice === priceRange.min)
+                // Otherwise, filter only by minimum value (max is ignored unless used for exact match)
+                // Ensure component price is greater than or equal to the minimum filter value
+                : (priceRange.min === null || componentPrice >= priceRange.min)
+        );
+
+        // Combine all filters
+        return matchesCategory && matchesSearch &&
+            matchesAdvancedCategory && matchesType &&
+            matchesMarks && matchesLocation &&
+            matchesFootprint && matchesQuantity && matchesPrice;
     });
+
+    // --- Pagination Logic ---
+    const paginatedComponents = itemsPerPage === 'all'
+        ? filteredComponents
+        : filteredComponents.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+        );
+
+    const totalPages = itemsPerPage === 'all'
+        ? 1
+        : Math.ceil(filteredComponents.length / itemsPerPage);
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(Math.min(Math.max(1, page), totalPages));
+    };
 
     // --- Calculations (using helpers) ---
     const totalComponents = components.length;
@@ -207,6 +319,97 @@ window.App.components.InventoryView = ({
         );
     };
 
+    // In InventoryView.js
+
+// Add this function inside your component before the main return
+const renderPagination = () => {
+    if (itemsPerPage === 'all' || totalPages <= 1) {
+        return null; // Don't render pagination if showing all or only one page
+    }
+    
+    return React.createElement('div', { className: "flex flex-col items-center mb-4" },
+        // Pagination controls
+        React.createElement('div', { className: "flex justify-center" },
+            React.createElement('div', { className: "bg-white shadow-sm rounded border inline-flex" },
+                // Previous button
+                React.createElement('button', {
+                    onClick: () => handlePageChange(currentPage - 1),
+                    disabled: currentPage === 1,
+                    className: `px-3 py-1 border-r ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
+                }, "Previous"),
+
+                // Page numbers - limit visible pages for readability
+                (() => {
+                    const pages = [];
+                    const maxVisiblePages = 5; // Show max 5 page numbers at once
+                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                    // Adjust if we're near the end
+                    if (endPage - startPage + 1 < maxVisiblePages) {
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                    }
+
+                    // Add first page if not in range
+                    if (startPage > 1) {
+                        pages.push(React.createElement('button', {
+                            key: 1,
+                            onClick: () => handlePageChange(1),
+                            className: `px-3 py-1 border-r ${1 === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                        }, "1"));
+
+                        if (startPage > 2) {
+                            pages.push(React.createElement('span', {
+                                key: 'start-ellipsis',
+                                className: "px-2 py-1 border-r text-gray-500"
+                            }, "..."));
+                        }
+                    }
+
+                    // Add visible page numbers
+                    for (let i = startPage; i <= endPage; i++) {
+                        pages.push(React.createElement('button', {
+                            key: i,
+                            onClick: () => handlePageChange(i),
+                            className: `px-3 py-1 border-r ${i === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                        }, i.toString()));
+                    }
+
+                    // Add last page if not in range
+                    if (endPage < totalPages) {
+                        if (endPage < totalPages - 1) {
+                            pages.push(React.createElement('span', {
+                                key: 'end-ellipsis',
+                                className: "px-2 py-1 border-r text-gray-500"
+                            }, "..."));
+                        }
+
+                        pages.push(React.createElement('button', {
+                            key: totalPages,
+                            onClick: () => handlePageChange(totalPages),
+                            className: `px-3 py-1 border-r ${totalPages === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                        }, totalPages.toString()));
+                    }
+
+                    return pages;
+                })(),
+
+                // Next button
+                React.createElement('button', {
+                    onClick: () => handlePageChange(currentPage + 1),
+                    disabled: currentPage === totalPages,
+                    className: `px-3 py-1 ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
+                }, "Next")
+            )
+        ),
+        
+        // Pagination status text
+        filteredComponents.length > 0 && React.createElement('div', { className: "text-center text-sm text-gray-600 mt-2" },
+            `Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, filteredComponents.length)} of ${filteredComponents.length} items`
+        )
+    );
+};
+
     // Renders a single card in the card view
     const renderCard = (component) => {
         const isSelected = selectedComponents.includes(component.id);
@@ -313,87 +516,6 @@ window.App.components.InventoryView = ({
     // --- Main Render ---
     return (
         React.createElement('div', null,
-            // --- Control buttons and Filters Row ---
-            React.createElement('div', { className: UI.grid.container + " " + UI.grid.cols4 + " mb-6 items-end" },
-                // Add Component Button
-                React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('button', {
-                        onClick: onAddComponent,
-                        className: UI.buttons.success
-                    }, "+ Add Component")
-                ),
-                // Category Filter
-                React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', {
-                        htmlFor: "category-filter",
-                        className: UI.forms.label
-                    }, "Filter by Category"),
-                    React.createElement('select', {
-                        id: "category-filter",
-                        className: UI.forms.select,
-                        value: selectedCategory,
-                        onChange: handleCategoryChange
-                    },
-                        React.createElement('option', { value: "all" }, "All Categories"),
-                        (categories || []).sort().map(category => React.createElement('option', { key: category, value: category }, category))
-                    )
-                ),
-                // Search Input
-                React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', {
-                        htmlFor: "search-input",
-                        className: UI.forms.label
-                    }, "Search"),
-                    React.createElement('input', {
-                        id: "search-input",
-                        type: "text",
-                        placeholder: "Name, type, category...",
-                        className: UI.forms.input,
-                        value: searchTerm,
-                        onChange: handleSearchChange
-                    })
-                ),
-                // View Mode Toggle
-                React.createElement('div', { className: "lg:col-span-1" },
-                    React.createElement('label', { className: UI.forms.label }, "View Mode"),
-                    React.createElement('div', { className: "flex rounded shadow-sm border border-gray-300" },
-                        React.createElement('button', {
-                            title: "Table View",
-                            className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
-                            onClick: () => handleViewChange('table')
-                        },
-                            React.createElement('svg', {
-                                xmlns: "http://www.w3.org/2000/svg",
-                                className: "h-5 w-5 inline mr-1",
-                                fill: "none",
-                                viewBox: "0 0 24 24",
-                                stroke: "currentColor"
-                            },
-                                React.createElement('path', {
-                                    strokeLinecap: "round",
-                                    strokeLinejoin: "round",
-                                    strokeWidth: 2,
-                                    d: "M3 10h18M3 14h18M4 6h16M4 18h16"
-                                })), " Table"
-                        ),
-                        React.createElement('button', {
-                            title: "Card View",
-                            className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
-                            onClick: () => handleViewChange('card')
-                        },
-                            React.createElement('svg', {
-                                xmlns: "http://www.w3.org/2000/svg",
-                                className: "h-5 w-5 inline mr-1",
-                                viewBox: "0 0 20 20",
-                                fill: "currentColor"
-                            },
-                                React.createElement('path', {
-                                    d: "M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
-                                })), " Cards"
-                        )
-                    )
-                )
-            ), // End Filters Row
 
             // --- Inventory Summary Stats ---
             React.createElement('div', { className: UI.layout.sectionAlt + " mb-6" },
@@ -439,6 +561,44 @@ window.App.components.InventoryView = ({
                 )
             ), // End Summary Stats
 
+            // --- Advanced Filters Card ---
+            React.createElement(window.App.components.AdvancedFilters, {
+                // Props
+                components: components,
+                categories: categories,
+                locations: locations,
+                footprints: footprints,
+                viewMode: viewMode,
+                
+                // Filter states
+                selectedCategories: selectedCategories,
+                selectedTypes: selectedTypes,
+                selectedMarks: selectedMarks,
+                selectedLocations: selectedLocations,
+                selectedFootprints: selectedFootprints,
+                quantityRange: quantityRange,
+                priceRange: priceRange,
+                itemsPerPage: itemsPerPage, // Pass the prop
+                
+                // Callbacks
+                onAddComponent: onAddComponent,
+                onCategoriesChange: setSelectedCategories,
+                onTypesChange: setSelectedTypes,
+                onMarksChange: setSelectedMarks,
+                onLocationsChange: setSelectedLocations,
+                onFootprintsChange: setSelectedFootprints,
+                onQuantityRangeChange: setQuantityRange,
+                onPriceRangeChange: setPriceRange,
+                onItemsPerPageChange: onItemsPerPageChange, // Pass the callback
+                onClearFilters: handleClearAdvancedFilters,
+                onChangeViewMode: handleViewChange,
+                
+                // UI state
+                isExpanded: advancedFiltersExpanded,
+                onToggleExpand: () => setAdvancedFiltersExpanded(!advancedFiltersExpanded)
+            }),
+
+
             // --- Bulk Action Bar (Conditional) ---
             selectedComponents.length > 0 && React.createElement('div', { className: UI.status.info + " mb-4 flex flex-wrap justify-between items-center gap-2" },
                 // Select All Checkbox & Count
@@ -460,6 +620,7 @@ window.App.components.InventoryView = ({
                     React.createElement('button', { onClick: onBulkDelete, className: UI.buttons.small.danger }, "Delete Selected")
                 )
             ), // End Bulk Action Bar
+            renderPagination(),
 
             // --- Components List (Table or Cards) ---
             viewMode === 'table' ? (
@@ -493,7 +654,7 @@ window.App.components.InventoryView = ({
                                 )
                             ),
                             React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
-                                filteredComponents.length > 0 ? filteredComponents.map(renderTableRow) : null,
+                                filteredComponents.length > 0 ? paginatedComponents.map(renderTableRow) : null,
                                 // Empty/No Match Messages
                                 filteredComponents.length === 0 && totalComponents > 0 && React.createElement('tr', null,
                                     React.createElement('td', { colSpan: "9", className: "px-4 py-8 text-center text-gray-500 italic" },
@@ -525,8 +686,11 @@ window.App.components.InventoryView = ({
                         )
                     )
                 )
-            ) // End Conditional View Rendering
-        ) // End Main Inventory View Div
+            ), // End Conditional View Rendering
+            renderPagination(),
+        )
+
+        // End Main Inventory View Div
     );
 };
 

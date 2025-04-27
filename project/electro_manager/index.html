@@ -11,17 +11,18 @@
     <script src="js/external/react-dom18.development.js"></script>
     <script src="js/external/babel.min.js"></script>
     -->
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <script src="js/utils/helpers.js"></script>
     <script src="js/utils/storage.js"></script>
     <script src="js/utils/ui-constants.js"></script>
 
     <script src="js/components/ComponentForm.js"></script>
+    <script src="js/components/AdvancedFilters.js"></script>
     <script src="js/components/BulkEditForm.js"></script>
     <script src="js/components/InventoryView.js"></script>
     <script src="js/components/SettingsView.js"></script>
@@ -74,6 +75,8 @@
             const [drawers, setDrawers] = useState([]);
             const [cells, setCells] = useState([]);
             const [viewingDrawerId, setViewingDrawerId] = useState(null);
+            const [itemsPerPage, setItemsPerPage] = useState('all');
+
             //const [showAddDrawerForm, setShowAddDrawerForm] = useState(false);
 
             // --- Effects ---
@@ -90,6 +93,7 @@
                 setShowTotalValue(config.showTotalValue);
                 setFootprints(config.footprints || []);
                 setLocations(storage.loadLocations() || []);
+                setItemsPerPage(config.itemsPerPage || 'all');
 
                 // Load drawers from localStorage
                 setDrawers(storage.loadDrawers() || []);
@@ -133,7 +137,9 @@
                 storage.saveCells(cells);
             }, [cells]);
 
-
+            const handleItemsPerPageChange = useCallback((value) => {
+                setItemsPerPage(value);
+            }, []);
 
             // Save components to localStorage whenever they change
             // Use useCallback for stability if passed as dependency elsewhere, though not strictly needed here
@@ -148,21 +154,29 @@
             }, [components, saveComponentsCallback]);
 
             // Save configuration changes to localStorage
-            const saveConfigCallback = useCallback(() => {
-                storage.saveConfig({
-                    categories,
-                    viewMode,
-                    lowStockConfig,
-                    currencySymbol,
-                    showTotalValue,
-                    footprints // Add this line
-                });
-            }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints]);
-
             useEffect(() => {
-                saveConfigCallback();
-            }, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, saveConfigCallback]);
-            // Dependency array includes the callback itself
+    storage.saveConfig({
+        categories,
+        viewMode,
+        lowStockConfig,
+        currencySymbol,
+        showTotalValue,
+        footprints,
+        itemsPerPage // Add this line
+    });
+}, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, itemsPerPage]);
+
+const saveConfigCallback = useCallback(() => {
+    storage.saveConfig({
+        categories,
+        viewMode,
+        lowStockConfig,
+        currencySymbol,
+        showTotalValue,
+        footprints,
+        itemsPerPage // Add this property
+    });
+}, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, itemsPerPage]); // Add itemsPerPage to dependency array
 
             // --- Helper Functions / Callbacks for Child Components ---
 
@@ -1318,8 +1332,8 @@
             // --- Render ---
             return (
                 React.createElement('div', { className: "container mx-auto p-4 font-sans" },
-                    React.createElement('h1', { className: "text-3xl font-bold mb-6 text-center text-gray-700" }, "Electronics Component Inventory"),
-                    React.createElement('h4', { className: "text font-bold mb-6 text-center text-gray-700" }, "DANP-EDNA V0.1.6beta"),
+                    React.createElement('h1', { className: "text-3xl font-bold mb-6 text-center text-gray-700" }, "Electro Manager"),
+                    React.createElement('h4', { className: "text font mb-6 text-center text-gray-700" }, "an Electronics Inventory System | DANP-EDNA V0.1.7beta"),
                     // --- Navigation Tabs ---
                     React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300 overflow-x-auto" },
                         React.createElement('button', {
@@ -1365,6 +1379,8 @@
                         selectedComponents: selectedComponents,
                         locations: locations,
                         selectedLocation: selectedLocation,
+                        itemsPerPage: itemsPerPage, 
+                        
                         // Pass callbacks
                         onAddComponent: handleAddComponent,
                         onEditComponent: handleEditComponent,
@@ -1379,6 +1395,7 @@
                         onChangeSearchTerm: setSearchTerm,
                         onChangeLocationFilter: setSelectedLocation,
                         onToggleFavorite: handleToggleFavorite,
+                        onItemsPerPageChange: handleItemsPerPageChange,
                     }),
 
                     currentPage === 'data' && React.createElement(SettingsView, {
