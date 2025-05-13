@@ -132,13 +132,14 @@ window.App.components.SettingsView = ({
                     React.createElement('h3', { className: UI.typography.heading.h3 }, "Electro Manager"),
                     React.createElement('div', { className: "flex items-center mb-3" },
                         React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.1.7beta"),
-                        React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.success.light} text-white-800 text-xs rounded-full` }, "Latest Update")
+                        React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.danger.light} text-white-400 text-xs rounded-full` }, "Deprecated")
                     ),
                     // Update date
                     "Updated: 26 April 2025",
                     
                     // Changes in this version 
                     React.createElement('div', { className: "mb-4 mt-4" },
+                        React.createElement('h4', { className: UI.colors.danger.light }, "This version is outdated. This DB version scheme will not work in new version as compability issues"),
                         React.createElement('h4', { className: UI.typography.sectionTitle }, "Changes in this version:"),
                         React.createElement('ul', { className: "list-disc list-inside text-sm text-gray-700 space-y-1 ml-2" },
                             React.createElement('li', null, "Adding advanced filtering option for better search"),
