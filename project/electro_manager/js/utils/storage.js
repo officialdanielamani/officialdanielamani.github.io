@@ -1,358 +1,359 @@
-// js/utils/storage.js
+// js/utils/storage.js - Ultra-compact format with minimal code
 
-// Create a global namespace if it doesn't exist
 window.App = window.App || {};
 window.App.utils = window.App.utils || {};
 
-/**
- * Storage utility functions for the Electronics Inventory App.
- * Handles saving and loading data from localStorage.
- */
 window.App.utils.storage = {
-    /**
-     * Load components from localStorage.
-     * @returns {Array} Array of component objects or empty array if none found.
-     */
-    loadComponents: () => {
-        try {
-            const savedComponents = localStorage.getItem('electronicsComponents');
-            if (savedComponents) {
-                const parsedComponents = JSON.parse(savedComponents);
-                // Ensure all objects have proper structure and types
-                const componentsWithValidValues = parsedComponents.map(comp => {
-                    // Create base component with standard fields
-                    const updatedComp = {
-                        ...comp,
-                        price: typeof comp.price === 'number' ? comp.price : Number(comp.price) || 0,
-                        quantity: typeof comp.quantity === 'number' ? comp.quantity : Number(comp.quantity) || 0,
-                        // Initialize flag fields if they don't exist
-                        favorite: comp.favorite || false,
-                        bookmark: comp.bookmark || false,
-                        star: comp.star || false
-                    };
+    useIndexedDB: null,
     
-                    // Ensure locationInfo is properly formatted
-                    if (!comp.locationInfo || typeof comp.locationInfo === 'string' || comp.locationInfo === '[object Object]') {
-                        updatedComp.locationInfo = { locationId: '', details: '' };
-                    }
+    init() {
+        if (this.useIndexedDB !== null) return Promise.resolve(this.useIndexedDB);
+        
+        const idb = window.App.utils.idb;
+        if (!idb?.init) {
+            this.useIndexedDB = false;
+            return Promise.resolve(false);
+        }
+        
+        return idb.init()
+            .then(initialized => {
+                this.useIndexedDB = initialized;
+                return initialized;
+            })
+            .catch(() => {
+                this.useIndexedDB = false;
+                return false;
+            });
+    },
     
-                    // Ensure storageInfo is properly formatted
-                    if (!comp.storageInfo || typeof comp.storageInfo === 'string' || comp.storageInfo === '[object Object]') {
-                        updatedComp.storageInfo = { locationId: '', drawerId: '', cells: [] };
-                    } else {
-                        // Handle partial storageInfo object (may be missing 'cells' array)
-                        updatedComp.storageInfo = {
-                            locationId: comp.storageInfo.locationId || '',
-                            drawerId: comp.storageInfo.drawerId || '',
-                            cells: Array.isArray(comp.storageInfo.cells) ? comp.storageInfo.cells : []
-                        };
-                        
-                        // Handle backward compatibility - if cellId exists but cells array doesn't include it
-                        if (comp.storageInfo.cellId && 
-                            !updatedComp.storageInfo.cells.includes(comp.storageInfo.cellId)) {
-                            updatedComp.storageInfo.cells.push(comp.storageInfo.cellId);
-                        }
-                    }
+    // Generic load/save for all store types
+    async _load(storeName, defaultValue = []) {
+        await this.init();
+        if (!this.useIndexedDB) return defaultValue;
+        
+        try {
+            console.log(`Loading ${storeName}...`);
+            
+            if (storeName === 'lowStockConfig') {
+                const config = await window.App.utils.idb.loadLowStockConfig();
+                console.log(`Loaded ${storeName}:`, config);
+                return config;
+            }
+            
+            const methodName = `load${storeName.charAt(0).toUpperCase()}${storeName.slice(1)}`;
+            const data = await window.App.utils.idb[methodName]();
+            
+            console.log(`Raw ${storeName} data:`, data);
+            
+            // Expand components from compact format
+            if (storeName === 'components') {
+                const expanded = data.map(comp => this._expandComponent(comp));
+                console.log(`Expanded ${storeName}:`, expanded);
+                return expanded;
+            }
+            
+            console.log(`Loaded ${storeName}:`, data);
+            return data;
+        } catch (err) {
+            console.error(`Error loading ${storeName}:`, err);
+            return defaultValue;
+        }
+    },
     
-                    return updatedComp;
-                });
-                
-                console.log('Loaded components from localStorage:', componentsWithValidValues.length);
-                return componentsWithValidValues;
-            }
-        } catch (e) {
-            console.error("Error parsing saved components:", e);
-            // Don't remove storage on error, just return empty array
-        }
-        return []; // Default to empty array if nothing valid found
-    },
-
-    /**
-     * Save components to localStorage.
-     * @param {Array} components Array of component objects to save.
-     * @returns {boolean} True if saved successfully, false otherwise.
-     */
-    saveComponents: (components) => {
+    async _save(storeName, data) {
+        await this.init();
+        if (!this.useIndexedDB) return false;
+        
         try {
-            if (Array.isArray(components)) {
-                // Make sure price and quantity are properly formatted before saving
-                const componentsToSave = components.map(comp => ({
-                    ...comp,
-                    price: Number(comp.price) || 0,
-                    quantity: Number(comp.quantity) || 0
-                }));
-
-                // Save to localStorage
-                localStorage.setItem('electronicsComponents', JSON.stringify(componentsToSave));
-                console.log('Saved components to localStorage:', componentsToSave.length);
-                return true;
+            console.log(`Saving ${storeName}...`, data);
+            
+            let processedData = data;
+            
+            // Compact components before saving
+            if (storeName === 'components') {
+                processedData = data.map(comp => this._compactComponent(comp));
+                console.log(`Compacted ${storeName}:`, processedData);
             }
-        } catch (e) {
-            console.error("Error saving components to localStorage:", e);
-        }
-        return false;
-    },
-
-    /**
- * Load locations from localStorage.
- * @returns {Array} Array of location objects or empty array if none found.
- */
-    loadLocations: () => {
-        try {
-            const savedLocations = localStorage.getItem('electronicsLocations');
-            if (savedLocations) {
-                return JSON.parse(savedLocations);
+            
+            // Sanitize data
+            if (Array.isArray(processedData)) {
+                const sanitizeMethod = window.App.utils.sanitize[storeName.slice(0, -1)] || window.App.utils.sanitize.object;
+                processedData = processedData.map(item => sanitizeMethod.call(window.App.utils.sanitize, item));
+                console.log(`Sanitized ${storeName}:`, processedData);
             }
-        } catch (e) {
-            console.error("Error parsing saved locations:", e);
-        }
-        return []; // Default to empty array if nothing valid found
-    },
-
-    /**
-     * Save locations to localStorage.
-     * @param {Array} locations Array of location objects to save.
-     * @returns {boolean} True if saved successfully, false otherwise.
-     */
-    saveLocations: (locations) => {
-        try {
-            if (Array.isArray(locations)) {
-                localStorage.setItem('electronicsLocations', JSON.stringify(locations));
-                console.log('Saved locations to localStorage:', locations.length);
-                return true;
-            }
-        } catch (e) {
-            console.error("Error saving locations to localStorage:", e);
-        }
-        return false;
-    },
-
-
-    /**
-     * Load configuration (categories, view mode, etc.) from localStorage.
-     * @returns {Object} Configuration object with default values if none found.
-     */
-    loadConfig: () => {
-        // Create default config object
-        const defaultConfig = {
-            categories: [],
-            viewMode: 'table',
-            lowStockConfig: {},
-            currencySymbol: 'RM',
-            showTotalValue: false,
-            footprints: [],
-            itemsPerPage: 'all' 
-        };
-
-        try {
-            // Load categories
-            const savedCategories = localStorage.getItem('electronicsCategories');
-            if (savedCategories) {
-                defaultConfig.categories = JSON.parse(savedCategories);
-            }
-
-            // Load view mode
-            const savedViewMode = localStorage.getItem('electronicsViewMode');
-            if (savedViewMode && (savedViewMode === 'table' || savedViewMode === 'card')) {
-                defaultConfig.viewMode = savedViewMode;
-            }
-
-            // Load low stock configuration
-            const savedLowStockConfig = localStorage.getItem('electronicsLowStockConfig');
-            if (savedLowStockConfig) {
-                defaultConfig.lowStockConfig = JSON.parse(savedLowStockConfig);
-            }
-
-            // Load locations
-            const savedLocations = localStorage.getItem('electronicsLocations');
-            if (savedLocations) {
-                defaultConfig.locations = JSON.parse(savedLocations);
-            }
-
-            // Load currency symbol
-            const savedCurrency = localStorage.getItem('electronicsCurrencySymbol');
-            if (savedCurrency) {
-                defaultConfig.currencySymbol = savedCurrency;
-            }
-
-            // Load footprints
-            const savedFootprints = localStorage.getItem('electronicsFootprints');
-            if (savedFootprints) {
-                defaultConfig.footprints = JSON.parse(savedFootprints);
-            }
-
-            // Load items per page setting
-            const savedItemsPerPage = localStorage.getItem('electronicsItemsPerPage');
-            if (savedItemsPerPage) {
-                defaultConfig.itemsPerPage = JSON.parse(savedItemsPerPage);
-            }
-
-            // Load show total value setting
-            const savedShowTotalValue = localStorage.getItem('electronicsShowTotalValue');
-            // Check for 'true' string as localStorage stores strings
-            defaultConfig.showTotalValue = savedShowTotalValue === 'true';
-
-            console.log('Loaded config from localStorage');
-            return defaultConfig;
-        } catch (e) {
-            console.error("Error loading config from localStorage:", e);
-            return defaultConfig;
-        }
-    },
-
-    /**
-     * Save configuration to localStorage.
-     * @param {Object} config Configuration object to save.
-     * @returns {boolean} True if saved successfully, false otherwise.
-     */
-    saveConfig: (config) => {
-        try {
-            if (config && typeof config === 'object') {
-                // Save categories
-                if (Array.isArray(config.categories)) {
-                    localStorage.setItem('electronicsCategories', JSON.stringify(config.categories));
-                }
-
-                // Save view mode
-                if (config.viewMode === 'table' || config.viewMode === 'card') {
-                    localStorage.setItem('electronicsViewMode', config.viewMode);
-                }
-
-                // Save low stock configuration
-                if (config.lowStockConfig && typeof config.lowStockConfig === 'object') {
-                    localStorage.setItem('electronicsLowStockConfig', JSON.stringify(config.lowStockConfig));
-                }
-
-                // Save currency symbol
-                if (config.currencySymbol && typeof config.currencySymbol === 'string') {
-                    localStorage.setItem('electronicsCurrencySymbol', config.currencySymbol);
-                }
-
-                // Save show total value setting
-                if (typeof config.showTotalValue === 'boolean') {
-                    // Store boolean as string 'true' or 'false'
-                    localStorage.setItem('electronicsShowTotalValue', config.showTotalValue.toString());
-                }
-
-                // Save footprints
-                if (Array.isArray(config.footprints)) {
-                    localStorage.setItem('electronicsFootprints', JSON.stringify(config.footprints));
-                }
-
-                // Save items per page setting
-                if (config.itemsPerPage !== undefined) {
-                    localStorage.setItem('electronicsItemsPerPage', JSON.stringify(config.itemsPerPage));
-                }
-
-                console.log('Saved config to localStorage');
-                return true;
-            }
-        } catch (e) {
-            console.error("Error saving config to localStorage:", e);
-        }
-        return false;
-    },
-
-    // Add to window.App.utils.storage
-    loadDrawers: () => {
-        try {
-            const savedDrawers = localStorage.getItem('electronicsDrawers');
-            if (savedDrawers) {
-                return JSON.parse(savedDrawers);
-            }
-        } catch (e) {
-            console.error("Error parsing saved drawers:", e);
-        }
-        return []; // Default to empty array
-    },
-
-    saveDrawers: (drawers) => {
-        try {
-            if (Array.isArray(drawers)) {
-                localStorage.setItem('electronicsDrawers', JSON.stringify(drawers));
-                console.log('Saved drawers to localStorage:', drawers.length);
-                return true;
-            }
-        } catch (e) {
-            console.error("Error saving drawers to localStorage:", e);
-        }
-        return false;
-    },
-
-    loadCells: () => {
-        try {
-            const savedCells = localStorage.getItem('electronicsCells');
-            if (savedCells) {
-                const parsedCells = JSON.parse(savedCells);
-                // Set default availability for any cell that doesn't have it
-                return parsedCells.map(cell => ({
-                    ...cell,
-                    available: cell.available !== undefined ? cell.available : true
-                }));
-            }
-        } catch (e) {
-            console.error("Error parsing saved cells:", e);
-        }
-        return []; // Default to empty array
-    },
-
-    saveCells: (cells) => {
-        try {
-            if (Array.isArray(cells)) {
-                localStorage.setItem('electronicsCells', JSON.stringify(cells));
-                console.log('Saved cells to localStorage:', cells.length);
-                return true;
-            }
-        } catch (e) {
-            console.error("Error saving cells to localStorage:", e);
-        }
-        return false;
-    },
-
-    /**
-     * Clear all electronics inventory related data from localStorage.
-     * @returns {boolean} True if cleared successfully, false otherwise.
-     */
-    clearStorage: () => {
-        try {
-            // Clear all related items one by one
-            localStorage.removeItem('electronicsComponents');
-            localStorage.removeItem('electronicsCategories');
-            localStorage.removeItem('electronicsViewMode');
-            localStorage.removeItem('electronicsLowStockConfig');
-            localStorage.removeItem('electronicsCurrencySymbol');
-            localStorage.removeItem('electronicsShowTotalValue');
-            localStorage.removeItem('electronicsFootprints');
-            localStorage.removeItem('electronicsLocations');
-            localStorage.removeItem('electronicsDrawers');
-            localStorage.removeItem('electronicsCells');
-
-            console.log('All localStorage items cleared');
-            return true;
-        } catch (e) {
-            console.error("Error clearing localStorage:", e);
+            
+            const methodName = `save${storeName.charAt(0).toUpperCase()}${storeName.slice(1)}`;
+            const result = await window.App.utils.idb[methodName](processedData);
+            console.log(`Saved ${storeName} result:`, result);
+            return result;
+        } catch (err) {
+            console.error(`Error saving ${storeName}:`, err);
             return false;
         }
     },
-
-    /**
-     * For debugging - dump all electronics-related localStorage contents to console
-     */
-    debugStorage: () => {
+    
+    // Component compaction using single-letter keys for maximum compression
+    _compactComponent(c) {
+        if (!c) return c;
+        
+        console.log('Compacting component:', c.name);
+        
+        // Core fields (always included): i=id, n=name, c=category, t=type, q=quantity, p=price
+        const compact = { 
+            i: c.id || '', 
+            n: c.name || '', 
+            c: c.category || '', 
+            t: c.type || '', 
+            q: c.quantity || 0, 
+            p: c.price || 0 
+        };
+        
+        // Handle footprint - use customFootprint if it exists and footprint is __custom__
+        let footprintValue = c.footprint;
+        if (c.footprint === '__custom__' && c.customFootprint) {
+            footprintValue = c.customFootprint;
+        }
+        if (footprintValue && footprintValue !== '__custom__' && footprintValue.trim()) {
+            compact.f = footprintValue;
+        }
+        
+        // Handle category - use customCategory if it exists and category is __custom__
+        let categoryValue = c.category;
+        if (c.category === '__custom__' && c.customCategory) {
+            categoryValue = c.customCategory;
+            compact.c = categoryValue; // Update the category field
+        }
+        
+        // Optional fields: d=description/info, s=datasheets, m=image
+        if (c.info && c.info.trim()) compact.d = c.info;
+        if (c.datasheets && c.datasheets.trim()) compact.s = c.datasheets;
+        if (c.image && c.image.trim()) compact.m = c.image;
+        
+        // Flags (only if true): v=favorite, b=bookmark, r=star
+        if (c.favorite === true) compact.v = 1;
+        if (c.bookmark === true) compact.b = 1;
+        if (c.star === true) compact.r = 1;
+        
+        // Storage: l=location, w=drawer, e=cells, x=details
+        if (c.storageInfo?.drawerId) {
+            compact.l = { w: c.storageInfo.drawerId };
+            if (c.storageInfo.cells?.length) compact.l.e = c.storageInfo.cells;
+        } else if (c.locationInfo?.locationId) {
+            compact.l = { i: c.locationInfo.locationId };
+            if (c.locationInfo.details && c.locationInfo.details.trim()) compact.l.x = c.locationInfo.details;
+        }
+        
+        // Parameters (custom fields) - exclude more fields now
+        const params = {};
+        const excludeFields = ['id', 'name', 'category', 'type', 'quantity', 'price', 'footprint', 'info', 
+                              'datasheets', 'image', 'favorite', 'bookmark', 'star', 'locationInfo', 'storageInfo',
+                              'customCategory', 'customFootprint']; // Exclude custom fields since they're handled above
+        
+        for (const [key, value] of Object.entries(c)) {
+            if (!excludeFields.includes(key) && value !== undefined && value !== null && value !== '') {
+                params[key] = value;
+            }
+        }
+        
+        if (Object.keys(params).length) compact.a = params; // a=additional/parameters
+        
+        console.log('Compacted to:', compact);
+        return compact;
+    },
+    
+    // Expand from compact format
+    _expandComponent(c) {
+        if (!c) return c;
+        console.log('Expanding component:', c);
+        
+        // If already in expanded format, return as-is
+        if (c.locationInfo || c.storageInfo) {
+            console.log('Already expanded:', c);
+            return c;
+        }
+        
+        const expanded = {
+            id: c.i || c.id || '',
+            name: c.n || c.name || '',
+            category: c.c || c.category || '',
+            type: c.t || c.type || '',
+            quantity: c.q ?? c.quantity ?? 0,
+            price: c.p ?? c.price ?? 0,
+            footprint: c.f || c.footprint || '',
+            info: c.d || c.info || '',
+            datasheets: c.s || c.datasheets || '',
+            image: c.m || c.image || '',
+            favorite: !!(c.v || c.favorite),
+            bookmark: !!(c.b || c.bookmark),
+            star: !!(c.r || c.star),
+            locationInfo: { locationId: '', details: '' },
+            storageInfo: { locationId: '', drawerId: '', cells: [] }
+        };
+        
+        // Restore storage
+        if (c.l) {
+            if (c.l.w) { // Drawer storage
+                expanded.storageInfo = {
+                    locationId: '',
+                    drawerId: c.l.w,
+                    cells: c.l.e || []
+                };
+            } else if (c.l.i) { // Location storage
+                expanded.locationInfo = {
+                    locationId: c.l.i,
+                    details: c.l.x || ''
+                };
+            }
+        }
+        
+        // Restore parameters
+        if (c.a && typeof c.a === 'object') {
+            Object.assign(expanded, c.a);
+        }
+        
+        console.log('Expanded to:', expanded);
+        return expanded;
+    },
+    
+    // Public API methods
+    loadComponents() { return this._load('components'); },
+    saveComponents(data) { return this._save('components', data); },
+    loadLocations() { return this._load('locations'); },
+    saveLocations(data) { return this._save('locations', data); },
+    loadDrawers() { return this._load('drawers'); },
+    saveDrawers(data) { return this._save('drawers', data); },
+    loadCells() { return this._load('cells'); },
+    saveCells(data) { return this._save('cells', data); },
+    loadCategories() { return this._load('categories'); },
+    saveCategories(data) { return this._save('categories', data); },
+    loadFootprints() { return this._load('footprints'); },
+    saveFootprints(data) { return this._save('footprints', data); },
+    loadLowStockConfig() { return this._load('lowStockConfig', {}); },
+    saveLowStockConfig(data) { return this._save('lowStockConfig', data); },
+    
+    // Config (localStorage only)
+    loadConfig() {
+        const defaults = { viewMode: 'table', currencySymbol: 'RM', showTotalValue: true, itemsPerPage: 'all', theme: 'light' };
         try {
-            console.log('==== Electronics Inventory localStorage Debug ====');
-            console.log('Components:', localStorage.getItem('electronicsComponents'));
-            console.log('Categories:', localStorage.getItem('electronicsCategories'));
-            console.log('View Mode:', localStorage.getItem('electronicsViewMode'));
-            console.log('Low Stock Config:', localStorage.getItem('electronicsLowStockConfig'));
-            console.log('Currency Symbol:', localStorage.getItem('electronicsCurrencySymbol'));
-            console.log('Show Total Value:', localStorage.getItem('electronicsShowTotalValue'));
-            console.log('Locations:', localStorage.getItem('electronicsLocations'));
-            console.log('=================================================');
-        } catch (e) {
-            console.error("Error debugging localStorage:", e);
+            return {
+                viewMode: localStorage.getItem('electronicsViewMode') || defaults.viewMode,
+                currencySymbol: localStorage.getItem('electronicsCurrencySymbol') || defaults.currencySymbol,
+                showTotalValue: localStorage.getItem('electronicsShowTotalValue') === 'true',
+                itemsPerPage: JSON.parse(localStorage.getItem('electronicsItemsPerPage') || JSON.stringify(defaults.itemsPerPage)),
+                theme: localStorage.getItem('electronicsTheme') || defaults.theme
+            };
+        } catch {
+            return defaults;
+        }
+    },
+    
+    saveConfig(config) {
+        try {
+            if (config.viewMode) localStorage.setItem('electronicsViewMode', config.viewMode);
+            if (config.currencySymbol) localStorage.setItem('electronicsCurrencySymbol', config.currencySymbol);
+            if (typeof config.showTotalValue === 'boolean') localStorage.setItem('electronicsShowTotalValue', String(config.showTotalValue));
+            if (config.theme) localStorage.setItem('electronicsTheme', config.theme);
+            if (config.itemsPerPage !== undefined) localStorage.setItem('electronicsItemsPerPage', JSON.stringify(config.itemsPerPage));
+            return true;
+        } catch {
+            return false;
+        }
+    },
+    
+    // Backup/Restore
+    async createBackup() {
+        await this.init();
+        if (!this.useIndexedDB) throw new Error("IndexedDB not available");
+        
+        const stores = ['components', 'locations', 'drawers', 'cells', 'categories', 'footprints', 'lowStockConfig'];
+        const data = {};
+        
+        for (const store of stores) {
+            try {
+                if (store === 'lowStockConfig') {
+                    const config = await this.loadLowStockConfig();
+                    data[store] = Object.entries(config).map(([category, threshold]) => ({ 
+                        id: `ls-${category.replace(/[^a-zA-Z0-9]/g, '_')}`, category, threshold 
+                    }));
+                } else if (store === 'categories' || store === 'footprints') {
+                    const items = await this._load(store);
+                    data[store] = items.map((name, i) => ({ id: `${store[0]}${i}`, name }));
+                } else if (store === 'components') {
+                    // Get components in compact format directly from IndexedDB
+                    data[store] = await window.App.utils.idb.loadComponents();
+                } else {
+                    data[store] = await this._load(store);
+                }
+            } catch (err) {
+                console.error(`Error backing up ${store}:`, err);
+                data[store] = [];
+            }
+        }
+        
+        return {
+            meta: { v: "0.2.2beta", d: new Date().toISOString(), ultra: true },
+            data
+        };
+    },
+    
+    async restoreBackup(backup) {
+        await this.init();
+        if (!this.useIndexedDB) throw new Error("IndexedDB not available");
+        if (!backup?.meta || !backup?.data) throw new Error("Invalid backup format");
+        
+        const results = [];
+        
+        for (const [store, storeData] of Object.entries(backup.data)) {
+            try {
+                if (store === 'lowStockConfig') {
+                    const config = {};
+                    storeData.forEach(item => { if (item.category) config[item.category] = item.threshold; });
+                    await this.saveLowStockConfig(config);
+                } else if (store === 'categories' || store === 'footprints') {
+                    const items = storeData.map(item => item.name);
+                    await this._save(store, items);
+                } else {
+                    await this._save(store, storeData);
+                }
+                results.push({ store, success: true });
+            } catch (err) {
+                console.error(`Error restoring ${store}:`, err);
+                results.push({ store, success: false, error: err.message });
+            }
+        }
+        
+        const successCount = results.filter(r => r.success).length;
+        return {
+            success: successCount > 0,
+            message: `${successCount}/${results.length} stores restored`,
+            details: results
+        };
+    },
+    
+    async clearStorage() {
+        const promises = [];
+        
+        if (this.useIndexedDB) {
+            promises.push(window.App.utils.idb.clearAll());
+        }
+        
+        try {
+            ['electronicsComponents', 'electronicsViewMode', 'electronicsCurrencySymbol', 
+             'electronicsShowTotalValue', 'electronicsLocations', 'electronicsDrawers', 
+             'electronicsCells', 'electronicsItemsPerPage'].forEach(key => localStorage.removeItem(key));
+        } catch (err) {
+            console.error("Error clearing localStorage:", err);
+            return false;
+        }
+        
+        try {
+            await Promise.all(promises);
+            return true;
+        } catch (err) {
+            console.error("Error clearing storage:", err);
+            return false;
         }
     }
 };
 
-console.log("Storage utilities loaded."); // For debugging
+console.log("Ultra-compact storage.js loaded");

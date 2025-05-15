@@ -1,4 +1,4 @@
-// js/components/AdvancedFilters.js
+// js/components/AdvancedFilters.js - Updated for better dark mode support
 
 // Ensure the global namespace exists
 window.App = window.App || {};
@@ -15,6 +15,7 @@ window.App.components.AdvancedFilters = ({
     locations = [], // Array: List of location objects
     footprints = [], // Array: List of footprint strings
     viewMode, // String: 'table' or 'card'
+    searchTerm = '',//String: Current search term
 
     // Filter states
     selectedCategories = [], // Array: Currently selected categories
@@ -25,9 +26,6 @@ window.App.components.AdvancedFilters = ({
     quantityRange, // Object: {min, max} for quantity filter
     priceRange, // Object: {min, max} for price filter
     itemsPerPage, // Number: Items to show per page
-    selectedCategory, // String: Currently selected category filter
-    searchTerm, //String: Current search term
-    onChangeCategoryFilter, // Function(category): Called when category filter changes
     onChangeViewMode, // Function(mode): Called to change view mode ('table'/'card')
 
     // Callbacks
@@ -40,15 +38,16 @@ window.App.components.AdvancedFilters = ({
     onPriceRangeChange, // Function(range): Update price range
     onItemsPerPageChange, // Function(count): Update items per page
     onClearFilters, // Function: Clear all filters
-    onChangeSearchTerm, // Function(term): Called when search input changes
+    onChangeSearchTerm = () => { },
     onAddComponent, // Function: Called when 'Add Component' button clicked
 
     // State
     isExpanded, // Boolean: Whether the filter panel is expanded
     onToggleExpand, // Function: Toggle expanded state
 }) => {
+
     // Get UI constants
-    const { helpers, UI } = window.App.utils;
+    const { UI } = window.App.utils;
     const { useState, useEffect } = React;
 
     // Extract unique types from components
@@ -69,36 +68,35 @@ window.App.components.AdvancedFilters = ({
     const [quantityStats, setQuantityStats] = useState({ min: 0, max: 100 });
 
     // Items per page options
-    const pageOptions = [10, 25, 50, 75, 100, 'all'];
+    const pageOptions = [5, 10, 25, 50, 100 ];
 
     // Calculate price and quantity stats on component changes
     useEffect(() => {
         // Check if components exists and has items
         if (components && components.length > 0) {
-            const prices = components.map(c => Number(c.price) || 0); //
-            const quantities = components.map(c => Number(c.quantity) || 0); //
+            const prices = components.map(c => Number(c.price) || 0);
+            const quantities = components.map(c => Number(c.quantity) || 0);
 
             // Ensure calculated min is at least 0
-            const calculatedPriceMin = Math.min(...prices); //
-            const calculatedQuantityMin = Math.min(...quantities); //
+            const calculatedPriceMin = Math.min(...prices);
+            const calculatedQuantityMin = Math.min(...quantities);
 
             // Set stats, ensuring min is never below 0
             setPriceStats({
-                min: Math.max(0, calculatedPriceMin), //
-                // Use a sensible default max for the slider UI if actual max is 0 or less than min
-                max: Math.max(Math.max(0, calculatedPriceMin), Math.max(...prices) || 0) || 100 //
+                min: Math.max(0, calculatedPriceMin),
+                max: Math.max(Math.max(0, calculatedPriceMin), Math.max(...prices) || 0) || 100
             });
 
             setQuantityStats({
-                min: Math.max(0, calculatedQuantityMin), //
-                max: Math.max(Math.max(0, calculatedQuantityMin), Math.max(...quantities) || 0) || 100 //
+                min: Math.max(0, calculatedQuantityMin),
+                max: Math.max(Math.max(0, calculatedQuantityMin), Math.max(...quantities) || 0) || 100
             });
         } else {
             // Default stats if no components
-            setPriceStats({ min: 0, max: 100 }); //
-            setQuantityStats({ min: 0, max: 100 }); //
+            setPriceStats({ min: 0, max: 100 });
+            setQuantityStats({ min: 0, max: 100 });
         }
-    }, [components]); //
+    }, [components]);
 
     // Handler for checkbox group changes
     const handleCheckboxGroup = (currentSelected, item, onChange) => {
@@ -124,10 +122,11 @@ window.App.components.AdvancedFilters = ({
         }
     };
 
-    // Render a checkbox group with select all option
+    // Render a checkbox group with select all option and scrollable area
     const renderCheckboxGroup = (title, items, selectedItems, onChange) => {
         const isItemsArray = Array.isArray(items); // Check if it's an array
         const itemCount = isItemsArray ? items.length : 0; // Get length safely
+        const showScroll = itemCount > 6; // Enable scroll view if more than 6 items
 
         // Calculate allSelected safely
         const allSelected = isItemsArray && itemCount === selectedItems?.length;
@@ -137,9 +136,9 @@ window.App.components.AdvancedFilters = ({
                 React.createElement('h4', { className: UI.typography.sectionTitle }, title),
                 // Select all checkbox
                 itemCount === 0
-                    ? React.createElement('p', { /* ... */ }, "No items available")
+                    ? React.createElement('p', { className: `text-${UI.getThemeColors().textMuted}` }, "No items available")
                     :
-                    React.createElement('label', { className: "flex items-center text-xs cursor-pointer" },
+                    React.createElement('label', { className: `flex items-center text-xs cursor-pointer text-${UI.getThemeColors().textSecondary}` },
                         React.createElement('input', {
                             type: "checkbox",
                             className: UI.forms.checkbox + " mr-1",
@@ -149,30 +148,206 @@ window.App.components.AdvancedFilters = ({
                         "Select all"
                     )
             ),
-            // Checkbox list
-            React.createElement('div', { className: "max-h-36 overflow-y-auto px-1 border border-gray-200 rounded bg-white" },
+            // Checkbox list in scrollable container
+            React.createElement('div', {
+                className: `${showScroll ? 'max-h-48' : 'max-h-36'} overflow-y-auto px-1 border border-${UI.getThemeColors().border} rounded bg-${UI.getThemeColors().cardBackground}`
+            },
                 items.length === 0
-                    ? React.createElement('p', { className: "text-sm text-gray-500 p-2 italic" }, "No items available")
-                    : React.createElement('div', { className: "grid grid-cols-2 gap-1 py-1" },
-                        items.map(item =>
-                            React.createElement('label', {
-                                key: item,
-                                className: "flex items-center text-sm px-1 py-0.5 hover:bg-gray-50 rounded cursor-pointer"
-                            },
-                                React.createElement('input', {
-                                    type: "checkbox",
-                                    className: UI.forms.checkbox + " mr-1",
-                                    checked: selectedItems?.includes(item) || false,
-                                    onChange: () => handleCheckboxGroup(selectedItems, item, onChange)
-                                }),
-                                typeof item === 'string' ? item : item.label
+                    ? React.createElement('p', { className: `text-sm text-${UI.getThemeColors().textMuted} p-2 italic` }, "No items available")
+                    : React.createElement('div', { className: "py-1" },
+                        // Showing items in a single column for better readability when there are many items
+                        showScroll
+                            ? items.map(item =>
+                                React.createElement('div', { key: item, className: "mb-1" },
+                                    React.createElement('label', {
+                                        className: `flex items-center text-sm px-2 py-1 hover:bg-${UI.getThemeColors().background} rounded cursor-pointer text-${UI.getThemeColors().textSecondary}`
+                                    },
+                                        React.createElement('input', {
+                                            type: "checkbox",
+                                            className: UI.forms.checkbox + " mr-2",
+                                            checked: selectedItems?.includes(item) || false,
+                                            onChange: () => handleCheckboxGroup(selectedItems, item, onChange)
+                                        }),
+                                        typeof item === 'string' ? item : item.label
+                                    )
+                                )
                             )
-                        )
+                            // For 6 or fewer items, keep the 2-column grid
+                            : React.createElement('div', { className: "grid grid-cols-2 gap-1" },
+                                items.map(item =>
+                                    React.createElement('label', {
+                                        key: item,
+                                        className: `flex items-center text-sm px-1 py-0.5 hover:bg-${UI.getThemeColors().background} rounded cursor-pointer text-${UI.getThemeColors().textSecondary}`
+                                    },
+                                        React.createElement('input', {
+                                            type: "checkbox",
+                                            className: UI.forms.checkbox + " mr-1",
+                                            checked: selectedItems?.includes(item) || false,
+                                            onChange: () => handleCheckboxGroup(selectedItems, item, onChange)
+                                        }),
+                                        typeof item === 'string' ? item : item.label
+                                    )
+                                )
+                            )
                     )
+            ),
+            // Show count of items if there are many
+            showScroll && React.createElement('div', {
+                className: `text-xs text-${UI.getThemeColors().textMuted} mt-1 text-right`
+            }, `${itemCount} items available`)
+        );
+    };
+
+    // For use with many filter options - Add this function to your component
+    const FilterCheckboxGroup = ({ title, items, selectedItems, onChange }) => {
+        const [searchTerm, setSearchTerm] = useState('');
+        const isItemsArray = Array.isArray(items);
+        const itemCount = isItemsArray ? items.length : 0;
+        const showSearch = itemCount > 4; // Show search if more than 4 items
+
+        // Calculate if all visible items are selected
+        const filteredItems = showSearch && searchTerm
+            ? items.filter(item =>
+                typeof item === 'string'
+                    ? item.toLowerCase().includes(searchTerm.toLowerCase())
+                    : (item.label || '').toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            : items;
+
+        const allSelected = filteredItems.length > 0 &&
+            filteredItems.every(item => selectedItems?.includes(item));
+
+        // Handle select all for filtered items
+        const handleSelectAllFiltered = () => {
+            if (allSelected) {
+                // Remove all filtered items from selection
+                onChange(selectedItems.filter(item => !filteredItems.includes(item)));
+            } else {
+                // Add all filtered items to selection, preserving existing selections
+                const newSelected = [...(selectedItems || [])];
+                filteredItems.forEach(item => {
+                    if (!newSelected.includes(item)) {
+                        newSelected.push(item);
+                    }
+                });
+                onChange(newSelected);
+            }
+        };
+
+        return React.createElement('div', { className: "mb-4" },
+            // Title and controls
+            React.createElement('div', { className: "flex justify-between items-center mb-2" },
+                React.createElement('h4', { className: UI.typography.sectionTitle }, title),
+                itemCount === 0
+                    ? React.createElement('p', { className: `text-${UI.getThemeColors().textMuted}` }, "No items")
+                    : React.createElement('label', {
+                        className: `flex items-center text-xs cursor-pointer text-${UI.getThemeColors().textSecondary}`
+                    },
+                        React.createElement('input', {
+                            type: "checkbox",
+                            className: UI.forms.checkbox + " mr-1",
+                            checked: allSelected && filteredItems.length > 0,
+                            onChange: handleSelectAllFiltered,
+                            disabled: filteredItems.length === 0
+                        }),
+                        searchTerm ? "Select filtered" : "Select all"
+                    )
+            ),
+
+            // Search box (conditionally rendered)
+            showSearch && React.createElement('div', { className: "mb-2" },
+                React.createElement('input', {
+                    type: "text",
+                    value: searchTerm,
+                    onChange: (e) => setSearchTerm(e.target.value),
+                    placeholder: "Search...",
+                    className: `w-full text-sm px-2 py-1 border border-${UI.getThemeColors().border} rounded`
+                })
+            ),
+
+            // Checkbox list
+            React.createElement('div', {
+                className: `max-h-24 overflow-y-auto px-1 border border-${UI.getThemeColors().border} rounded bg-${UI.getThemeColors().cardBackground}`
+            },
+                filteredItems.length === 0
+                    ? React.createElement('p', { className: `text-sm text-${UI.getThemeColors().textMuted} p-2 italic` },
+                        searchTerm ? "No matches found" : "No items available"
+                    )
+                    : React.createElement('div', { className: "py-1" },
+                        filteredItems.map(item => {
+                            const label = typeof item === 'string' ? item : item.label;
+                            return React.createElement('div', { key: item, className: "mb-1" },
+                                React.createElement('label', {
+                                    className: `flex items-center text-sm px-2 py-1 hover:bg-${UI.getThemeColors().background} rounded cursor-pointer text-${UI.getThemeColors().textSecondary}`
+                                },
+                                    React.createElement('input', {
+                                        type: "checkbox",
+                                        className: UI.forms.checkbox + " mr-2",
+                                        checked: selectedItems?.includes(item) || false,
+                                        onChange: () => {
+                                            if (!selectedItems) {
+                                                onChange([item]);
+                                            } else {
+                                                const newSelected = selectedItems.includes(item)
+                                                    ? selectedItems.filter(i => i !== item)
+                                                    : [...selectedItems, item];
+                                                onChange(newSelected);
+                                            }
+                                        }
+                                    }),
+                                    // If search term exists, highlight the matching part
+                                    searchTerm
+                                        ? highlightMatch(label, searchTerm)
+                                        : label
+                                )
+                            );
+                        })
+                    )
+            ),
+
+            // Item count
+            showSearch && React.createElement('div', {
+                className: `text-xs text-${UI.getThemeColors().textMuted} mt-1 flex justify-between`
+            },
+                React.createElement('span', null,
+                    searchTerm
+                        ? `${filteredItems.length} of ${itemCount} items shown`
+                        : `${itemCount} items available`
+                ),
+                selectedItems?.length > 0 && React.createElement('span', null,
+                    `${selectedItems.length} selected`
+                )
             )
         );
     };
-    // RenderRangeSlider
+
+    // Helper function to highlight matched text
+    const highlightMatch = (text, query) => {
+        if (!query || !text) return text;
+
+        // Escape special regex characters to prevent errors
+        const escapeRegExp = (string) => {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        };
+
+        try {
+            const parts = text.split(new RegExp(`(${escapeRegExp(query)})`, 'gi'));
+            return React.createElement('span', null,
+                parts.map((part, index) => {
+                    const isMatch = part.toLowerCase() === query.toLowerCase();
+                    return isMatch
+                        ? React.createElement('span', {
+                            key: index,
+                            className: `bg-${UI.getThemeColors().primary.replace('500', '100').replace('400', '900')} text-${UI.getThemeColors().primary.replace('500', '800').replace('400', '300')}`
+                        }, part)
+                        : part;
+                })
+            );
+        } catch (e) {
+            // Fallback if regex fails
+            return text;
+        }
+    };
 
     const [exactMatchModes, setExactMatchModes] = useState({
         quantity: false,
@@ -231,11 +406,11 @@ window.App.components.AdvancedFilters = ({
 
             // Filter mode indicator
             React.createElement('div', { className: "flex justify-between items-center mb-2" },
-                React.createElement('span', { className: "text-xs font-medium text-blue-600" },
+                React.createElement('span', { className: `text-xs font-medium text-${UI.getThemeColors().primary}` },
                     exactMatchMode ? "Finding exact value" : "Finding in range"
                 ),
                 // Exact match toggle
-                React.createElement('label', { className: "flex items-center text-xs cursor-pointer" },
+                React.createElement('label', { className: `flex items-center text-xs cursor-pointer text-${UI.getThemeColors().textSecondary}` },
                     React.createElement('input', {
                         type: "checkbox",
                         className: UI.forms.checkbox + " mr-1",
@@ -250,7 +425,7 @@ window.App.components.AdvancedFilters = ({
             React.createElement('div', { className: "grid grid-cols-2 gap-2" },
                 // Min Input
                 React.createElement('div', null,
-                    React.createElement('label', { className: "text-xs block mb-0.5" },
+                    React.createElement('label', { className: `text-xs block mb-0.5 text-${UI.getThemeColors().textSecondary}` },
                         exactMatchMode ? "Value" : "Minimum"
                     ),
                     React.createElement('input', {
@@ -259,7 +434,7 @@ window.App.components.AdvancedFilters = ({
                         step: title.toLowerCase().includes('price') ? "0.01" : "1",
                         value: currentMin,
                         onChange: (e) => handleMinChange(e.target.value),
-                        className: "w-full text-sm p-1 border rounded"
+                        className: UI.forms.input
                     })
                 ),
 
@@ -267,20 +442,19 @@ window.App.components.AdvancedFilters = ({
                 React.createElement('div', {
                     style: { visibility: exactMatchMode ? 'hidden' : 'visible' }
                 },
-                    React.createElement('label', { className: "text-xs block mb-0.5" }, "Maximum"),
+                    React.createElement('label', { className: `text-xs block mb-0.5 text-${UI.getThemeColors().textSecondary}` }, "Maximum"),
                     React.createElement('input', {
                         type: "number",
                         min: 0,
                         step: title.toLowerCase().includes('price') ? "0.01" : "1",
                         value: currentMax,
                         onChange: (e) => handleMaxChange(e.target.value),
-                        className: "w-full text-sm p-1 border rounded"
+                        className: UI.forms.input
                     })
                 )
             )
         );
     };
-
 
     // Special render method for marks (with icons)
     const renderMarksCheckboxes = () => {
@@ -319,7 +493,7 @@ window.App.components.AdvancedFilters = ({
 
                     return React.createElement('label', {
                         key: mark.id,
-                        className: "flex items-center bg-white px-2 py-1 border rounded hover:bg-gray-50 cursor-pointer"
+                        className: `flex items-center bg-${UI.getThemeColors().cardBackground} px-2 py-1 border border-${UI.getThemeColors().border} rounded hover:bg-${UI.getThemeColors().background} cursor-pointer text-${UI.getThemeColors().textSecondary}`
                     },
                         React.createElement('input', {
                             type: "checkbox",
@@ -336,20 +510,23 @@ window.App.components.AdvancedFilters = ({
     };
 
     // Render page size selector
-const renderPageSizeSelector = () => {
-    return React.createElement('div', { className: "mb-4" },
-        React.createElement('h4', { className: UI.typography.sectionTitle + " mb-2" }, "Items per Page"),
-        React.createElement('div', { className: "flex space-x-2" },
-            pageOptions.map(option => 
-                React.createElement('button', {
-                    key: option,
-                    onClick: () => onItemsPerPageChange(option), // This should be correctly calling the prop
-                    className: `px-3 py-1.5 text-sm border rounded ${itemsPerPage === option ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'}`
-                }, option === 'all' ? 'All' : option)
+    const renderPageSizeSelector = () => {
+        return React.createElement('div', { className: "mb-4" },
+            React.createElement('h4', { className: UI.typography.sectionTitle + " mb-2" }, "Items per Page"),
+            React.createElement('div', { className: "flex space-x-2" },
+                pageOptions.map(option =>
+                    React.createElement('button', {
+                        key: option,
+                        onClick: () => onItemsPerPageChange(option),
+                        className: `px-3 py-1.5 text-sm border border-${UI.getThemeColors().border} rounded 
+                            ${itemsPerPage === option ?
+                                `bg-${UI.getThemeColors().primary} text-white` :
+                                `bg-${UI.getThemeColors().cardBackground} text-${UI.getThemeColors().textSecondary} hover:bg-${UI.getThemeColors().background}`}`
+                    }, option === 'all' ? 'All' : option)
+                )
             )
-        )
-    );
-};
+        );
+    };
 
     // Count active filters
     const getActiveFilterCount = () => {
@@ -381,62 +558,64 @@ const renderPageSizeSelector = () => {
 
         // Header with Basic Controls (moved from InventoryView)
         React.createElement('div', {
-            className: "p-4 border-b border-gray-200 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end",
+            className: `p-4 border-b border-${UI.getThemeColors().border} grid grid-cols-1 md:grid-cols-3 gap-4 items-end`,
         },
-            // Add Component Button
+            // Add Component Button (column 1)
             React.createElement('div', null,
                 React.createElement('button', {
                     onClick: () => {
-                        console.log("Add Component button clicked"); // Debug output
                         if (typeof onAddComponent === 'function') {
                             onAddComponent();
-                        } else {
-                            console.error("onAddComponent is not a function or undefined");
                         }
                     },
-                    className: UI.buttons.success + " w-full"
+                    className: UI.buttons.success + " w-full",
+                    disabled: typeof onAddComponent !== 'function'
                 }, "+ Add Component")
             ),
-            // Category Filter
-            React.createElement('div', null,
+
+            // Search Input (column 2)
+            React.createElement('div', { className: "md:col-span-1" },
                 React.createElement('label', {
-                    htmlFor: "category-filter",
-                    className: UI.forms.label
-                }, "Filter by Category"),
-                React.createElement('select', {
-                    id: "category-filter",
-                    className: UI.forms.select,
-                    value: selectedCategory,
-                    onChange: (e) => onChangeCategoryFilter(e.target.value),
-                },
-                    React.createElement('option', { value: "all" }, "All Categories"),
-                    (categories || []).sort().map(category => React.createElement('option', { key: category, value: category }, category))
+                    htmlFor: "search-input",
+                    className: UI.typography.body
+                }, "Search Components"),
+                React.createElement('div', { className: "flex" },
+                    React.createElement('input', {
+                        id: "search-input",
+                        type: "text",
+                        placeholder: "Search by name, type, category, info...",
+                        className: UI.forms.input + " flex-grow",
+                        value: searchTerm || '',
+                        onChange: (e) => {
+                            if (typeof onChangeSearchTerm === 'function') {
+                                // Use e.target.value directly when possible
+                                onChangeSearchTerm(e.target.value);
+                            }
+                        }
+                    }),
+                    // Clear button (only shown when search has text)
+                    searchTerm && React.createElement('button', {
+                        className: `ml-2 px-2 text-${UI.getThemeColors().textMuted} hover:text-${UI.getThemeColors().textPrimary}`,
+                        onClick: () => {
+                            if (typeof onChangeSearchTerm === 'function') {
+                                // Clear search by passing empty string or event-like object
+                                onChangeSearchTerm('');
+                            }
+                        },
+                        title: "Clear search"
+                    }, "✕")
                 )
             ),
 
-            // Search Input
-            React.createElement('div', null,
-                React.createElement('label', {
-                    htmlFor: "search-input",
-                    className: UI.forms.label
-                }, "Search"),
-                React.createElement('input', {
-                    id: "search-input",
-                    type: "text",
-                    placeholder: "Name, type, category...",
-                    className: UI.forms.input,
-                    value: searchTerm,
-                    onChange: (e) => onChangeSearchTerm(e.target.value),
-                })
-            ),
-
-            // View Mode Toggle
-            React.createElement('div', null,
-                React.createElement('label', { className: UI.forms.label }, "View Mode"),
-                React.createElement('div', { className: "flex rounded shadow-sm border border-gray-300" },
+            // View Mode Toggle (column 3)
+            React.createElement('div', { className: "md:col-span-3 lg:col-span-1" },
+                React.createElement('label', { className: UI.typography.body }, "View Mode"),
+                React.createElement('div', { className: `flex rounded shadow-sm border border-${UI.getThemeColors().border}` },
                     React.createElement('button', {
                         title: "Table View",
-                        className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
+                        className: `flex-1 p-2 text-sm rounded-l ${viewMode === 'table' ?
+                            `bg-${UI.getThemeColors().primary} text-white` :
+                            `bg-${UI.getThemeColors().cardBackground} text-${UI.getThemeColors().textSecondary} hover:bg-${UI.getThemeColors().background}`}`,
                         onClick: () => onChangeViewMode('table')
                     },
                         React.createElement('svg', {
@@ -455,7 +634,9 @@ const renderPageSizeSelector = () => {
                     ),
                     React.createElement('button', {
                         title: "Card View",
-                        className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100 text-gray-700'}`,
+                        className: `flex-1 p-2 text-sm rounded-r ${viewMode === 'card' ?
+                            `bg-${UI.getThemeColors().primary} text-white` :
+                            `bg-${UI.getThemeColors().cardBackground} text-${UI.getThemeColors().textSecondary} hover:bg-${UI.getThemeColors().background}`}`,
                         onClick: () => onChangeViewMode('card')
                     },
                         React.createElement('svg', {
@@ -473,19 +654,19 @@ const renderPageSizeSelector = () => {
         ),
 
         React.createElement('div', {
-            className: "flex justify-between items-center p-4 border-b border-gray-200 cursor-pointer",
+            className: `flex justify-between items-center p-4 border-b border-${UI.getThemeColors().border} cursor-pointer`,
             onClick: onToggleExpand
         },
             React.createElement('div', { className: "flex items-center" },
                 React.createElement('h3', { className: UI.typography.heading.h3 }, "Advanced Filters"),
                 activeFilterCount > 0 && React.createElement('span', {
-                    className: "ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                    className: `ml-2 ${UI.buttons.small.info} `
                 }, `${activeFilterCount} active`)
             ),
             // Expand/collapse icon
             React.createElement('svg', {
                 xmlns: "http://www.w3.org/2000/svg",
-                className: `h-5 w-5 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`,
+                className: `h-5 w-5 ${UI.colors.secondary} transform transition-transform ${isExpanded ? 'rotate-180' : ''}`,
                 fill: "none",
                 viewBox: "0 0 24 24",
                 stroke: "currentColor"
@@ -503,14 +684,32 @@ const renderPageSizeSelector = () => {
         isExpanded && React.createElement('div', { className: UI.cards.body },
             // Filter controls grid
             React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2" },
-                // Category filter
+                // Category filter with enhanced checkbox group
                 React.createElement('div', null,
-                    renderCheckboxGroup("Filter by Category", categories, selectedCategories, onCategoriesChange)
+                    categories && categories.length > 4
+                        // Use searchable filter for large lists
+                        ? React.createElement(FilterCheckboxGroup, {
+                            title: "Filter by Category",
+                            items: categories,
+                            selectedItems: selectedCategories,
+                            onChange: onCategoriesChange
+                        })
+                        // Use scrollable filter for medium lists
+                        : renderCheckboxGroup("Filter by Category", categories, selectedCategories, onCategoriesChange)
                 ),
 
-                // Type filter
+                // Type filter with enhanced checkbox group
                 React.createElement('div', null,
-                    renderCheckboxGroup("Filter by Type", allTypes, selectedTypes, onTypesChange)
+                    allTypes && allTypes.length > 4
+                        // Use searchable filter for large lists
+                        ? React.createElement(FilterCheckboxGroup, {
+                            title: "Filter by Type",
+                            items: allTypes,
+                            selectedItems: selectedTypes,
+                            onChange: onTypesChange
+                        })
+                        // Use scrollable filter for medium lists
+                        : renderCheckboxGroup("Filter by Type", allTypes, selectedTypes, onTypesChange)
                 ),
 
                 // Marks filter (special render with icons)
@@ -520,16 +719,34 @@ const renderPageSizeSelector = () => {
 
                 // Location filter
                 React.createElement('div', null,
-                    renderCheckboxGroup("Filter by Location",
-                        locations.map(loc => loc.name),
-                        selectedLocations,
-                        onLocationsChange
-                    )
+                    locations && locations.length > 4
+                        // Use searchable filter for large lists
+                        ? React.createElement(FilterCheckboxGroup, {
+                            title: "Filter by Location",
+                            items: locations.map(loc => loc.name),
+                            selectedItems: selectedLocations,
+                            onChange: onLocationsChange
+                        })
+                        // Use scrollable filter for medium lists
+                        : renderCheckboxGroup("Filter by Location",
+                            locations.map(loc => loc.name),
+                            selectedLocations,
+                            onLocationsChange
+                        )
                 ),
 
                 // Footprint filter
                 React.createElement('div', null,
-                    renderCheckboxGroup("Filter by Footprint", footprints, selectedFootprints, onFootprintsChange)
+                    footprints && footprints.length > 4
+                        // Use searchable filter for large lists
+                        ? React.createElement(FilterCheckboxGroup, {
+                            title: "Filter by Footprint",
+                            items: footprints,
+                            selectedItems: selectedFootprints,
+                            onChange: onFootprintsChange
+                        })
+                        // Use scrollable filter for medium lists
+                        : renderCheckboxGroup("Filter by Footprint", footprints, selectedFootprints, onFootprintsChange)
                 ),
 
                 // Items per page selector
@@ -555,9 +772,10 @@ const renderPageSizeSelector = () => {
                         disabled: activeFilterCount === 0
                     }, "Clear All Filters")
                 )
-            )
+            ),
+
         )
     );
 };
 
-console.log("AdvancedFilters component loaded."); // For debugging
+console.log("AdvancedFilters done load.");

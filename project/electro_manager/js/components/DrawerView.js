@@ -70,59 +70,46 @@ window.App.components.DrawerView = ({
             return comp.storageInfo.cellId === cellId;
         });
     };
-    /*
-    // Get or create cell for a coordinate
-    const getOrCreateCell = (rowIndex, colIndex) => {
-        const coordinate = `${getColLabel(colIndex)}${rowIndex + 1}`; // e.g., "A1", "B2"
-
-        // If cell exists for this coordinate, return it
-        if (cellMap[coordinate]) {
-            return cellMap[coordinate];
-        }
-
-        // Otherwise return a placeholder object
-        return {
-            id: null,
-            drawerId: drawer.id,
-            coordinate: coordinate,
-            nickname: '',
-            available: true // Add this property
-        };
-    };
-    */
 
     // Handle editing a cell nickname
     const handleEditCellNickname = (cell) => {
         if (!cell || !cell.id) return;
-        setEditingCellId(cell.id);
-        setEditCellNickname(cell.nickname || '');
+        // Sanitize the cell ID
+        const sanitizedCellId = window.App.utils.sanitize.value(cell.id);
+        setEditingCellId(sanitizedCellId);
+        // Sanitize the nickname before setting state
+        const sanitizedNickname = window.App.utils.sanitize.value(cell.nickname || '');
+        setEditCellNickname(sanitizedNickname);
     };
 
     // Handle saving a cell nickname
     const handleSaveCellNickname = () => {
+        // Find the cell being edited
         const cellToUpdate = drawerCells.find(cell => cell.id === editingCellId);
         if (!cellToUpdate) return;
-
-        const trimmedNickname = editCellNickname.trim();
-
+    
+        // Sanitize and trim the nickname
+        const trimmedNickname = window.App.utils.sanitize.value(editCellNickname.trim());
+    
         // Check for duplicate nicknames in this drawer
         const isDuplicate = drawerCells.some(cell =>
             cell.id !== editingCellId &&
             cell.nickname &&
             cell.nickname.toLowerCase() === trimmedNickname.toLowerCase()
         );
-
+    
         if (isDuplicate && trimmedNickname) {
             alert(`Nickname "${trimmedNickname}" is already used in this drawer.`);
             return;
         }
-
-        const updatedCell = {
+    
+        // Create a sanitized updated cell
+        const updatedCell = window.App.utils.sanitize.cell({
             ...cellToUpdate,
             nickname: trimmedNickname,
             available: cellToUpdate.available !== undefined ? cellToUpdate.available : true
-        };
-
+        });
+    
         onEditCell(editingCellId, updatedCell);
         setEditingCellId(null);
         setEditCellNickname('');
@@ -132,29 +119,37 @@ window.App.components.DrawerView = ({
     const handleToggleAvailability = (cellId) => {
         if (!cellId) return;
         
-        const cellToToggle = drawerCells.find(cell => cell.id === cellId);
+        // Sanitize the cell ID
+        const sanitizedCellId = window.App.utils.sanitize.value(cellId);
+        
+        const cellToToggle = drawerCells.find(cell => cell.id === sanitizedCellId);
         if (!cellToToggle) return;
-
-        const updatedCell = {
+    
+        // Create sanitized updated cell with toggled availability
+        const updatedCell = window.App.utils.sanitize.cell({
             ...cellToToggle,
             available: cellToToggle.available === false ? true : false // Toggle the value
-        };
-
-        onEditCell(cellId, updatedCell);
+        });
+    
+        onEditCell(sanitizedCellId, updatedCell);
     };
+    
 
     // Handle emptying a cell by removing all component associations
     const handleEmptyCell = (cellId) => {
         if (!cellId) return;
         
+        // Sanitize the cell ID
+        const sanitizedCellId = window.App.utils.sanitize.value(cellId);
+        
         // Find components assigned to this cell
-        const cellComponents = getComponentsForCell(cellId);
+        const cellComponents = getComponentsForCell(sanitizedCellId);
         
         if (cellComponents.length === 0) {
             alert("This cell is already empty.");
             return;
         }
-
+    
         if (window.confirm(`Remove ${cellComponents.length} component(s) from this cell?`)) {
             // We need to make a copy of the components array to update
             let updatedComponents = [...components];
@@ -174,16 +169,16 @@ window.App.components.DrawerView = ({
                     
                     // Handle new format (cells array)
                     if (updatedComponent.storageInfo.cells && Array.isArray(updatedComponent.storageInfo.cells)) {
-                        updatedComponent.storageInfo.cells = updatedComponent.storageInfo.cells.filter(id => id !== cellId);
+                        updatedComponent.storageInfo.cells = updatedComponent.storageInfo.cells.filter(id => id !== sanitizedCellId);
                     }
                     
                     // Handle legacy format (cellId)
-                    if (updatedComponent.storageInfo.cellId === cellId) {
+                    if (updatedComponent.storageInfo.cellId === sanitizedCellId) {
                         updatedComponent.storageInfo.cellId = '';
                     }
                     
-                    // Update the component in our array
-                    updatedComponents[index] = updatedComponent;
+                    // Sanitize the updated component
+                    updatedComponents[index] = window.App.utils.sanitize.component(updatedComponent);
                 }
             });
             
@@ -202,35 +197,35 @@ window.App.components.DrawerView = ({
     // Handle clicking on a cell
     const handleCellClick = (cell) => {
         if (!cell) return;
-        
         // If we're editing a cell, save before selecting a new one
         if (editingCellId && cell.id !== editingCellId) {
             handleSaveCellNickname();
         }
-
-        setSelectedCellId(cell.id);
+        // Sanitize the cell ID before setting state
+        setSelectedCellId(window.App.utils.sanitize.value(cell.id));
     };
 
     // Handle creating a new cell
     const handleCreateCell = (rowIndex, colIndex) => {
+        // Create the coordinate with clean inputs
         const coordinate = `${String.fromCharCode(65 + colIndex)}${rowIndex + 1}`;
-
+    
         // Check if a cell already exists for this coordinate
         const existingCell = drawerCells.find(cell => cell.coordinate === coordinate);
         if (existingCell) {
             setSelectedCellId(existingCell.id);
             return;
         }
-
-        // Create a new cell
-        const newCell = {
+    
+        // Create a sanitized new cell
+        const newCell = window.App.utils.sanitize.cell({
             id: `cell-${Date.now()}-${Math.random().toString(16).slice(2)}`,
             drawerId: drawer.id,
             coordinate: coordinate,
             nickname: '',
-            available: true // Add this property with default value true
-        };
-
+            available: true
+        });
+    
         onAddCell(newCell);
         setSelectedCellId(newCell.id);
     };
@@ -244,7 +239,7 @@ window.App.components.DrawerView = ({
             // Empty cell for row header column (top-left corner)
             React.createElement('div', {
                 key: 'corner',
-                className: "sticky left-0 top-0 z-10 bg-gray-100 p-2 font-medium border border-gray-300 text-center w-[40px] h-[40px]"
+                className: `sticky left-0 top-0 z-10 bg-${UI.getThemeColors().background} p-2 font-medium border border-${UI.getThemeColors().border} text-center w-[40px] h-[40px]`
             })
         ];
 
@@ -253,7 +248,7 @@ window.App.components.DrawerView = ({
             headerRow.push(
                 React.createElement('div', {
                     key: `col-${c}`,
-                    className: "sticky top-0 z-10 bg-gray-100 p-2 font-medium border border-gray-300 text-center w-[100px] h-[40px]"
+                    className: `sticky top-0 z-10 ${UI.colors.background.default} ${UI.typography.body} border border-${UI.getThemeColors().border} text-center p-2 w-[100px] h-[40px]`
                 }, getColLabel(c))
             );
         }
@@ -271,7 +266,7 @@ window.App.components.DrawerView = ({
                 // Row header (1, 2, 3, ...)
                 React.createElement('div', {
                     key: `row-${r}`,
-                    className: "sticky left-0 z-10 bg-gray-100 p-2 font-medium border border-gray-300 text-center w-[40px] h-[100px] flex items-center justify-center"
+                    className: `sticky left-0 z-10 bg-${UI.getThemeColors().background} ${UI.typography.body} border border-${UI.getThemeColors().border} text-center w-[40px] h-[100px] flex items-center justify-center`
                 }, r + 1)
             ];
 
@@ -289,11 +284,11 @@ window.App.components.DrawerView = ({
             
                 const cellElement = React.createElement('div', {
                     key: `cell-${r}-${c}`,
-                    className: `border border-gray-300 p-2 w-[100px] h-[100px] 
-                        ${isSelected ? 'bg-blue-50 border-blue-500' : 'bg-white'} 
-                        ${!isAvailable ? 'bg-gray-300 opacity-70' : ''} 
+                    className: `border border-${UI.getThemeColors().border} p-2 w-[100px] h-[100px] 
+                        ${isSelected ? `bg-${UI.getThemeColors().primary.replace('500', '100').replace('400', '900')} border-${UI.getThemeColors().primary}` : `bg-${UI.getThemeColors().cardBackground}`} 
+                        ${!isAvailable ? `bg-${UI.getThemeColors().background} opacity-70` : ''} 
                         ${cell && cell.id ? 'cursor-pointer' : 'cursor-default'} 
-                        ${cellComponents.length > 0 ? 'bg-green-50' : ''}`,
+                        ${cellComponents.length > 0 ? `bg-${UI.getThemeColors().success.replace('500', '100').replace('400', '900')}` : ''}`,
                     onClick: () => cell && cell.id ? handleCellClick(cell) : handleCreateCell(r, c)
                 },
                     // Cell content
@@ -306,16 +301,16 @@ window.App.components.DrawerView = ({
                                 onChange: (e) => setEditCellNickname(e.target.value),
                                 onBlur: handleSaveCellNickname,
                                 onKeyDown: (e) => e.key === 'Enter' && handleSaveCellNickname(),
-                                className: "w-full p-1 text-sm border border-gray-300 rounded",
+                                className: "w-full p-1 ${UI.typography.body}  border border-gray-300 rounded",
                                 autoFocus: true
                             }) :
-                            React.createElement('div', { className: "font-medium text-sm" },
+                            React.createElement('div', { className: `${UI.typography.body} text-sm` },
                                 cell ? (cell.nickname || cell.coordinate) : coordinate, // Show coordinate if cell doesn't exist
-                                cell && !cell.id && React.createElement('span', { className: "text-gray-400 text-xs italic block" }, "Click to create"),
+                                cell && !cell.id && React.createElement('span', { className: `text-${UI.getThemeColors().textMuted} text-xs italic block` }, "Click to create"),
                                 cell && cell.id && !isAvailable && React.createElement('span', { className: "text-red-500 text-xs italic block" }, "Unavailable")
                             ),
 
-                        cellComponents.length > 0 && React.createElement('div', { className: "text-xs mt-1 text-gray-600" },
+                        cellComponents.length > 0 && React.createElement('div', { className: `text-xs mt-1 text-${UI.getThemeColors().textSecondary}` },
                             `${cellComponents.length} component${cellComponents.length !== 1 ? 's' : ''}`
                         )
                     )
@@ -342,13 +337,13 @@ window.App.components.DrawerView = ({
     return React.createElement('div', { className: "space-y-4" },
         // Header with back button
         React.createElement('div', { className: "flex justify-between items-center mb-4" },
-            React.createElement('h2', { className: "text-xl font-semibold text-gray-800" },
+            React.createElement('h2', { className: UI.typography.heading.h2 },
                 `Drawer: ${drawer.name}`,
-                drawer.description && React.createElement('span', { className: "ml-2 text-sm text-gray-500 font-normal" }, `(${drawer.description})`)
+                drawer.description && React.createElement('span', { className: `ml-2 text-sm text-${UI.getThemeColors().textMuted} font-normal` }, `(${drawer.description})`)
             ),
             React.createElement('button', {
                 onClick: onBackToDrawers,
-                className: "px-3 py-1 bg-gray-200 text-gray-700 rounded flex items-center hover:bg-gray-300"
+                className: `px-3 py-1 bg-${UI.getThemeColors().secondary} text-${UI.getThemeColors().textSecondary} rounded flex items-center hover:bg-${UI.getThemeColors().secondaryHover}`
             },
                 React.createElement('svg', {
                     xmlns: "http://www.w3.org/2000/svg",
@@ -369,26 +364,26 @@ window.App.components.DrawerView = ({
         ),
 
         // Location info
-        React.createElement('div', { className: "bg-gray-50 p-3 rounded-lg border border-gray-200" },
-            React.createElement('div', { className: "text-sm text-gray-600" },
+        React.createElement('div', { className: `bg-${UI.getThemeColors().background} p-3 rounded-lg border border-${UI.getThemeColors().border}` },
+            React.createElement('div', { className: `text-sm text-${UI.getThemeColors().textSecondary}` },
                 React.createElement('span', { className: "font-medium" }, "Location: "),
                 location?.name || "Unknown Location"
             ),
-            React.createElement('div', { className: "text-sm text-gray-600 mt-1" },
+            React.createElement('div', { className: `text-sm text-${UI.getThemeColors().textSecondary} mt-1` },
                 React.createElement('span', { className: "font-medium" }, "Grid Size: "),
                 `${rows} × ${cols}`
             ),
-            React.createElement('div', { className: "text-sm text-gray-600 mt-1" },
+            React.createElement('div', { className: `text-sm text-${UI.getThemeColors().textSecondary} mt-1` },
                 React.createElement('span', { className: "font-medium" }, "Total Components: "),
                 components.filter(comp => comp.storageInfo && comp.storageInfo.drawerId === drawer.id).length
             )
         ),
 
         // Grid view with responsive container
-        React.createElement('div', { className: "bg-white p-4 rounded-lg shadow border border-gray-200" },
-            React.createElement('h3', { className: "text-lg font-medium mb-4 text-gray-700" }, "Drawer Grid"),
+        React.createElement('div', { className: `bg-${UI.getThemeColors().cardBackground} p-4 rounded-lg shadow border border-${UI.getThemeColors().border}` },
+            React.createElement('h3', { className: `text-lg font-medium mb-4 text-${UI.getThemeColors().textSecondary}` }, "Drawer Grid"),
             // Instructions
-            React.createElement('p', { className: "text-sm text-gray-600 mb-4" },
+            React.createElement('p', { className: `text-sm text-${UI.getThemeColors().textSecondary} mb-4` },
                 "Click on a cell to select it. Click on an empty coordinate to create a new cell. Cells with components are highlighted in green."
             ),
             // Grid container with scroll capabilities
@@ -422,36 +417,36 @@ window.App.components.DrawerView = ({
 
                 React.createElement('button', {
                     onClick: () => handleEditCellNickname(selectedCell),
-                    className: "px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className: UI.buttons.small.info
                 }, "Rename Cell"),
 
                 React.createElement('button', {
                     onClick: () => onDeleteCell(selectedCell.id),
-                    className: "px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                    className: UI.buttons.small.danger
                 }, "Delete Cell")
             ),
 
             // Components in this cell
-            React.createElement('h4', { className: "font-medium text-gray-600 mt-4 mb-2" },
+            React.createElement('h4', { className: `font-medium text-${UI.getThemeColors().textSecondary} mt-4 mb-2` },
                 `Components in ${selectedCell.nickname || selectedCell.coordinate}`
             ),
             selectedCellComponents.length === 0 ?
-                React.createElement('p', { className: "text-sm text-gray-500 italic" }, "No components in this cell.") :
+                React.createElement('p', { className: `text-sm text-${UI.getThemeColors().textMuted} italic` }, "No components in this cell.") :
                 React.createElement('div', { className: "space-y-2 max-h-60 overflow-y-auto" },
                     selectedCellComponents.map(comp =>
                         React.createElement('div', {
                             key: comp.id,
-                            className: "flex justify-between items-center p-2 bg-gray-50 rounded border border-gray-200"
+                            className: `flex justify-between items-center p-2 bg-${UI.getThemeColors().background} rounded border border-${UI.getThemeColors().border}`
                         },
                             React.createElement('div', null,
-                                React.createElement('div', { className: "font-medium" }, comp.name),
-                                React.createElement('div', { className: "text-xs text-gray-600" },
+                                React.createElement('div', { className: `font-medium text-${UI.getThemeColors().textSecondary} `}, comp.name),
+                                React.createElement('div', { className: `text-xs text-${UI.getThemeColors().textSecondary}` },
                                     `${comp.category} • Model/Type: ${comp.type || ""}`
                                 )
                             ),
                             React.createElement('button', {
                                 onClick: () => onEditComponent(comp),
-                                className: "px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                                className: UI.buttons.small.primary
                             }, "Edit")
                         )
                     )
@@ -460,4 +455,4 @@ window.App.components.DrawerView = ({
     );
 };
 
-console.log("DrawerView component loaded."); // For debugging
+console.log("DrawerView component loaded with theme-aware styling."); // For debugging

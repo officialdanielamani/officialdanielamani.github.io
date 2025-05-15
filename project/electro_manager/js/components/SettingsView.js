@@ -1,3 +1,5 @@
+// js/components/SettingsView.js
+
 // Ensure the global namespace exists
 window.App = window.App || {};
 window.App.components = window.App.components || {};
@@ -7,109 +9,169 @@ window.App.components = window.App.components || {};
  * Provides access to import/export, category management, low stock config, and display settings.
  */
 window.App.components.SettingsView = ({
-    // Props
-    categories, // Array: List of category strings
-    lowStockConfig, // Object: Low stock thresholds { category: threshold }
-    currencySymbol, // String: Currency symbol
-    showTotalValue, // Boolean: Whether to show total value in summary
-    footprints, // Array: List of footprint strings
-    jsonData, // String: Text content for import/export text area
-    importError, // String: Error or success message after import
-    exportMessage, // String: Message after export/save attempt
-    localStorageStatus, // Object: Status of localStorage items { key: boolean }
-    locations,
-    components,
-    // Callbacks
-    onExportComponents, // Function: Called when Export Components button is clicked
-    onExportConfig, // Function: Called when Export Config button is clicked
-    onImportComponentsFile, // Function(event): Called when component file is selected for import
-    onImportConfigFile, // Function(event): Called when config file is selected for import
-    onDownloadJson, // Function: Called when Download JSON button is clicked
-    onCopyJson, // Function: Called when Copy JSON button is clicked
-    onClearJsonArea, // Function: Called when Clear Area button is clicked
-    onChangeCurrency, // Function(event): Called when currency input changes
-    onChangeShowTotalValue, // Function(event): Called when show total value checkbox changes
-    onAddLowStock, // Function(category, threshold): Called to add/update low stock threshold
-    onRemoveLowStock, // Function(category): Called to remove low stock threshold
-    onEditCategory, // Function(oldName, newName): Called to rename a category
-    onDeleteCategory, // Function(category): Called to delete a category
-    onAddDefaultCategory, // Function: Called to add a "Default" category
-    onSaveComponentsLS, // Function: Called to force save components to localStorage
-    onSaveConfigLS, // Function: Called to force save config to localStorage
-    onClearLS, // Function: Called to clear all localStorage
-    onAddFootprint, // Function(newFootprint): Called to add a new footprint
-    onEditFootprint, // Function(oldFootprint, newFootprint): Called to rename a footprint
-    onDeleteFootprint, // Function(footprint): Called to delete a footprint
-    onExportLocations, // Function: Called when Export Locations button is clicked
-    onImportLocationsFile, // Function(event): Called when locations file is selected for import
-    onRestoreDefaultFootprints, // Function: Called to restore default footprints
+    // Data props
+    categories = [], // Array: List of category strings
+    lowStockConfig = {}, // Object: Low stock thresholds { category: threshold }
+    footprints = [], // Array: List of footprint strings
+    components = [], // Array: All components
+
+    // Configuration props
+    currencySymbol = 'RM', // String: Currency symbol
+    showTotalValue = false, // Boolean: Whether to show total value in summary
+    theme = 'light', // String: Current UI theme
+
+    // Callbacks that update parent state
+    onUpdateCategories, // Function(categories): Update categories in parent
+    onUpdateLowStockConfig, // Function(config): Update lowStockConfig in parent
+    onUpdateComponents, // Function(components): Update components in parent
+    onUpdateLocations, // Function(locations): Update locations in parent
+    onUpdateDrawers, // Function(drawers): Update drawers in parent
+    onUpdateCells, // Function(cells): Update cells in parent
+    onUpdateFootprints, // Function(footprints): Update footprints in parent
+
+    // Configuration update callbacks
+    onChangeCurrency, // Function(e): Called when currency input changes
+    onChangeShowTotalValue, // Function(e): Called when show total value checkbox changes
+    onChangeTheme, // Function(theme): Called when theme is changed
+
 }) => {
+    // Get UI constants and required hooks
     const { UI } = window.App.utils;
+    const { storage } = window.App.utils;
     const { useState } = React;
-    const { FootprintManager } = window.App.components;
+    const { CategoryManager, FootprintManager } = window.App.components;
 
     // Internal state for settings form controls
-    const [editingCategory, setEditingCategory] = useState(null); // Category being edited
-    const [newCategoryName, setNewCategoryName] = useState(''); // New name for edited category
     const [newLowStockCategory, setNewLowStockCategory] = useState(''); // Category for new low stock threshold
     const [newLowStockThreshold, setNewLowStockThreshold] = useState(5); // Threshold value
+    const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
+    const [itemsPerPage, setItemsPerPage] = useState('50'); //
 
-    // --- Event Handlers ---
+    // State for import/export
+    const [importError, setImportError] = useState(''); // Error or success message after import
+    const [exportMessage, setExportMessage] = useState(''); // Message after export/save attempt
 
-    // Handle low stock threshold submission
-    const handleAddLowStock = () => {
-        if (!newLowStockCategory || newLowStockThreshold < 1) {
-            alert("Please select a category and enter a threshold greater than 0.");
-            return;
-        }
-        onAddLowStock(newLowStockCategory, newLowStockThreshold);
-        // Reset the form
-        setNewLowStockThreshold(5);
+    // --- Helper Functions ---
+
+    // Clear status messages
+    const clearStatusMessages = () => {
+        setImportError('');
+        setExportMessage('');
     };
 
-    // Start editing category
-    const handleStartEditCategory = (category) => {
-        setEditingCategory(category);
-        setNewCategoryName(category);
+    // --- Backup & Restore Functions (New Unified Approach) ---
+
+    // Create a complete backup of all data
+    const handleCreateBackup = () => {
+        clearStatusMessages();
+
+        storage.createBackup()
+            .then(function (backup) {
+                try {
+                    const backupJson = JSON.stringify(backup, null, 2);
+
+                    // Create and trigger download
+                    const element = document.createElement('a');
+                    const file = new Blob([backupJson], { type: 'application/json' });
+                    element.href = URL.createObjectURL(file);
+
+                    // Generate a filename with current date
+                    const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+                    element.download = `electronics_backup_${date}.json`;
+
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                    URL.revokeObjectURL(element.href);
+
+                    setExportMessage('Backup created and downloaded successfully!');
+                } catch (err) {
+                    console.error("Error downloading backup:", err);
+                    setImportError(`Error creating backup: ${err.message}`);
+                }
+            })
+            .catch(function (err) {
+                console.error("Error creating backup:", err);
+                setImportError(`Error creating backup: ${err.message}`);
+            });
     };
 
-    // Save edited category name
-    const handleSaveCategory = () => {
-        const trimmedNewName = newCategoryName.trim();
-        // Validate
-        if (!trimmedNewName) {
-            alert("Category name cannot be empty.");
-            return;
-        }
+    // Import a backup file
+    const handleFileImport = (event) => {
+        clearStatusMessages();
 
-        if (trimmedNewName === editingCategory) {
-            // No change, just cancel
-            setEditingCategory(null);
-            setNewCategoryName('');
-            return;
-        }
+        const file = event.target.files[0];
+        if (!file) return;
 
-        if (categories.includes(trimmedNewName)) {
-            alert(`Category "${trimmedNewName}" already exists.`);
-            return;
-        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const backup = JSON.parse(e.target.result);
 
-        // Call parent handler and reset state
-        onEditCategory(editingCategory, trimmedNewName);
-        setEditingCategory(null);
-        setNewCategoryName('');
+                // Confirm import
+                if (window.confirm(`This will replace your current data with the backup from ${new Date(backup.meta.d).toLocaleString()}. Continue?`)) {    restoreFromBackup(backup);
+                }
+            } catch (err) {
+                console.error("Error parsing backup file:", err);
+                setImportError(`Invalid backup file: ${err.message}`);
+            }
+        };
+
+        reader.onerror = (e) => {
+            console.error("Error reading backup file:", e.target.error);
+            setImportError(`Error reading backup file: ${e.target.error}`);
+        };
+
+        reader.readAsText(file);
+
+        // Reset file input
+        event.target.value = null;
     };
 
-    // Cancel category editing
-    const handleCancelCategoryEdit = () => {
-        setEditingCategory(null);
-        setNewCategoryName('');
+    // Restore from a backup
+    const restoreFromBackup = (backup) => {
+        storage.restoreBackup(backup)
+            .then(function (result) {
+                if (result.success) {
+                    setImportError(`Backup restored successfully! ${result.message}`);
+
+                    // Reload data after restore
+                    Promise.all([
+                        storage.loadComponents(),
+                        storage.loadLocations(),
+                        storage.loadDrawers(),
+                        storage.loadCells(),
+                        storage.loadCategories(),
+                        storage.loadFootprints(),
+                        storage.loadLowStockConfig()
+                    ]).then(function (results) {
+                        onUpdateComponents(results[0]);
+                        onUpdateLocations(results[1]);
+                        onUpdateDrawers(results[2]);
+                        onUpdateCells(results[3]);
+                        onUpdateCategories(results[4]);
+                        onUpdateFootprints(results[5]);
+                        onUpdateLowStockConfig(results[6]);
+                    });
+                } else {
+                    setImportError(`Error restoring backup: ${result.message}`);
+                }
+            })
+            .catch(function (err) {
+                console.error("Error restoring backup:", err);
+                setImportError(`Error restoring backup: ${err.message}`);
+            });
     };
 
-    // Handle low stock category selection, also update threshold if already configured
+    // --- Category Management Functions ---
+
+    // --- Footprint Management Functions ---
+
+    // --- Low Stock Configuration Functions ---
     const handleLowStockCategoryChange = (e) => {
         const category = e.target.value;
         setNewLowStockCategory(category);
+
         // If there's already a threshold for this category, load it
         if (category && lowStockConfig && lowStockConfig[category]) {
             setNewLowStockThreshold(lowStockConfig[category]);
@@ -119,7 +181,113 @@ window.App.components.SettingsView = ({
         }
     };
 
-    // --- Render ---
+    // Handle adding a low stock threshold
+    const handleAddLowStock = () => {
+        clearStatusMessages();
+
+        if (!newLowStockCategory || newLowStockThreshold < 1) {
+            alert("Please select a category and enter a threshold greater than 0.");
+            return;
+        }
+
+        const updatedConfig = { ...lowStockConfig, [newLowStockCategory]: newLowStockThreshold };
+        onUpdateLowStockConfig(updatedConfig);
+        setExportMessage(`Low stock threshold ${lowStockConfig[newLowStockCategory] ? 'updated' : 'added'} for ${newLowStockCategory}.`);
+    };
+
+    // Handle removing a low stock threshold
+    const handleRemoveLowStock = (category) => {
+        clearStatusMessages();
+
+        const updatedConfig = { ...lowStockConfig };
+        delete updatedConfig[category];
+
+        onUpdateLowStockConfig(updatedConfig);
+        setExportMessage(`Low stock threshold removed for ${category}.`);
+    };
+
+    // --- Storage Management Functions ---
+
+    // Save components to storage
+    const handleSaveComponentsLS = async () => {
+        clearStatusMessages();
+        try {
+            const ok = await storage.saveComponents(components);
+            if (ok) {
+                setExportMessage("✅ Components saved to IndexedDB.");
+            } else {
+                setImportError("❌ Component save failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            setImportError("❌ Component save threw an error.");
+        }
+    };
+
+    // Save configuration to storage
+    const handleSaveConfig = async () => {
+        clearStatusMessages();
+
+        // Create config object using local state + props
+        const currentConfig = {
+            categories,
+            viewMode: viewMode,
+            lowStockConfig,
+            currencySymbol,
+            showTotalValue,
+            footprints,
+            itemsPerPage: itemsPerPage,
+            theme
+        };
+
+        try {
+            const ok = await storage.saveConfig(currentConfig);
+            if (ok) {
+                setExportMessage("✅ Config saved to LocalStorage.");
+            } else {
+                setImportError("❌ Config save failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            setImportError("❌ Config save threw an error.");
+        }
+    };
+
+    // Clear all storage
+    const handleClearStorage = async () => {
+        clearStatusMessages();
+
+        if (window.confirm('Are you sure you want to clear ALL inventory data and settings? This action cannot be undone.')) {
+            try {
+                const cleared = await storage.clearStorage();
+
+                if (cleared) {
+                    // Reset state values using the passed-in update callbacks
+                    onUpdateComponents([]);
+                    onUpdateCategories([]);
+                    onUpdateLowStockConfig({});
+                    onUpdateLocations([]);
+                    onUpdateDrawers([]);
+                    onUpdateCells([]);
+                    onUpdateFootprints([]);
+
+                    // Reset local state
+                    setViewMode('table');
+                    setItemsPerPage('50');
+
+                    setExportMessage('All storage cleared successfully! Application state reset. You may need to refresh the page to see all changes.');
+                } else {
+                    setImportError('An error occurred while trying to clear storage.');
+                }
+            } catch (err) {
+                console.error("Error clearing storage:", err);
+                setImportError(`Error clearing storage: ${err.message}`);
+            }
+        }
+    };
+
+    // --- Render Method ---
+
     return (
         React.createElement('div', { className: "space-y-8" },
 
@@ -131,32 +299,29 @@ window.App.components.SettingsView = ({
                 React.createElement('div', { className: UI.cards.body },
                     React.createElement('h3', { className: UI.typography.heading.h3 }, "Electro Manager"),
                     React.createElement('div', { className: "flex items-center mb-3" },
-                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.1.7beta"),
-                        React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.danger.light} text-white-400 text-xs rounded-full` }, "Deprecated")
+                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.2.2beta"),
+                        React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.success.bg} text-white text-xs rounded-full` }, "Latest Update")
                     ),
                     // Update date
-                    "Updated: 26 April 2025",
-                    
+                    "Updated: 16 May 2025",
+
                     // Changes in this version 
                     React.createElement('div', { className: "mb-4 mt-4" },
-                        React.createElement('h4', { className: UI.colors.danger.light }, "This version is outdated. This DB version scheme will not work in new version as compability issues"),
                         React.createElement('h4', { className: UI.typography.sectionTitle }, "Changes in this version:"),
-                        React.createElement('ul', { className: "list-disc list-inside text-sm text-gray-700 space-y-1 ml-2" },
-                            React.createElement('li', null, "Adding advanced filtering option for better search"),
-                            React.createElement('li', null, "Remap some UI for more consistancy"),
-                            React.createElement('li', null, "Add function to assign component Location and Drawers"),
+                        React.createElement('ul', { className: "list-disc list-inside text-sm space-y-1 ml-2" },
+                            React.createElement('li', null, "Re-structuring the export to all in one file"),
+                            React.createElement('li', null, "Using IndexedDB, reducing LocalStorage usage"),
+                            React.createElement('li', null, "Updated Location and Drawers system"),
                             React.createElement('li', null, "Import and Export the location and drawers data"),
-                            React.createElement('li', null, "Fixed error on save data for drawers and cells"),
-                            React.createElement('li', null, "Added ability to mark cells as unavailable in drawers"),
-                            React.createElement('li', null, "Added function to clear all components from a cell at once"),
-                            React.createElement('li', null, "Added view of drawer list for specific locations"),
+                            React.createElement('li', null, "Better system settings"),
+                            React.createElement('li', null, "Overall UI consistancy"),
                             React.createElement('li', null, "Note: Card View in holding development"),
                         )
                     ),
 
                     React.createElement('div', { className: `mb-4 pt-4 ${UI.utils.borderTop}` },
                         React.createElement('h4', { className: UI.typography.sectionTitle }, "Info:"),
-                        React.createElement('ul', { className: "list-disc list-inside text-sm text-red-700 space-y-1 ml-2" },
+                        React.createElement('ul', { className: "list-disc list-inside text-sm text-red-500 space-y-1 ml-2" },
                             React.createElement('li', null, "All data is store on your browser session, not save in cloud or 3rd party"),
                             React.createElement('li', null, "Clear data, change browser profile or incognito will effect your file"),
                             React.createElement('li', null, "Please export the JSON data of Component and Location for your own backup"),
@@ -173,9 +338,9 @@ window.App.components.SettingsView = ({
             ),
             //-- End of System Info
 
-            // --- Import/Export Section ---
+            // --- Backup & Restore Section (New Unified UI) ---
             React.createElement('div', { className: UI.cards.container },
-                React.createElement('h2', { className: `${UI.typography.heading.h2} ${UI.cards.header}` }, "Import / Export Data"),
+                React.createElement('h2', { className: `${UI.typography.heading.h2} ${UI.cards.header}` }, "Backup & Restore"),
                 React.createElement('div', { className: UI.cards.body },
                     // Messages (Error, Success, Info)
                     importError && React.createElement('div', {
@@ -184,208 +349,61 @@ window.App.components.SettingsView = ({
                     exportMessage && !importError && React.createElement('div', {
                         className: UI.status.info
                     }, exportMessage),
-                    // Components & Config Export/Import Buttons
-                    React.createElement('p', { className: UI.forms.hint }, "Please save the JSON file for backup as you may accidentally clear all data"),
-                    React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" },
-                        // Components Data Section
-                        React.createElement('div', null,
-                            React.createElement('h4', { className: UI.typography.sectionTitle }, "Components Data"),
-                            React.createElement('div', { className: "flex flex-wrap gap-2" },
-                                React.createElement('button', {
-                                    onClick: onExportComponents,
-                                    className: UI.buttons.primary
-                                }, "Export Components"),
+
+                    // Main actions - just two primary buttons
+                    React.createElement('div', { className: "flex flex-col md:flex-row gap-4 mb-6" },
+                        // Backup button
+                        React.createElement('div', { className: "flex-grow" },
+                            React.createElement('h4', { className: UI.typography.sectionTitle }, "Backup All Data"),
+                            React.createElement('p', { className: "text-sm mb-2" },
+                                "Create a complete backup of your inventory, including components, locations, drawers, and all settings."
+                            ),
+                            React.createElement('button', {
+                                onClick: handleCreateBackup,
+                                className: UI.buttons.primary + " w-full"
+                            }, "Create & Download Backup")
+                        ),
+
+                        // Restore button
+                        React.createElement('div', { className: "flex-grow" },
+                            React.createElement('h4', { className: UI.typography.sectionTitle }, "Restore From Backup"),
+                            React.createElement('p', { className: "text-sm mb-2" },
+                                "Restore your inventory from a previously created backup file. Will replace all current data!"
+                            ),
+                            React.createElement('div', { className: "flex flex-col" },
                                 React.createElement('input', {
                                     type: "file",
-                                    id: "import-components-file",
+                                    id: "import-backup-file",
                                     accept: ".json",
-                                    onChange: onImportComponentsFile,
+                                    onChange: handleFileImport,
                                     className: "hidden"
                                 }),
                                 React.createElement('label', {
-                                    htmlFor: "import-components-file",
-                                    className: UI.buttons.success
-                                }, "Import Components")
-                            ),
-                            React.createElement('p', { className: UI.forms.hint }, "Import replaces components. Export generates JSON below.")
-                        ),
-                        // Configuration Section
-                        React.createElement('div', null,
-                            React.createElement('h4', { className: UI.typography.sectionTitle }, "Configuration"),
-                            React.createElement('div', { className: "flex flex-wrap gap-2" },
-                                React.createElement('button', {
-                                    onClick: onExportConfig,
-                                    className: UI.buttons.info
-                                }, "Export Config"),
-                                React.createElement('input', {
-                                    type: "file",
-                                    id: "import-config-file",
-                                    accept: ".json",
-                                    onChange: onImportConfigFile,
-                                    className: "hidden"
-                                }),
-                                React.createElement('label', {
-                                    htmlFor: "import-config-file",
-                                    className: UI.buttons.accent
-                                }, "Import Config")
-                            ),
-                            React.createElement('p', { className: UI.forms.hint }, "Includes categories, settings. Import merges/overwrites.")
-                        )
-                    ),
-
-                    //Import/Export Location & Drawers
-                    React.createElement('div', null,
-                        React.createElement('h4', { className: UI.typography.sectionTitle }, "Locations & Drawers"),
-                        React.createElement('div', { className: "flex flex-wrap gap-2" },
-                            React.createElement('button', {
-                                onClick: onExportLocations,
-                                className: UI.buttons.warning
-                            }, "Export Locations & Drawers"),
-                            React.createElement('input', {
-                                type: "file",
-                                id: "import-locations-file",
-                                accept: ".json",
-                                onChange: onImportLocationsFile,
-                                className: "hidden"
-                            }),
-                            React.createElement('label', {
-                                htmlFor: "import-locations-file",
-                                className: "cursor-pointer px-4 py-2 bg-amber-500 text-white text-sm rounded shadow hover:bg-amber-600 transition duration-150"
-                            }, "Import Locations & Drawers")
-                        ),
-                        React.createElement('p', { className: UI.forms.hint }, "Export/import locations, drawers and cells.")
-                    ),
-
-                    // Add Force Save Buttons here
-                    React.createElement('div', { className: `border-t pt-4 mb-4` },
-                        React.createElement('h4', { className: UI.typography.sectionTitle }, "Local Storage"),
-                        React.createElement('p', { className: "text-xs text-red-500 mt-2" }, "Warn: The data is stored on browser session, if you clear browser data or incognito mode, this will wipe the data."),
-                        React.createElement('div', { className: "flex flex-wrap gap-3" },
-                            React.createElement('button', {
-                                onClick: onSaveComponentsLS,
-                                className: UI.buttons.primary
-                            }, "Force Save Components"),
-                            React.createElement('button', {
-                                onClick: onSaveConfigLS,
-                                className: UI.buttons.info
-                            }, "Force Save Configuration")
-                        ),
-                        React.createElement('p', { className: UI.forms.hint }, "Data is auto-saved. Use buttons above to force save.")
-                    ),
-
-                    // JSON Text Area (conditional)
-                    jsonData && React.createElement('div', { className: `mt-4 ${UI.utils.borderTop} pt-4` },
-                        React.createElement('label', {
-                            htmlFor: "json-data-area",
-                            className: UI.forms.label
-                        }, "Generated JSON Data:"),
-                        React.createElement('textarea', {
-                            id: "json-data-area",
-                            readOnly: true,
-                            className: "w-full p-2 border border-gray-300 rounded h-40 font-mono text-xs bg-gray-50",
-                            value: jsonData
-                        }),
-                        React.createElement('div', { className: "flex flex-wrap gap-2 mt-2" },
-                            React.createElement('button', {
-                                onClick: onDownloadJson,
-                                className: "px-4 py-2 bg-teal-500 text-white text-sm rounded shadow hover:bg-teal-600 transition duration-150"
-                            }, "Download JSON"),
-                            React.createElement('button', {
-                                onClick: onCopyJson,
-                                className: "px-4 py-2 bg-gray-500 text-white text-sm rounded shadow hover:bg-gray-600 transition duration-150"
-                            }, "Copy JSON"),
-                            React.createElement('button', {
-                                onClick: onClearJsonArea,
-                                className: UI.buttons.warning
-                            }, "Clear Area")
+                                    htmlFor: "import-backup-file",
+                                    className: UI.buttons.success + " w-full text-center cursor-pointer"
+                                }, "Select Backup File")
+                            )
                         )
                     )
                 )
-            ), // End Import/Export Section
+            ), // End Backup & Restore Section
 
             // --- Category Management Section ---
             React.createElement('div', { className: UI.cards.container },
                 React.createElement('h2', { className: `${UI.typography.heading.h2} ${UI.cards.header}` }, "Category Management"),
                 React.createElement('div', { className: UI.cards.body },
                     React.createElement('p', { className: `mb-4 ${UI.typography.body}` },
-                        `Edit or delete categories. Deleting moves components to "${categories.includes('Default') ? 'Default' : 'Uncategorized'}".`
+                        `Edit or delete categories. Deleting moves components to "Default".`
                     ),
-                    React.createElement('div', { className: "overflow-x-auto" },
-                        React.createElement('table', { className: UI.tables.container },
-                            React.createElement('thead', { className: UI.tables.header.row },
-                                React.createElement('tr', null,
-                                    React.createElement('th', { className: UI.tables.header.cell }, "Category Name"),
-                                    React.createElement('th', { className: UI.tables.header.cell }, "Component Count"),
-                                    React.createElement('th', { className: UI.tables.header.cell }, "Actions")
-                                )
-                            ),
-                            React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
-                                categories.length === 0 ?
-                                    React.createElement('tr', null,
-                                        React.createElement('td', { colSpan: "3", className: "py-4 px-4 text-center text-gray-500 italic" }, "No categories defined.")
-                                    ) :
-                                    categories.sort().map(category =>
-                                        React.createElement('tr', { key: category, className: UI.tables.body.row },
-                                            // Category Name (editable)
-                                            React.createElement('td', { className: UI.tables.body.cell },
-                                                editingCategory === category ?
-                                                    React.createElement('input', {
-                                                        type: "text",
-                                                        value: newCategoryName,
-                                                        onChange: (e) => setNewCategoryName(e.target.value),
-                                                        className: UI.forms.input,
-                                                        autoFocus: true,
-                                                        onKeyDown: (e) => e.key === 'Enter' && handleSaveCategory()
-                                                    }) :
-                                                    React.createElement('span', { className: "text-sm text-gray-900" }, category)
-                                            ),
-                                            // Component Count
-                                            React.createElement('td', { className: `${UI.tables.body.cell} text-center` },
-                                                categories.length > 0 ? categories.filter(cat => cat === category).length : 0
-                                            ),
-                                            // Actions
-                                            React.createElement('td', { className: UI.tables.body.cellAction },
-                                                editingCategory === category ?
-                                                    // Edit Mode Actions
-                                                    React.createElement('div', { className: "flex justify-center space-x-2" },
-                                                        React.createElement('button', {
-                                                            onClick: handleSaveCategory,
-                                                            className: UI.buttons.small.success,
-                                                            title: "Save"
-                                                        }, "Save"),
-                                                        React.createElement('button', {
-                                                            onClick: handleCancelCategoryEdit,
-                                                            className: UI.buttons.small.secondary,
-                                                            title: "Cancel"
-                                                        }, "Cancel")
-                                                    ) :
-                                                    // Normal Mode Actions
-                                                    React.createElement('div', { className: "flex justify-center space-x-2" },
-                                                        React.createElement('button', {
-                                                            onClick: () => handleStartEditCategory(category),
-                                                            className: UI.buttons.small.primary,
-                                                            title: "Edit"
-                                                        }, "Edit"),
-                                                        React.createElement('button', {
-                                                            onClick: () => onDeleteCategory(category),
-                                                            className: UI.buttons.small.danger,
-                                                            title: "Delete",
-                                                            disabled: category === 'Default' && categories.some(c => c === 'Default')
-                                                        }, "Delete")
-                                                    )
-                                            )
-                                        )
-                                    )
-                            )
-                        )
-                    ),
-                    React.createElement('div', { className: "mt-4" },
-                        React.createElement('button', {
-                            onClick: onAddDefaultCategory,
-                            className: "px-4 py-2 bg-gray-500 text-white text-sm rounded shadow hover:bg-gray-600 transition duration-150",
-                            disabled: categories.includes('Default')
-                        }, 'Ensure "Default" Category Exists')
-                    )
+                    React.createElement(CategoryManager, {
+                        categories,
+                        components,
+                        lowStockConfig,
+                        onUpdateCategories,
+                        onUpdateComponents,
+                        onUpdateLowStockConfig,
+                        onShowMessage: setExportMessage
+                    })
                 )
             ), // End Category Management Section
 
@@ -398,10 +416,10 @@ window.App.components.SettingsView = ({
                     ),
                     React.createElement(FootprintManager, {
                         footprints,
-                        onAddFootprint,
-                        onEditFootprint,
-                        onDeleteFootprint,
-                        onRestoreDefaults: onRestoreDefaultFootprints
+                        components,  // Pass components so FootprintManager can check usage
+                        onUpdateFootprints,  // Pass the callback to update footprints
+                        onUpdateComponents,  // Pass the callback to update components
+                        onShowMessage: setExportMessage  // Pass message display function
                     })
                 )
             ), // End Footprint Management Section
@@ -455,7 +473,7 @@ window.App.components.SettingsView = ({
                                     React.createElement('button', {
                                         onClick: handleAddLowStock,
                                         disabled: !newLowStockCategory,
-                                        className: `w-full px-4 py-2 rounded shadow transition duration-150 ${!newLowStockCategory ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : UI.buttons.primary}`
+                                        className: !newLowStockCategory ? `${UI.buttons.secondary} cursor-not-allowed` : UI.buttons.primary
                                     }, lowStockConfig[newLowStockCategory] ? 'Update Threshold' : 'Add Threshold')
                                 )
                             )
@@ -465,7 +483,7 @@ window.App.components.SettingsView = ({
                             React.createElement('h4', { className: UI.typography.sectionTitle }, "Current Thresholds"),
                             Object.keys(lowStockConfig).length === 0 ?
                                 React.createElement('p', { className: "text-gray-500 italic text-sm" }, "No thresholds configured.") :
-                                React.createElement('div', { className: "border rounded max-h-60 overflow-y-auto" },
+                                React.createElement('div', { className: `border ${UI.utils.rounded} max-h-60 overflow-y-auto` },
                                     React.createElement('table', { className: UI.tables.container },
                                         React.createElement('thead', { className: `${UI.tables.header.row} sticky top-0` },
                                             React.createElement('tr', null,
@@ -474,14 +492,16 @@ window.App.components.SettingsView = ({
                                                 React.createElement('th', { className: UI.tables.header.cell }, "Action")
                                             )
                                         ),
-                                        React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },
+                                        React.createElement('tbody', {
+                                            className: `divide-y divide-${UI.getThemeColors().border} bg-${UI.getThemeColors().cardBackground}`
+                                        },
                                             Object.entries(lowStockConfig).sort(([catA], [catB]) => catA.localeCompare(catB)).map(([category, threshold]) =>
                                                 React.createElement('tr', { key: category, className: UI.tables.body.row },
                                                     React.createElement('td', { className: UI.tables.body.cell }, category),
                                                     React.createElement('td', { className: `${UI.tables.body.cell} text-center` }, threshold),
                                                     React.createElement('td', { className: UI.tables.body.cellAction },
                                                         React.createElement('button', {
-                                                            onClick: () => onRemoveLowStock(category),
+                                                            onClick: () => handleRemoveLowStock(category),
                                                             className: `${UI.colors.danger.text} hover:text-red-800 text-xs`,
                                                             title: "Remove threshold"
                                                         }, "Remove")
@@ -530,154 +550,76 @@ window.App.components.SettingsView = ({
                                     onChange: onChangeShowTotalValue,
                                     className: UI.forms.checkbox
                                 }),
-                                React.createElement('span', null, "Show Total Inventory Value in Summary")
+                                React.createElement('span', { className: UI.typography.body }, "Show Total Inventory Value in Summary")
                             ),
                             React.createElement('p', { className: UI.forms.hint }, "Calculates and displays the sum of (price * quantity) for all components.")
                         )
+                    ),
+                    // Theme Selector
+                    React.createElement('div', { className: "mt-6" },
+                        React.createElement('h3', { className: UI.typography.sectionTitle }, "Theme"),
+                        React.createElement(window.App.components.ThemeSwitcher, {
+                            currentTheme: theme,
+                            onThemeChange: onChangeTheme
+                        })
                     )
                 )
             ), // End Display Settings Section
 
-            // --- Local Storage Management Section ---
+            // --- Storage Management Section ---
             React.createElement('div', { className: UI.cards.container },
-                React.createElement('h2', { className: `${UI.typography.heading.h2} ${UI.cards.header}` }, "Local Storage Management"),
+                React.createElement('h2', { className: `${UI.typography.heading.h2} ${UI.cards.header}` }, "Storage Management"),
                 React.createElement('div', { className: UI.cards.body },
-                    // Storage Status Display
-                    React.createElement('div', { className: `${UI.colors.background.alt} p-4 ${UI.utils.rounded} ${UI.utils.border} mb-4` },
-                        React.createElement('h4', { className: UI.typography.sectionTitle }, "Current Storage Status"),
-                        React.createElement('ul', { className: "list-disc list-inside text-sm text-gray-700 space-y-1" },
-                            React.createElement('li', null, "Components: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.components ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.components ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Categories: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.categories ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.categories ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "View Mode: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.viewMode ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.viewMode ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Low Stock Config: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.lowStockConfig ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.lowStockConfig ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Currency Symbol: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.currencySymbol ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.currencySymbol ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Show Total Value: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${localStorageStatus.showTotalValue ? 'text-green-600' : 'text-red-600'}`
-                                }, localStorageStatus.showTotalValue ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Footprints: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${footprints && footprints.length > 0 ? 'text-green-600' : 'text-red-600'}`
-                                }, footprints && footprints.length > 0 ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Locations: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${locations && locations.length > 0 ? 'text-green-600' : 'text-red-600'}`
-                                }, locations && locations.length > 0 ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Drawers: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${'electronicsDrawers' in localStorage ? 'text-green-600' : 'text-red-600'}`
-                                }, 'electronicsDrawers' in localStorage ? 'Yes' : 'No')
-                            ),
-                            React.createElement('li', null, "Cells: ",
-                                React.createElement('span', {
-                                    className: `font-semibold ${'electronicsCells' in localStorage ? 'text-green-600' : 'text-red-600'}`
-                                }, 'electronicsCells' in localStorage ? 'Yes' : 'No')
-                            )
-                        )
-                    ),
-
-                    // Storage Statistics
-                    React.createElement('div', { className: `${UI.colors.background.alt} p-4 ${UI.utils.rounded} ${UI.utils.border} mb-4` },
-                        React.createElement('h4', { className: UI.typography.sectionTitle }, "Storage Statistics"),
-                        React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mt-3" },
-                            // Left column - counts
-                            React.createElement('div', null,
-                                React.createElement('ul', { className: "space-y-1 text-sm" },
-                                    React.createElement('li', { className: "flex justify-between" },
-                                        React.createElement('span', null, "Components:"),
-                                        React.createElement('span', { className: "font-semibold" }, components ? components.length : 0)
-                                    ),
-                                    React.createElement('li', { className: "flex justify-between" },
-                                        React.createElement('span', null, "Categories:"),
-                                        React.createElement('span', { className: "font-semibold" }, categories ? categories.length : 0)
-                                    ),
-                                    React.createElement('li', { className: "flex justify-between" },
-                                        React.createElement('span', null, "Footprints:"),
-                                        React.createElement('span', { className: "font-semibold" }, footprints ? footprints.length : 0)
-                                    ),
-                                    React.createElement('li', { className: "flex justify-between" },
-                                        React.createElement('span', null, "Locations:"),
-                                        React.createElement('span', { className: "font-semibold" }, locations ? locations.length : 0)
-                                    )
-                                )
-                            ),
-  
-                        )
-                    ),
 
                     React.createElement('p', { className: `mb-4 ${UI.typography.body}` }, "Data is auto-saved. Use buttons below to force save or clear all data."),
 
                     // Force Save Buttons
                     React.createElement('div', { className: "flex flex-wrap gap-3 mb-4" },
                         React.createElement('button', {
-                            onClick: onSaveComponentsLS,
+                            onClick: handleSaveComponentsLS,
                             className: UI.buttons.primary
                         }, "Force Save Components"),
                         React.createElement('button', {
-                            onClick: onSaveConfigLS,
+                            onClick: handleSaveConfig,
                             className: UI.buttons.info
                         }, "Force Save Configuration"),
                     ),
 
                     // Backup Recommendations
                     React.createElement('div', { className: `mb-4 p-3 ${UI.colors.background.alt} ${UI.utils.rounded} ${UI.utils.border}` },
-                        React.createElement('h5', { className: "font-medium mb-2" }, "Backup Recommendations"),
-                        React.createElement('p', { className: "text-sm mb-2" },
+                        React.createElement('h5', { className: `${UI.typography.weight.medium} mb-2` }, "Backup Recommendations"),
+                        React.createElement('p', { className: `${UI.typography.body}` },
                             "Regular backups help prevent data loss. We recommend:"
                         ),
-                        React.createElement('ul', { className: "list-disc list-inside text-sm space-y-1 ml-2" },
-                            React.createElement('li', null, "Export components data at least once per week"),
-                            React.createElement('li', null, "Export locations and drawers after making changes"),
+                        React.createElement('ul', { className: `list-disc list-inside ${UI.typography.body} space-y-1 ml-2` },
+                            React.createElement('li', null, "Create a complete backup at least once per week"),
+                            React.createElement('li', null, "Backup after making significant changes"),
                             React.createElement('li', null, "Keep backup files in multiple locations"),
-                            React.createElement('li', null, "Test imports occasionally to verify backup integrity")
+                            React.createElement('li', null, "Test restoring backups occasionally to verify integrity")
                         )
                     ),
 
-                    // Danger Zone
+                    // Danger Zone -
                     React.createElement('div', { className: `mt-6 pt-4 ${UI.utils.borderTop}` },
                         React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" },
                             // Clear All Data
                             React.createElement('div', { className: "border border-red-200 rounded p-3 bg-red-50" },
-                                React.createElement('h5', { className: "font-medium text-red-700 mb-2" }, "Danger Zone | Delete all Local Storage Data"),
-                                React.createElement('p', { className: "text-sm mb-2" },
-                                    "Warning: Deletes all components, categories, and settings. There is no way back,"
+                                React.createElement('h5', { className: "font-medium text-red-700 mb-2" }, "Danger Zone | Delete all data"),
+                                React.createElement('p', { className: `text-red-700 ${UI.typography.body} mb-2` },
+                                    "Warning: Deletes all item in database, and clear all settings (LocalStorage & IndexedDB). There is no way back"
                                 ),
                                 React.createElement('button', {
-                                    onClick: onClearLS,
-                                    className: "px-4 py-2 bg-red-600 text-white text-sm rounded shadow hover:bg-red-700 transition duration-150"
-                                }, "Clear All Local Storage Data"),
+                                    onClick: handleClearStorage,
+                                    className: UI.buttons.danger
+                                }, "Clear All Data"),
                                 React.createElement('p', { className: "text-xs text-red-600 mt-1" }, "I am aware what I am doing when clicking the button above"),
-
                             ),
-                        
                         )
                     )
                 )
             ),
         )
     )
-}
-console.log("SettingsView component loaded.");
+};
+
+console.log("SettingsView component fully refactored and loaded!");

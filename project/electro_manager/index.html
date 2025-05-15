@@ -6,38 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electronics Inventory (Modular)</title>
     <!--
-    <script src="js/external/tailwind.js"></script>
-    <script src="js/external/react18.development.js"></script>
-    <script src="js/external/react-dom18.development.js"></script>
-    <script src="js/external/babel.min.js"></script>
-    -->
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js">
+-->
+    </script>
 
-    <script src="js/utils/helpers.js"></script>
-    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/sanitize-utils.js"></script>
     <script src="js/utils/ui-constants.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/idb.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/form-helpers.js"></script>
 
     <script src="js/components/ComponentForm.js"></script>
     <script src="js/components/AdvancedFilters.js"></script>
     <script src="js/components/BulkEditForm.js"></script>
     <script src="js/components/InventoryView.js"></script>
     <script src="js/components/SettingsView.js"></script>
+    <script src="js/components/CategoryManager.js"></script>
     <script src="js/components/FootprintManager.js"></script>
     <script src="js/components/LocationManager.js"></script>
     <script src="js/components/LocationPage.js"></script>
     <script src="js/components/DrawerManager.js"></script>
     <script src="js/components/DrawerView.js"></script>
     <script src="js/components/DrawerPage.js"></script>
+    <script src="js/components/ThemeSwitcher.js"></script>
+    <script src="js/components/shared/LocationSelector.js"></script>
+    <script src="js/components/shared/Pagination.js"></script>
+    <script src="js/components/shared/SelectWithCustom.js"></script>
+    <script src="js/components/shared/ValidatedInput.js"></script>
 
+    <script src="js/external/tailwind.js"></script>
+    <script src="js/external/react18.development.js"></script>
+    <script src="js/external/react-dom18.development.js"></script>
+    <script src="js/external/babel.min.js"></script>
+    <script src="js/external/purify325.min.js"></script>
 </head>
 
-<body class="bg-gray-100">
+<body>
     <div id="root"></div>
-
     <script type="text/babel">
         // Ensure App namespace and sub-namespaces exist
         window.App = window.App || {};
@@ -48,6 +58,7 @@
         const { useState, useEffect, useCallback } = React;
         const { helpers } = window.App.utils;
         const { storage } = window.App.utils;
+        const { UI } = window.App.utils || {};
         const { ComponentForm, BulkEditForm, InventoryView, SettingsView, DrawerPage, LocationPage } = window.App.components;
 
         // --- Main Application Component ---
@@ -65,7 +76,7 @@
             const [importError, setImportError] = useState(''); // Message after import attempt
             const [exportMessage, setExportMessage] = useState(''); // Message after export/save attempt
             const [lowStockConfig, setLowStockConfig] = useState({}); // { category: threshold }
-            const [currencySymbol, setCurrencySymbol] = useState('$');
+            const [currencySymbol, setCurrencySymbol] = useState('RM');
             const [showTotalValue, setShowTotalValue] = useState(false);
             const [selectedComponents, setSelectedComponents] = useState([]); // Array of selected component IDs for bulk actions
             const [showBulkEditForm, setShowBulkEditForm] = useState(false);
@@ -76,119 +87,342 @@
             const [cells, setCells] = useState([]);
             const [viewingDrawerId, setViewingDrawerId] = useState(null);
             const [itemsPerPage, setItemsPerPage] = useState('all');
-
-            //const [showAddDrawerForm, setShowAddDrawerForm] = useState(false);
+            const [appTheme, setAppTheme] = useState(window.App.utils.UI.currentTheme);
+            const [configLoaded, setConfigLoaded] = useState(false);
+            const [theme, setTheme] = useState(
+                () => storage.loadConfig().theme
+                    || window.App.utils.UI.currentTheme
+                    || 'light'
+            );
 
             // --- Effects ---
-
-            // Load data from localStorage on initial render
+            // Initial load effect
             useEffect(() => {
-                console.log("Initial load effect running...");
-                setComponents(storage.loadComponents());
-                const config = storage.loadConfig();
-                setCategories(config.categories);
-                setViewMode(config.viewMode);
-                setLowStockConfig(config.lowStockConfig);
-                setCurrencySymbol(config.currencySymbol);
-                setShowTotalValue(config.showTotalValue);
-                setFootprints(config.footprints || []);
-                setLocations(storage.loadLocations() || []);
-                setItemsPerPage(config.itemsPerPage || 'all');
+                console.log("Initial load effect running with proper data ordering...");
 
-                // Load drawers from localStorage
-                setDrawers(storage.loadDrawers() || []);
+                // Initialize storage first
+                storage.init()
+                    .then(function () {
+                        console.log("Storage system initialized");
 
-                // Load cells from localStorage 
-                setCells(storage.loadCells() || []);
+                        // Load all data from IndexedDB
+                        // Load all data from IndexedDB
+                        Promise.all([
+                            storage.loadComponents(),
+                            storage.loadLocations(),
+                            storage.loadDrawers(),
+                            storage.loadCells(),
+                            storage.loadCategories(),
+                            storage.loadFootprints(),
+                            storage.loadLowStockConfig()
+                        ])
+                            .then(function (results) {
+                                var [
+                                    loadedComponents,
+                                    loadedLocations,
+                                    loadedDrawers,
+                                    loadedCells,
+                                    loadedCategories,
+                                    loadedFootprints,
+                                    loadedLowStockConfig
+                                ] = results;
 
-                // Fallback: If categories are empty but components exist, derive from components
-                if (config.categories.length === 0) {
-                    const loadedComponents = storage.loadComponents(); // Load again or use already loaded
-                    if (loadedComponents.length > 0) {
-                        const derivedCategories = [...new Set(loadedComponents.map(item => item.category).filter(Boolean))];
-                        if (derivedCategories.length > 0) {
-                            setCategories(derivedCategories);
-                            // Optionally save derived categories back to storage
-                            // storage.saveConfig({ ...config, categories: derivedCategories });
-                            console.log("Derived categories from existing components.");
-                        }
-                    }
-                }
-                console.log("Initial load complete.");
-            }, []); // Runs only once on mount
+                                console.log("Loaded all data:", {
+                                    components: loadedComponents.length,
+                                    locations: loadedLocations.length,
+                                    drawers: loadedDrawers.length,
+                                    cells: loadedCells.length,
+                                    categories: loadedCategories.length,
+                                    footprints: loadedFootprints.length,
+                                    lowStockConfig: Object.keys(loadedLowStockConfig).length + " categories"
+                                });
 
+                                // Set state - THIS WAS MISSING!
+                                setComponents(loadedComponents);
+                                setLocations(loadedLocations);
+                                setDrawers(loadedDrawers);
+                                setCells(loadedCells);
+                                setCategories(loadedCategories);
+                                setFootprints(loadedFootprints);
+                                setLowStockConfig(loadedLowStockConfig);
+
+                                // Load other config from localStorage
+                                var config = storage.loadConfig();
+                                setViewMode(config.viewMode || 'table');
+                                setCurrencySymbol(config.currencySymbol || 'RM');
+                                setShowTotalValue(config.showTotalValue || false);
+                                setItemsPerPage(config.itemsPerPage || 'all');
+                                setTheme(config.theme || 'light');
+
+                                // IMPORTANT: Mark config as loaded
+                                setConfigLoaded(true);
+                            });
+                    });
+            }, []);// Only run once
+
+            setTimeout(() => {
+                console.log("=== FINAL STATE CHECK ===");
+                console.log("Components:", components.length);
+                console.log("Locations:", locations.length);
+                console.log("Categories:", categories.length);
+            }, 100);
+
+            // --- FOR COMPONENTS ---
             useEffect(() => {
-                let cells = storage.loadCells() || [];
+                if (!components.length) return;
 
-                // Set default availability for cells that don't have it set
-                cells = cells.map(cell => ({
-                    ...cell,
-                    available: cell.available !== undefined ? cell.available : true
-                }));
+                // We use a delay to avoid multiple rapid saves during initialization
+                var saveTimeout = setTimeout(function () {
+                    console.log("Saving components...", components.length);
 
-                setCells(cells);
-            }, []);
+                    storage.saveComponents(components)
+                        .then(function (success) {
+                            if (success) {
+                                console.log("Components saved successfully");
+                            } else {
+                                console.warn("Failed to save components");
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error("Error saving components:", err);
+                        });
+                }, 300); // Small delay to batch rapid changes
 
+                // Clear timeout on unmount
+                return function cleanup() {
+                    clearTimeout(saveTimeout);
+                };
+            }, [components]);
+
+            // --- FOR LOCATIONS ---
             useEffect(() => {
-                storage.saveDrawers(drawers);
-            }, [drawers]);
+                if (!locations.length) return;
+                // We use a delay to avoid multiple rapid saves during initialization
+                var saveTimeout = setTimeout(function () {
+                    console.log("Saving locations...", locations.length);
 
+                    storage.saveLocations(locations)
+                        .then(function (success) {
+                            if (success) {
+                                console.log("Locations saved successfully");
+
+                                // After locations are saved, make sure drawers are also saved
+                                // to ensure references are maintained
+                                if (drawers.length) {
+                                    return storage.saveDrawers(drawers);
+                                }
+                            } else {
+                                console.warn("Failed to save locations");
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error("Error saving locations:", err);
+                        });
+                }, 300); // Small delay to batch rapid changes
+
+                // Clear timeout on unmount
+                return function cleanup() {
+                    clearTimeout(saveTimeout);
+                };
+            }, [locations]);
+
+            // --- FOR DRAWERS ---
             useEffect(() => {
-                storage.saveCells(cells);
+                if (!drawers.length) return;
+                // We use a delay to avoid multiple rapid saves during initialization
+                var saveTimeout = setTimeout(function () {
+                    console.log("Saving drawers...", drawers.length);
+
+                    storage.saveDrawers(drawers)
+                        .then(function (success) {
+                            if (success) {
+                                console.log("Drawers saved successfully");
+
+                                // After drawers are saved, make sure cells are also saved
+                                // to ensure references are maintained
+                                if (cells.length) {
+                                    return storage.saveCells(cells);
+                                }
+                            } else {
+                                console.warn("Failed to save drawers");
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error("Error saving drawers:", err);
+                        });
+                }, 300); // Small delay to batch rapid changes
+
+                // Clear timeout on unmount
+                return function cleanup() {
+                    clearTimeout(saveTimeout);
+                };
+            }, [drawers, cells]);
+
+            // --- FOR CELLS ---
+            useEffect(() => {
+                if (!cells.length) return;
+                // We use a delay to avoid multiple rapid saves during initialization
+                var saveTimeout = setTimeout(function () {
+                    console.log("Saving cells...", cells.length);
+
+                    storage.saveCells(cells)
+                        .then(function (success) {
+                            if (success) {
+                                console.log("Cells saved successfully");
+                            } else {
+                                console.warn("Failed to save cells");
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error("Error saving cells:", err);
+                        });
+                }, 300);
+                return function cleanup() {
+                    clearTimeout(saveTimeout);
+                };
             }, [cells]);
+
+            // --- FOR CATEGORY ---
+            useEffect(() => {
+                if (!categories.length) return;
+                storage.saveCategories(categories)
+                    .then(function (success) {
+                        if (success) {
+                            console.log("Categories saved to IndexedDB successfully:", categories.length);
+                        } else {
+                            console.warn("Failed to save categories to IndexedDB");
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error("Error saving categories to IndexedDB:", err);
+                    });
+            }, [categories]);
+
+            // --- FOR FOOTPRINT ---
+            useEffect(() => {
+                if (!footprints.length) return;
+
+                // Save directly to IndexedDB
+                storage.saveFootprints(footprints)
+                    .then(function (success) {
+                        if (success) {
+                            console.log("Footprints saved to IndexedDB successfully:", footprints.length);
+                        } else {
+                            console.warn("Failed to save footprints to IndexedDB");
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error("Error saving footprints to IndexedDB:", err);
+                    });
+            }, [footprints]);
+
+            // ---LOW CONFIG---
+            useEffect(() => {
+                // Skip if empty
+                if (!lowStockConfig || Object.keys(lowStockConfig).length === 0) return;
+
+                // Save to IndexedDB only
+                storage.saveLowStockConfig(lowStockConfig)
+                    .then(function (success) {
+                        if (success) {
+                            console.log("Low stock config saved to IndexedDB successfully");
+                        } else {
+                            console.warn("Failed to save low stock config to IndexedDB");
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error("Error saving low stock config to IndexedDB:", err);
+                    });
+            }, [lowStockConfig]);
+
+            // ---SAVE CONFIG---
+            // For configuration (still synchronous)
+            useEffect(() => {
+                // Don't save until config is loaded
+                if (!configLoaded) return;
+
+                var config = {
+                    categories,
+                    viewMode,
+                    lowStockConfig,
+                    currencySymbol,
+                    showTotalValue,
+                    footprints,
+                    itemsPerPage,
+                    theme
+                };
+
+                var success = storage.saveConfig(config);
+                if (success) {
+                    console.log("Config saved to localStorage");
+                } else {
+                    console.warn("Failed to save config");
+                }
+            }, [configLoaded, categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, itemsPerPage, theme]);
+
+            const saveConfigCallback = useCallback(() => {
+                // To IndexedDB
+                Promise.all([
+                    storage.saveCategories(categories),
+                    storage.saveFootprints(footprints),
+                    storage.saveLowStockConfig(lowStockConfig)
+                ]).catch(function (err) {
+                    console.error("Error saving to IndexedDB:", err);
+                });
+                // Config to localStorage
+                storage.saveConfig({
+                    viewMode,
+                    currencySymbol,
+                    showTotalValue,
+                    itemsPerPage,
+                    theme
+                });
+            }, [categories, footprints, lowStockConfig, viewMode, currencySymbol, showTotalValue, itemsPerPage, theme]);
+
+            const saveComponentsCallback = useCallback(() => {
+                storage.saveComponents(components);
+            }, [components]);
 
             const handleItemsPerPageChange = useCallback((value) => {
                 setItemsPerPage(value);
             }, []);
 
-            // Save components to localStorage whenever they change
-            // Use useCallback for stability if passed as dependency elsewhere, though not strictly needed here
-            const saveComponentsCallback = useCallback(() => {
-                storage.saveComponents(components);
-            }, [components]);
-
-
             useEffect(() => {
-                // Save components whenever the list changes
-                saveComponentsCallback();
-            }, [components, saveComponentsCallback]);
+                // Apply theme through the UI system
+                window.App.utils.UI.setTheme(theme);
 
-            // Save configuration changes to localStorage
-            useEffect(() => {
-    storage.saveConfig({
-        categories,
-        viewMode,
-        lowStockConfig,
-        currencySymbol,
-        showTotalValue,
-        footprints,
-        itemsPerPage // Add this line
-    });
-}, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, itemsPerPage]);
+                // Save theme preference (handled inside setTheme too, but for extra safety)
+                localStorage.setItem('electronicsTheme', theme);
 
-const saveConfigCallback = useCallback(() => {
-    storage.saveConfig({
-        categories,
-        viewMode,
-        lowStockConfig,
-        currencySymbol,
-        showTotalValue,
-        footprints,
-        itemsPerPage // Add this property
-    });
-}, [categories, viewMode, lowStockConfig, currencySymbol, showTotalValue, footprints, itemsPerPage]); // Add itemsPerPage to dependency array
+                // Log theme change for debugging
+                console.log(`Theme applied: ${theme}`);
+            }, [theme]);
+
 
             // --- Helper Functions / Callbacks for Child Components ---
-
-            // Clear status messages (import/export)
-            const clearStatusMessages = () => {
-                setImportError('');
-                setExportMessage('');
+            // Get Theme
+            const getThemeColors = () => {
+                // Check if UI and getThemeColors exist
+                if (UI && typeof UI.getThemeColors === 'function') {
+                    return UI.getThemeColors();
+                }
+                // Fallback if UI is not available
+                return {
+                    textPrimary: 'gray-900',
+                    textSecondary: 'gray-700',
+                    textMuted: 'gray-500',
+                    primary: 'blue-500',
+                    border: 'gray-300',
+                    background: 'gray-100'
+                };
             };
+
+            // Get the theme colors
+            const themeColors = getThemeColors();
 
             // --- Component CRUD Callbacks ---
             const handleAddComponent = () => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 // Prepare initial data for the form (empty component)
                 setEditComponentData({
                     id: '', name: '', category: '', customCategory: '', type: '', quantity: 0, price: 0,
@@ -198,7 +432,7 @@ const saveConfigCallback = useCallback(() => {
             };
 
             const handleEditComponent = (componentToEdit) => {
-                clearStatusMessages();
+                //clearStatusMessages();
 
                 // Create a deep copy of the component
                 const cleanComponent = { ...componentToEdit };
@@ -255,9 +489,10 @@ const saveConfigCallback = useCallback(() => {
                 });
                 setShowForm(true);
             };
+
             // Update to handleSaveComponent
             const handleSaveComponent = (componentDataFromForm) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 let categoryToSave = componentDataFromForm.category;
                 let footprintToSave = componentDataFromForm.footprint;
                 let newCategoryAdded = false;
@@ -369,7 +604,7 @@ const saveConfigCallback = useCallback(() => {
             };
 
             const handleDeleteComponent = (idToDelete) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 if (window.confirm('Are you sure you want to delete this component? This action cannot be undone.')) {
                     setComponents(prev => prev.filter(comp => comp.id !== idToDelete));
                     // Also remove from selection if it was selected
@@ -409,8 +644,6 @@ const saveConfigCallback = useCallback(() => {
                 storage.saveLocations(locations);
             }, [locations]);
 
-
-
             // --- Bulk Action Callbacks ---
             const handleToggleSelect = (id) => {
                 setSelectedComponents(prev =>
@@ -443,13 +676,13 @@ const saveConfigCallback = useCallback(() => {
             };
 
             const handleBulkEdit = () => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 if (selectedComponents.length === 0) return;
                 setShowBulkEditForm(true); // Open the bulk edit modal
             };
 
             const handleApplyBulkEdit = (bulkEditData) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 let categoryToApply = bulkEditData.category;
                 let footprintToApply = bulkEditData.footprint;
                 let newCategoryAdded = false;
@@ -596,7 +829,7 @@ const saveConfigCallback = useCallback(() => {
                 setExportMessage(`${selectedComponents.length} component(s) updated.`);
             };
             const handleBulkDelete = () => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 if (selectedComponents.length === 0) return;
                 if (window.confirm(`Are you sure you want to delete ${selectedComponents.length} selected component(s)? This action cannot be undone.`)) {
                     setComponents(prev => prev.filter(comp => !selectedComponents.includes(comp.id)));
@@ -608,13 +841,13 @@ const saveConfigCallback = useCallback(() => {
 
             //-- Location Management--
             const handleAddLocation = (newLocation) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 setLocations(prev => [...prev, newLocation]);
                 setExportMessage('Location added.');
             };
 
             const handleEditLocation = (locationId, updatedLocation) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 setLocations(prev => prev.map(loc =>
                     loc.id === locationId ? updatedLocation : loc
                 ));
@@ -622,7 +855,7 @@ const saveConfigCallback = useCallback(() => {
             };
 
             const handleDeleteLocation = (locationId) => {
-                clearStatusMessages();
+                //clearStatusMessages();
 
                 // Check if any components are assigned to this location
                 const assignedComponents = components.filter(comp =>
@@ -659,21 +892,41 @@ const saveConfigCallback = useCallback(() => {
 
             // Add handlers for drawers
             const handleAddDrawer = (newDrawer) => {
-                clearStatusMessages();
+                //clearStatusMessages();
+
                 setDrawers(prev => [...prev, newDrawer]);
-                setExportMessage('Drawer added.');
+
+                const newCells = window.App.utils.helpers.generateCellsForDrawer(newDrawer);
+                setCells(prev => [...prev, ...newCells]);
+
+                setExportMessage(
+                    `Drawer “${newDrawer.name}” added with ${newCells.length} empty cell${newCells.length !== 1 ? 's' : ''}.`
+                );
             };
 
-            const handleEditDrawer = (drawerId, updatedDrawer) => {
-                clearStatusMessages();
-                setDrawers(prev => prev.map(drawer =>
-                    drawer.id === drawerId ? updatedDrawer : drawer
-                ));
-                setExportMessage('Drawer updated.');
+            const handleEditDrawer = (updated) => {
+
+                setDrawers(prev => {
+                    const list = prev.map(d => d.id === updated.id ? updated : d);
+                    storage.saveDrawers(list);
+                    return list;
+                });
+
+
+                setCells(prevCells => {
+                    const next = window.App.utils.helpers.syncCellsWithDrawer(
+                        updated,
+                        prevCells,
+                        components          // ← current components array from state
+                    );
+                    storage.saveCells(next);
+                    return next;
+                });
             };
+
 
             const handleDeleteDrawer = (drawerId) => {
-                clearStatusMessages();
+                //clearStatusMessages();
 
                 // Check if any components are assigned to this drawer
                 const assignedComponents = components.filter(comp =>
@@ -714,13 +967,13 @@ const saveConfigCallback = useCallback(() => {
 
             // Add handlers for cells
             const handleAddCell = (newCell) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 setCells(prev => [...prev, newCell]);
                 setExportMessage('Cell added.');
             };
 
             const handleEditCell = (cellId, updatedCell) => {
-                clearStatusMessages();
+                //clearStatusMessages();
                 setCells(prev => prev.map(cell =>
                     cell.id === cellId ? updatedCell : cell
                 ));
@@ -729,7 +982,7 @@ const saveConfigCallback = useCallback(() => {
             };
 
             const handleDeleteCell = (cellId) => {
-                clearStatusMessages();
+                //clearStatusMessages();
 
                 // Check if any components are assigned to this cell
                 const assignedComponents = components.filter(comp =>
@@ -770,601 +1023,121 @@ const saveConfigCallback = useCallback(() => {
                 setViewingDrawerId(drawerId);
             };
 
-            //-- Footprint Management---
-            const handleAddFootprint = (newFootprint) => {
-                clearStatusMessages();
-                const trimmedFootprint = newFootprint.trim();
-                if (!trimmedFootprint) {
-                    setExportMessage('Footprint name cannot be empty.');
-                    return;
-                }
-                if (footprints.includes(trimmedFootprint)) {
-                    setExportMessage(`Footprint "${trimmedFootprint}" already exists.`);
-                    return;
-                }
+            //-- Theme Management--
+            const handleThemeChange = (newTheme) => {
+                if (window.App.utils.UI.themes[newTheme]) {
+                    // Update state
+                    setTheme(newTheme);
 
-                setFootprints(prev => [...prev, trimmedFootprint].sort());
-                setExportMessage(`Footprint "${trimmedFootprint}" added.`);
-            };
+                    // Get the body element
+                    const bodyElement = document.body;
 
-            const handleEditFootprint = (oldFootprint, newFootprint) => {
-                clearStatusMessages();
-                const trimmedNewFootprint = newFootprint.trim();
-                if (!trimmedNewFootprint) {
-                    setExportMessage('Footprint name cannot be empty.');
-                    return;
-                }
-                if (footprints.includes(trimmedNewFootprint)) {
-                    setExportMessage(`Footprint "${trimmedNewFootprint}" already exists.`);
-                    return;
-                }
+                    // Get theme colors
+                    const themeColors = window.App.utils.UI.getThemeColors();
 
-                // Update footprint list
-                setFootprints(prev => prev.map(fp => fp === oldFootprint ? trimmedNewFootprint : fp).sort());
+                    // Remove all existing theme-related classes from body
+                    bodyElement.classList.remove('bg-gray-100', 'bg-gray-900');
+                    bodyElement.classList.remove('text-gray-100', 'text-gray-900');
 
-                // Update components using the old footprint
-                setComponents(prev => prev.map(comp =>
-                    comp.footprint === oldFootprint ? { ...comp, footprint: trimmedNewFootprint } : comp
-                ));
-
-                setExportMessage(`Footprint "${oldFootprint}" renamed to "${trimmedNewFootprint}".`);
-            };
-
-            const handleDeleteFootprint = (footprintToDelete) => {
-                clearStatusMessages();
-                // Check if any components are using this footprint
-                const componentsUsingFootprint = components.filter(comp => comp.footprint === footprintToDelete);
-
-                if (componentsUsingFootprint.length > 0) {
-                    const confirmMessage = `${componentsUsingFootprint.length} component(s) are using this footprint. Removing it will clear the footprint from these components. Continue?`;
-                    if (!window.confirm(confirmMessage)) {
-                        return;
-                    }
-
-                    // Clear footprint from components
-                    setComponents(prev => prev.map(comp =>
-                        comp.footprint === footprintToDelete ? { ...comp, footprint: '' } : comp
-                    ));
-                }
-
-                // Remove the footprint from the list
-                setFootprints(prev => prev.filter(fp => fp !== footprintToDelete));
-                setExportMessage(`Footprint "${footprintToDelete}" deleted.`);
-            };
-
-            const handleRestoreDefaultFootprints = () => {
-                clearStatusMessages();
-                // Define the default footprints list here
-                const defaultFootprints = [
-                    "0603", "0805", "1206", "1210", "0402", "0201", "2512",
-                    "SOT-23", "SOT-223", "SOT-89", "SOT-143",
-                    "SOIC-8", "SOIC-16", "TSSOP-16", "TSSOP-20",
-                    "DIP-8", "DIP-14", "DIP-16", "DIP-20", "DIP-28",
-                    "QFP-32", "QFP-44", "QFP-64", "QFP-100",
-                    "QFN-16", "QFN-20", "QFN-24", "QFN-32",
-                    "TO-92", "TO-220", "TO-247", "TO-263", "TO-252"
-                ];
-
-                if (window.confirm('This will add common electronic component footprints to your list. Continue?')) {
-                    // Merge current footprints with defaults to avoid duplicates
-                    const merged = [...new Set([...defaultFootprints, ...footprints])].sort();
-                    setFootprints(merged);
-                    setExportMessage('Common footprints added to your list.');
-                }
-            };
-
-            // --- Data Management Callbacks (Import/Export) ---
-            const handleExportComponents = () => {
-                clearStatusMessages();
-                try {
-                    // Make sure all objects are properly serialized as JSON objects
-                    // Deep copy the components to avoid modifying the original objects
-                    const componentsToExport = components.map(comp => {
-                        // Create a deep copy of the component
-                        const compCopy = { ...comp };
-
-                        // Make sure locationInfo is a proper object, not a string
-                        if (compCopy.locationInfo === '[object Object]' || typeof compCopy.locationInfo === 'string') {
-                            compCopy.locationInfo = { locationId: '', details: '' };
-                        }
-
-                        // Make sure storageInfo is a proper object, not a string
-                        if (compCopy.storageInfo === '[object Object]' || typeof compCopy.storageInfo === 'string') {
-                            compCopy.storageInfo = { locationId: '', drawerId: '', cells: [] };
-                        }
-
-                        return compCopy;
-                    });
-
-                    const componentsJson = JSON.stringify(componentsToExport, null, 2); // Pretty print JSON
-                    setJsonData(componentsJson);
-                    setExportMessage('Components data ready in text area below. Copy or download.');
-                } catch (err) {
-                    console.error("Error exporting components:", err);
-                    setImportError(`Error exporting components: ${err.message}`);
-                }
-            };
-            const handleExportConfig = () => {
-                clearStatusMessages();
-                try {
-                    const configData = {
-                        categories: categories,
-                        lowStockConfig: lowStockConfig,
-                        viewMode: viewMode,
-                        currencySymbol: currencySymbol,
-                        showTotalValue: showTotalValue
-                    };
-                    setJsonData(JSON.stringify(configData, null, 2));
-                    setExportMessage('Configuration data ready in text area below. Copy or download.');
-                } catch (err) {
-                    console.error("Error exporting configuration:", err);
-                    setImportError(`Error exporting configuration: ${err.message}`);
-                }
-            };
-
-            const handleFileImport = (event, importType) => {
-                clearStatusMessages();
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const text = e.target.result;
-                    setJsonData(text); // Show loaded JSON in textarea
-                    try {
-                        if (importType === 'components') {
-                            importComponentsData(text);
-                        } else if (importType === 'config') {
-                            importConfigData(text);
-                        }
-                    } catch (err) {
-                        setImportError(`Import failed: ${err.message}`);
-                        // Clear textarea on failure? Maybe not, user might want to fix it.
-                        // setJsonData('');
-                    }
-                };
-                reader.onerror = (e) => {
-                    console.error("Error reading file:", e.target.error);
-                    setImportError(`Error reading file: ${e.target.error}`);
-                };
-                reader.readAsText(file);
-
-                // Reset file input to allow importing the same file again
-                event.target.value = null;
-            };
-
-            const importComponentsData = (jsonDataToImport) => {
-                // This function is called *after* file read is successful
-                try {
-                    const data = JSON.parse(jsonDataToImport);
-                    if (!Array.isArray(data)) {
-                        throw new Error('Imported components data must be an array.');
-                    }
-
-                    // Validate and sanitize imported data (ensure price/quantity are numbers)
-                    const validatedData = data.map(comp => ({
-                        ...comp,
-                        id: comp.id || helpers.generateId(), // Assign ID if missing
-                        price: Number(comp.price) || 0,
-                        quantity: Number(comp.quantity) || 0
-                    }));
-
-                    setComponents(validatedData); // Replace existing components
-
-                    // Update categories based on imported data (merge unique)
-                    const importedCategories = [...new Set(validatedData.map(item => item.category).filter(Boolean))];
-                    setCategories(prev => [...new Set([...prev, ...importedCategories])].sort());
-
-                    setImportError(`Import successful! ${validatedData.length} components loaded.`);
-                    // Optionally clear JSON area after successful import
-                    // setJsonData('');
-                } catch (err) {
-                    console.error("Error importing components data:", err);
-                    // Re-throw error to be caught by the file handler's catch block
-                    throw new Error(`Invalid JSON format or data structure: ${err.message}`);
-                }
-            };
-
-            const importConfigData = (jsonDataToImport) => {
-                try {
-                    const data = JSON.parse(jsonDataToImport);
-                    if (!data || typeof data !== 'object') {
-                        throw new Error('Invalid configuration data format.');
-                    }
-
-                    let messages = [];
-                    let configChanged = false;
-
-                    // Import Categories (Merge unique)
-                    if (data.categories && Array.isArray(data.categories)) {
-                        const uniqueCategories = [...new Set([...categories, ...data.categories.filter(Boolean)])].sort();
-                        if (uniqueCategories.length !== categories.length || !uniqueCategories.every((cat, i) => cat === categories[i])) {
-                            setCategories(uniqueCategories);
-                            messages.push(`${data.categories.length} categories processed.`);
-                            configChanged = true;
-                        } else {
-                            messages.push('Categories checked (no changes).');
-                        }
+                    // Add the correct background class based on theme
+                    if (newTheme === 'dark') {
+                        bodyElement.classList.add(`bg-${themeColors.background}`);
+                        bodyElement.classList.add(`text-${themeColors.textPrimary}`);
                     } else {
-                        messages.push('No categories found in import file.');
+                        bodyElement.classList.add(`bg-${themeColors.background}`);
+                        bodyElement.classList.add(`text-${themeColors.textPrimary}`);
                     }
 
-                    // Import Low Stock Config (Overwrite)
-                    if (data.lowStockConfig && typeof data.lowStockConfig === 'object') {
-                        setLowStockConfig(data.lowStockConfig);
-                        messages.push('Low stock config imported.');
-                        configChanged = true;
-                    } else {
-                        messages.push('No low stock config found in import file.');
-                    }
+                    // Update UI system
+                    window.App.utils.UI.setTheme(newTheme);
 
-                    // Import View Mode (Overwrite)
-                    if (data.viewMode && (data.viewMode === 'table' || data.viewMode === 'card')) {
-                        if (viewMode !== data.viewMode) {
-                            setViewMode(data.viewMode);
-                            messages.push(`View mode set to '${data.viewMode}'.`);
-                            configChanged = true;
-                        } else {
-                            messages.push('View mode checked (no change).');
-                        }
-                    } else {
-                        messages.push('No valid view mode found in import file.');
-                    }
+                    // Save theme preference
+                    saveConfigCallback();
 
-                    // Import Currency Symbol (Overwrite)
-                    if (data.currencySymbol && typeof data.currencySymbol === 'string') {
-                        if (currencySymbol !== data.currencySymbol) {
-                            setCurrencySymbol(data.currencySymbol);
-                            messages.push(`Currency set to '${data.currencySymbol}'.`);
-                            configChanged = true;
-                        } else {
-                            messages.push('Currency checked (no change).');
-                        }
-                    } else {
-                        messages.push('No currency symbol found in import file.');
-                    }
-
-                    // Import Show Total Value (Overwrite)
-                    if (typeof data.showTotalValue === 'boolean') {
-                        if (showTotalValue !== data.showTotalValue) {
-                            setShowTotalValue(data.showTotalValue);
-                            messages.push(`Show total value set to ${data.showTotalValue}.`);
-                            configChanged = true;
-                        } else {
-                            messages.push('Show total value checked (no change).');
-                        }
-                    } else {
-                        messages.push('No total value display setting found in import file.');
-                    }
-
-                    if (configChanged) {
-                        setImportError(`Configuration import finished: ${messages.join(' ')}`);
-                    } else {
-                        setImportError(`Configuration import checked: No changes applied. ${messages.join(' ')}`);
-                    }
-                    // Optionally clear JSON area after successful import
-                    // setJsonData('');
-
-                } catch (err) {
-                    console.error("Error importing config data:", err);
-                    // Re-throw error
-                    throw new Error(`Invalid JSON format or data structure: ${err.message}`);
+                    // Force re-render to update components
+                    setAppTheme(newTheme);
                 }
             };
 
-
-            const handleDownloadJson = () => {
-                clearStatusMessages();
-                if (!jsonData) {
-                    setExportMessage('No data in the text area to download.');
-                    return;
-                }
-                try {
-                    const element = document.createElement('a');
-                    const file = new Blob([jsonData], { type: 'application/json' });
-                    element.href = URL.createObjectURL(file);
-                    // Suggest filename based on content (simple check)
-                    const suggestedFilename = jsonData.includes('"lowStockConfig":') ? 'electronics_config.json' : 'electronics_inventory.json';
-                    element.download = suggestedFilename;
-                    document.body.appendChild(element); // Required for Firefox
-                    element.click();
-                    document.body.removeChild(element);
-                    URL.revokeObjectURL(element.href); // Clean up blob URL
-                    setExportMessage('JSON file download initiated!');
-                } catch (err) {
-                    console.error("Error downloading JSON:", err);
-                    setImportError(`Error creating download: ${err.message}`);
-                }
+            // Set up global theme change handler
+            window.App.onThemeChange = (newTheme) => {
+                setAppTheme(newTheme);
             };
 
-            const handleCopyJson = () => {
-                clearStatusMessages();
-                if (!jsonData) {
-                    setExportMessage('No data in the text area to copy.');
-                    return;
-                }
-                if (navigator.clipboard && window.isSecureContext) { // Use modern clipboard API if available
-                    navigator.clipboard.writeText(jsonData)
-                        .then(() => setExportMessage('JSON copied to clipboard!'))
-                        .catch(err => {
-                            console.error('Failed to copy using navigator.clipboard:', err);
-                            setImportError('Failed to copy to clipboard.');
-                        });
-                } else { // Fallback for older browsers/insecure contexts (less reliable)
-                    try {
-                        const textArea = document.createElement("textarea");
-                        textArea.value = jsonData;
-                        textArea.style.position = "fixed"; // Prevent scrolling to bottom
-                        textArea.style.left = "-9999px";
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        setExportMessage('JSON copied to clipboard (using fallback method).');
-                    } catch (err) {
-                        console.error('Failed to copy using fallback method:', err);
-                        setImportError('Failed to copy to clipboard.');
-                    }
-                }
-            };
+            useEffect(() => {
+                // Get updated styles based on current theme
+                window.App.utils.UI.buttons = window.App.utils.UI.getThemeStyles().buttons;
+                window.App.utils.UI.cards = window.App.utils.UI.getThemeStyles().cards;
+                window.App.utils.UI.typography = window.App.utils.UI.getThemeStyles().typography;
+                // Update other style categories similarly
 
-            // --- Settings Page Callbacks ---
-            const handleAddLowStock = (category, threshold) => {
-                clearStatusMessages();
-                setLowStockConfig(prev => ({ ...prev, [category]: threshold }));
-                setExportMessage(`Low stock threshold ${lowStockConfig[category] ? 'updated' : 'added'} for ${category}.`);
-            };
-
-            const handleRemoveLowStock = (category) => {
-                clearStatusMessages();
-                setLowStockConfig(prev => {
-                    const updatedConfig = { ...prev };
-                    delete updatedConfig[category];
-                    return updatedConfig;
-                });
-                setExportMessage(`Low stock threshold removed for ${category}.`);
-            };
-
-            const handleEditCategory = (oldName, newName) => {
-                clearStatusMessages();
-                // Update category list
-                setCategories(prev => prev.map(cat => cat === oldName ? newName : cat).sort());
-                // Update components using the old category name
-                setComponents(prev => prev.map(comp => comp.category === oldName ? { ...comp, category: newName } : comp));
-                // Update low stock config if the category existed there
-                if (lowStockConfig.hasOwnProperty(oldName)) {
-                    setLowStockConfig(prevConfig => {
-                        const newConfig = { ...prevConfig };
-                        newConfig[newName] = newConfig[oldName]; // Copy threshold
-                        delete newConfig[oldName]; // Remove old entry
-                        return newConfig;
-                    });
-                }
-                // If the currently selected filter was the old name, update it (or reset)
-                if (selectedCategory === oldName) {
-                    setSelectedCategory(newName);
-                }
-                setExportMessage(`Category "${oldName}" renamed to "${newName}".`);
-            };
-
-            const handleDeleteCategory = (categoryToDelete) => {
-                clearStatusMessages();
-                const defaultCategoryName = "Default"; // Or "Uncategorized"
-
-                // Ensure the default category exists if we need to move items to it
-                if (!categories.includes(defaultCategoryName)) {
-                    setCategories(prev => [...prev, defaultCategoryName].sort());
-                }
-
-                // Remove the category from the list
-                setCategories(prev => prev.filter(cat => cat !== categoryToDelete));
-
-                // Reassign components from the deleted category to the default one
-                setComponents(prev => prev.map(comp =>
-                    comp.category === categoryToDelete ? { ...comp, category: defaultCategoryName } : comp
-                ));
-
-                // Remove the category from low stock config if it exists
-                if (lowStockConfig.hasOwnProperty(categoryToDelete)) {
-                    setLowStockConfig(prevConfig => {
-                        const newConfig = { ...prevConfig };
-                        delete newConfig[categoryToDelete];
-                        return newConfig;
-                    });
-                }
-
-                // Reset filters if the deleted category was selected
-                if (selectedCategory === categoryToDelete) setSelectedCategory('all');
-                // Reset low stock form if the deleted category was selected there
-                // (Handled inside the SettingsView component state reset)
-
-                setExportMessage(`Category "${categoryToDelete}" deleted. Components moved to "${defaultCategoryName}".`);
-            };
-
-            const handleAddDefaultCategory = () => {
-                clearStatusMessages();
-                const defaultCategoryName = "Default";
-                if (!categories.includes(defaultCategoryName)) {
-                    setCategories(prev => [...prev, defaultCategoryName].sort());
-                    setExportMessage(`"${defaultCategoryName}" category added.`);
-                } else {
-                    setExportMessage(`"${defaultCategoryName}" category already exists.`);
-                }
-            };
-
-            // --- Export Location & Drawers ---
-            const handleExportLocations = () => {
-                clearStatusMessages();
-                try {
-                    const locationsData = {
-                        locations: locations,
-                        drawers: drawers,
-                        cells: cells
-                    };
-                    setJsonData(JSON.stringify(locationsData, null, 2));
-                    setExportMessage('Locations and drawers data ready in text area below. Copy or download.');
-                } catch (err) {
-                    console.error("Error exporting locations:", err);
-                    setImportError(`Error exporting locations: ${err.message}`);
-                }
-            };
-
-            const importLocationsData = (jsonDataToImport) => {
-                try {
-                    const data = JSON.parse(jsonDataToImport);
-
-                    // Validate the imported data structure
-                    if (!data.locations || !Array.isArray(data.locations)) {
-                        throw new Error('Invalid locations data format.');
-                    }
-
-                    // Import locations
-                    if (data.locations && Array.isArray(data.locations)) {
-                        setLocations(data.locations);
-                    }
-
-                    // Import drawers if available
-                    if (data.drawers && Array.isArray(data.drawers)) {
-                        setDrawers(data.drawers);
-                    }
-
-                    // Import cells if available
-                    if (data.cells && Array.isArray(data.cells)) {
-                        setCells(data.cells);
-                    }
-
-                    setImportError('Locations, drawers, and cells imported successfully!');
-                } catch (err) {
-                    console.error("Error importing locations data:", err);
-                    throw new Error(`Invalid JSON format or data structure: ${err.message}`);
-                }
-            };
-
-            const handleLocationsFileImport = (event) => {
-                clearStatusMessages();
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const text = e.target.result;
-                    setJsonData(text); // Show loaded JSON in textarea
-                    try {
-                        importLocationsData(text);
-                    } catch (err) {
-                        setImportError(`Import failed: ${err.message}`);
-                    }
-                };
-                reader.onerror = (e) => {
-                    console.error("Error reading file:", e.target.error);
-                    setImportError(`Error reading file: ${e.target.error}`);
-                };
-                reader.readAsText(file);
-
-                // Reset file input to allow importing the same file again
-                event.target.value = null;
-            };
-
-            // --- Local Storage Callbacks ---
-            const handleSaveComponentsLS = () => {
-                clearStatusMessages();
-
-                if (storage.saveComponents(components)) {
-                    setExportMessage('Component data force-saved to local storage.');
-                } else {
-                    setImportError('Error force-saving components to local storage.');
-                }
-            };
-            const handleSaveConfigLS = () => {
-                clearStatusMessages();
-                const currentConfig = { categories, viewMode, lowStockConfig, currencySymbol, showTotalValue };
-                if (storage.saveConfig(currentConfig)) {
-                    setExportMessage('Configuration force-saved to local storage.');
-                } else {
-                    setImportError('Error force-saving configuration to local storage.');
-                }
-            };
-            const handleClearLS = () => {
-                clearStatusMessages();
-                if (window.confirm('Are you sure you want to clear ALL inventory data and settings from local storage? This action cannot be undone.')) {
-                    if (storage.clearStorage()) {
-                        // Reset ALL state values to defaults
-                        setComponents([]);
-                        setCategories([]);
-                        setLowStockConfig({});
-                        setViewMode('table');
-                        setSelectedCategory('all');
-                        setSearchTerm('');
-                        setJsonData('');
-                        setImportError('');
-                        setCurrencySymbol('$');
-                        setShowTotalValue(false);
-                        setSelectedComponents([]);
-
-                        // Also reset locations, drawers, and cells
-                        setLocations([]);
-                        setDrawers([]);
-                        setCells([]);
-
-                        // Reset footprints
-                        setFootprints([]);
-
-                        setExportMessage('Local storage cleared successfully! Application state reset.');
-                    } else {
-                        setImportError('An error occurred while trying to clear local storage.');
-                    }
-                }
-            };
-
-            // --- Get Local Storage Status (for display in Settings) ---
-            // This could be memoized if performance becomes an issue
-            const getLocalStorageStatus = () => ({
-                components: !!localStorage.getItem('electronicsComponents'),
-                categories: !!localStorage.getItem('electronicsCategories'),
-                viewMode: !!localStorage.getItem('electronicsViewMode'),
-                lowStockConfig: !!localStorage.getItem('electronicsLowStockConfig'),
-                currencySymbol: !!localStorage.getItem('electronicsCurrencySymbol'),
-                showTotalValue: !!localStorage.getItem('electronicsShowTotalValue'),
-            });
+                // Apply theme class to body if needed
+                document.body.className = `bg-${window.App.utils.UI.themes[appTheme].colors.background}`;
+            }, [appTheme]);
 
 
             // --- Render ---
             return (
                 React.createElement('div', { className: "container mx-auto p-4 font-sans" },
-                    React.createElement('h1', { className: "text-3xl font-bold mb-6 text-center text-gray-700" }, "Electro Manager"),
-                    React.createElement('h4', { className: "text font mb-6 text-center text-red-500" }, "Warn: Deprecated Version | DANP-EDNA V0.1.7beta"),
-                    // --- Navigation Tabs ---
-                    React.createElement('div', { className: "flex justify-center mb-6 border-b border-gray-300 overflow-x-auto" },
+                    React.createElement('h1', {
+                        className: `text-3xl font-bold mb-6 text-center text-${themeColors.textPrimary}`
+                    }, "Electro Manager"),
+                    React.createElement('h4', {
+                        className: `text font mb-6 text-center text-${themeColors.textSecondary}`
+                    }, "an Electronics Inventory System | DANP-EDNA V0.2.2beta"),
+                    // Navigation Tabs
+                    React.createElement('div', {
+                        className: `flex justify-center mb-6 border-b border-${themeColors.border} overflow-x-auto`
+                    },
+                        // Inventory Tab
                         React.createElement('button', {
                             onClick: () => {
                                 setCurrentPage('inventory');
-                                setViewingDrawerId(null); // Reset drawer view when changing page
+                                setViewingDrawerId(null);
                             },
-                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'inventory' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'inventory'
+                                ? `border-b-2 border-${themeColors.primary} text-${themeColors.primary} font-semibold`
+                                : `text-${themeColors.textMuted} hover:text-${themeColors.textSecondary}`
+                                }`
                         }, "Inventory List"),
+
+                        // Locations Tab
                         React.createElement('button', {
                             onClick: () => {
                                 setCurrentPage('locations');
-                                setViewingDrawerId(null); // Reset drawer view when changing page
+                                setViewingDrawerId(null);
                             },
-                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'locations' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'locations'
+                                ? `border-b-2 border-${themeColors.primary} text-${themeColors.primary} font-semibold`
+                                : `text-${themeColors.textMuted} hover:text-${themeColors.textSecondary}`
+                                }`
                         }, "Locations"),
+
+                        // Drawers Tab
                         React.createElement('button', {
                             onClick: () => {
                                 setCurrentPage('drawers');
-                                setViewingDrawerId(null); // Reset drawer view when changing page
+                                setViewingDrawerId(null);
                             },
-                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'drawers' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'drawers'
+                                ? `border-b-2 border-${themeColors.primary} text-${themeColors.primary} font-semibold`
+                                : `text-${themeColors.textMuted} hover:text-${themeColors.textSecondary}`
+                                }`
                         }, "Drawers"),
+
+                        // Settings Tab
                         React.createElement('button', {
                             onClick: () => {
                                 setCurrentPage('data');
-                                setViewingDrawerId(null); // Reset drawer view when changing page
+                                setViewingDrawerId(null);
                             },
-                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'}`
-                        }, "Settings"),
+                            className: `py-2 px-4 text-lg whitespace-nowrap ${currentPage === 'data'
+                                ? `border-b-2 border-${themeColors.primary} text-${themeColors.primary} font-semibold`
+                                : `text-${themeColors.textMuted} hover:text-${themeColors.textSecondary}`
+                                }`
+                        }, "Settings")
                     ),
+
                     // --- Conditional Page Rendering ---
                     currentPage === 'inventory' && React.createElement(InventoryView, {
                         // Pass state
@@ -1377,10 +1150,13 @@ const saveConfigCallback = useCallback(() => {
                         currencySymbol: currencySymbol,
                         showTotalValue: showTotalValue,
                         selectedComponents: selectedComponents,
+                        drawers: drawers,
+                        cells: cells,
                         locations: locations,
+                        footprints: footprints,
                         selectedLocation: selectedLocation,
-                        itemsPerPage: itemsPerPage, 
-                        
+                        itemsPerPage: itemsPerPage,
+
                         // Pass callbacks
                         onAddComponent: handleAddComponent,
                         onEditComponent: handleEditComponent,
@@ -1398,47 +1174,38 @@ const saveConfigCallback = useCallback(() => {
                         onItemsPerPageChange: handleItemsPerPageChange,
                     }),
 
+
                     currentPage === 'data' && React.createElement(SettingsView, {
-                        // Pass state
+                        // Data
                         categories: categories,
                         lowStockConfig: lowStockConfig,
+                        footprints: footprints,
+                        components: components,
+                        locations: locations,
+                        drawers: drawers,
+                        cells: cells,
+
+                        // Config
                         currencySymbol: currencySymbol,
                         showTotalValue: showTotalValue,
-                        jsonData: jsonData,
-                        importError: importError,
-                        exportMessage: exportMessage,
-                        localStorageStatus: getLocalStorageStatus(), // Pass LS status
-                        footprints: footprints,
-                        locations: locations,
-                        components: components,
-                        onAddLocation: handleAddLocation,
-                        onEditLocation: handleEditLocation,
-                        onDeleteLocation: handleDeleteLocation,
-                        // Pass callbacks
-                        onExportComponents: handleExportComponents,
-                        onExportConfig: handleExportConfig,
-                        onImportComponentsFile: (e) => handleFileImport(e, 'components'),
-                        onImportConfigFile: (e) => handleFileImport(e, 'config'),
-                        onDownloadJson: handleDownloadJson,
-                        onExportLocations: handleExportLocations,
-                        onImportLocationsFile: handleLocationsFileImport,
-                        onCopyJson: handleCopyJson,
-                        onClearJsonArea: () => { setJsonData(''); clearStatusMessages(); },
-                        onChangeCurrency: (e) => { setCurrencySymbol(e.target.value); clearStatusMessages(); },
-                        onChangeShowTotalValue: (e) => { setShowTotalValue(e.target.checked); clearStatusMessages(); },
-                        onAddLowStock: handleAddLowStock,
-                        onRemoveLowStock: handleRemoveLowStock,
-                        onEditCategory: handleEditCategory,
-                        onDeleteCategory: handleDeleteCategory,
-                        onAddDefaultCategory: handleAddDefaultCategory,
-                        onSaveComponentsLS: handleSaveComponentsLS,
-                        onSaveConfigLS: handleSaveConfigLS,
-                        onClearLS: handleClearLS,
-                        onAddFootprint: handleAddFootprint,
-                        onEditFootprint: handleEditFootprint,
-                        onDeleteFootprint: handleDeleteFootprint,
-                        onEditComponent: handleEditComponent,
-                        onRestoreDefaultFootprints: handleRestoreDefaultFootprints,
+                        theme: theme,
+
+                        // Update callbacks
+                        onUpdateCategories: setCategories,
+                        onUpdateLowStockConfig: setLowStockConfig,
+                        onUpdateComponents: setComponents,
+                        onUpdateLocations: setLocations,
+                        onUpdateDrawers: setDrawers,
+                        onUpdateCells: setCells,
+                        onUpdateFootprints: setFootprints,
+
+                        // Event callbacks
+                        onChangeCurrency: (e) => { setCurrencySymbol(e.target.value) },
+                        onChangeShowTotalValue: (e) => { setShowTotalValue(e.target.checked) },
+                        onChangeTheme: handleThemeChange,
+
+                        // Component edit callback
+                        onEditComponent: handleEditComponent
                     }),
 
                     currentPage === 'locations' && React.createElement(LocationPage, {
@@ -1505,13 +1272,13 @@ const saveConfigCallback = useCallback(() => {
         // Ensure the root element exists before rendering
         const rootElement = document.getElementById('root');
         if (rootElement) {
-            ReactDOM.render(React.createElement(ElectronicsInventory), rootElement);
+            // Use the new createRoot API for React 18
+            const root = ReactDOM.createRoot(rootElement);
+            root.render(React.createElement(ElectronicsInventory));
         } else {
             console.error("Root element (#root) not found in the DOM.");
         }
-
     </script>
-
 </body>
 
 </html>

@@ -1,50 +1,47 @@
 // js/components/InventoryView.js
 
-// Ensure the global namespace exists
 window.App = window.App || {};
 window.App.components = window.App.components || {};
-window.App.utils = window.App.utils || {}; // Ensure utils namespace exists
+window.App.utils = window.App.utils || {};
 
-/**
- * React Component for the Inventory Page View.
- * Displays filters, summary, bulk actions, and the component list (table or cards).
- */
 window.App.components.InventoryView = ({
-    // Props
+    // --- Data ----------------------------------------------------------------
     components = [], // Array: All component objects
     categories = [], // Array: List of category strings
-    viewMode, // String: 'table' or 'card'
-    selectedCategory, // String: Currently selected category filter
-    searchTerm, // String: Current search term
-    lowStockConfig, // Object: Low stock thresholds { category: threshold }
-    currencySymbol, // String: Currency symbol
-    showTotalValue, // Boolean: Whether to show total value in summary
-    selectedComponents = [], // Array: IDs of selected components for bulk actions
-    locations = [], // Array: List of location objects
-    footprints = [], // Array: List of footprint strings
-    itemsPerPage, // 
-    onItemsPerPageChange, // 
+    locations = [], // Array: Location objects (rack / shelf / zone)
+    drawers = [], // Array: Drawer metadata (visual containers)
+    cells = [], // Array: Individual cell definitions within drawers
+    footprints = [], // Array: List of footprint strings (e.g., SOIC‑8, 0603)
 
-    // Callbacks
-    onAddComponent, // Function: Called when 'Add Component' button clicked
-    onEditComponent, // Function(component): Called to edit a specific component
-    onDeleteComponent, // Function(id): Called to delete a specific component
-    onUpdateQuantity, // Function(id, delta): Called to change quantity (+1 or -1)
-    onToggleSelect, // Function(id): Called when a component checkbox is toggled
-    onToggleSelectAll, // Function: Called when the select-all checkbox is toggled
-    onBulkEdit, // Function: Called when 'Edit Selected' button clicked
-    onBulkDelete, // Function: Called when 'Delete Selected' button clicked
-    onChangeViewMode, // Function(mode): Called to change view mode ('table'/'card')
-    onChangeCategoryFilter, // Function(category): Called when category filter changes
-    onChangeSearchTerm, // Function(term): Called when search input changes
-    onToggleFavorite, // Function(id, property): Called when favorite/bookmark/star is toggled
+    // --- UI state ------------------------------------------------------------
+    viewMode,                 // String: 'table' | 'card' – current view toggle
+    selectedCategory,         // String: Category filter selected in UI
+    lowStockConfig,           // Object: { [category]: threshold } for alerts
+    currencySymbol,           // String: e.g., '$', 'RM' – prefix in totals
+    showTotalValue,           // Boolean: true shows total inventory value card
+    itemsPerPage,             // Number | 'all' – pagination page size
+    selectedComponents = [],  // Array<string> of component IDs currently selected
+
+    // Callbacks 
+    onItemsPerPageChange, // (newSize)        → void
+    onAddComponent,       // ()               → void
+    onEditComponent,      // (component)      → void
+    onDeleteComponent,    // (id)             → void
+    onUpdateQuantity,     // (id, delta)      → void
+    onToggleSelect,       // (id)             → void
+    onToggleSelectAll,    // (selectAll)      → void
+    onBulkEdit,           // (ids)            → void
+    onBulkDelete,         // (ids)            → void
+    onChangeViewMode,     // ('table'|'card') → void
+    onToggleFavorite,     // (id)             → void
 }) => {
-    // Get UI constants and helper functions
-    const { helpers, UI } = window.App.utils;
-    const { useState, useEffect, useCallback } = React;
+    const { UI, helpers } = window.App.utils;
+    const { useState, useEffect } = React;
 
-    // --- Advanced Filter States ---
+    /* ----------------------------- Local state ----------------------------- */
     const [advancedFiltersExpanded, setAdvancedFiltersExpanded] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [selectedMarks, setSelectedMarks] = useState([]);
@@ -52,7 +49,32 @@ window.App.components.InventoryView = ({
     const [selectedFootprints, setSelectedFootprints] = useState([]);
     const [quantityRange, setQuantityRange] = useState(null);
     const [priceRange, setPriceRange] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+
+    /* -------------------------- Summary statistics ------------------------- */
+    const totalComponents = components.length;
+    const totalItems = components.reduce((s, c) => s + (Number(c.quantity) || 0), 0);
+    const totalValue = helpers.calculateTotalInventoryValue(components);
+
+    const lowStockCount = components.filter(c => helpers.isLowStock(c, lowStockConfig)).length;
+    const outOfStockCount = components.filter(c => (Number(c.quantity) || 0) === 0).length;
+
+    const locationCount = locations.length;
+    const drawerCount = drawers.length;
+    const cellCount = cells.length;
+    const footprintCount = footprints.length;
+
+    const categoryCounts = helpers.calculateCategoryCounts(components);
+
+    const renderSummaryCard = (label, value, colorClass = UI.colors.primary.text) => {
+        const cardClass = `${UI.cards.container} text-center p-4`;
+        const labelClass = `${UI.typography.small} font-medium mb-1`;
+        const valueClass = `${UI.typography.heading.h2} ${colorClass}`;
+
+        return React.createElement('div', { className: cardClass },
+            React.createElement('div', { className: labelClass }, label),
+            React.createElement('div', { className: valueClass }, value)
+        );
+    };
 
     // Clear advanced filters if simple category/search filters change
     useEffect(() => {
@@ -118,26 +140,30 @@ window.App.components.InventoryView = ({
         const matchesFootprint = selectedFootprints.length === 0 ||
             (component.footprint && selectedFootprints.includes(component.footprint));
 
-        // Quantity range filter
+        // Quantity range filter - FIXED LOGIC
         const componentQuantity = component.quantity || 0;
         const matchesQuantity = !quantityRange || (
             // If min and max are defined and equal, filter for exact match
             (quantityRange.min !== null && quantityRange.max !== null && quantityRange.min === quantityRange.max)
                 ? (componentQuantity === quantityRange.min)
-                // Otherwise, filter only by minimum value (max is ignored unless used for exact match)
-                // Ensure component quantity is greater than or equal to the minimum filter value
-                : (quantityRange.min === null || componentQuantity >= quantityRange.min)
+                // Otherwise, use proper range filtering with both min and max boundaries
+                : (
+                    (quantityRange.min === null || componentQuantity >= quantityRange.min) &&
+                    (quantityRange.max === null || componentQuantity <= quantityRange.max)
+                )
         );
 
-        // Component range filter
+        // Price range filter - FIXED LOGIC
         const componentPrice = component.price || 0;
         const matchesPrice = !priceRange || (
             // If min and max are defined and equal, filter for exact match
             (priceRange.min !== null && priceRange.max !== null && priceRange.min === priceRange.max)
                 ? (componentPrice === priceRange.min)
-                // Otherwise, filter only by minimum value (max is ignored unless used for exact match)
-                // Ensure component price is greater than or equal to the minimum filter value
-                : (priceRange.min === null || componentPrice >= priceRange.min)
+                // Otherwise, use proper range filtering with both min and max boundaries
+                : (
+                    (priceRange.min === null || componentPrice >= priceRange.min) &&
+                    (priceRange.max === null || componentPrice <= priceRange.max)
+                )
         );
 
         // Combine all filters
@@ -164,18 +190,36 @@ window.App.components.InventoryView = ({
         setCurrentPage(Math.min(Math.max(1, page), totalPages));
     };
 
-    // --- Calculations (using helpers) ---
-    const totalComponents = components.length;
-    const totalItems = components.reduce((sum, comp) => sum + (Number(comp.quantity) || 0), 0);
-    const totalValue = helpers.calculateTotalInventoryValue(components);
-
-    const lowStockCount = components.filter(comp => helpers.isLowStock(comp, lowStockConfig)).length;
-    const categoryCounts = helpers.calculateCategoryCounts(components);
-
     // --- Event Handlers ---
-    const handleCategoryChange = (e) => onChangeCategoryFilter(e.target.value);
-    const handleSearchChange = (e) => onChangeSearchTerm(e.target.value);
-    const handleViewChange = (mode) => onChangeViewMode(mode);
+
+    const handleSearchChange = (e) => {
+        // Extract the search value safely
+        let newSearchTerm = '';
+
+        if (e && e.target && e.target.value !== undefined) {
+            // Normal event object from input element
+            newSearchTerm = e.target.value;
+        } else if (typeof e === 'string') {
+            // Direct string value
+            newSearchTerm = e;
+        }
+
+        // Update the search term state
+        setSearchTerm(newSearchTerm);
+
+        // Reset to page 1 when search changes (if using pagination)
+        setCurrentPage(1);
+    };
+
+    const handleViewChange = (mode) => {
+        // Just pass the mode directly - this is expected to be a string value
+        if (mode === 'table' || mode === 'card') {
+            onChangeViewMode(mode);
+        } else {
+            console.warn("handleViewChange called with invalid mode", mode);
+            onChangeViewMode('table'); // Default to table view
+        }
+    };
 
     // --- Render Functions for Table and Card Views ---
 
@@ -188,7 +232,7 @@ window.App.components.InventoryView = ({
 
         return React.createElement('tr', {
             key: component.id,
-            className: `${UI.tables.body.row} ${isSelected ? 'bg-blue-50' : ''} ${lowStock ? 'bg-red-50 hover:bg-red-100' : ''}`
+            className: `${isSelected ? UI.tables.body.rowSelected : UI.tables.body.row} ${lowStock ? `bg-${UI.getThemeColors().danger.replace('500', '50').replace('400', '950')} hover:bg-${UI.getThemeColors().danger.replace('500', '100').replace('400', '900')}` : ''}`
         },
             // Checkbox
             React.createElement('td', { className: "px-3 py-2 text-center" },
@@ -224,7 +268,7 @@ window.App.components.InventoryView = ({
                     // Favorite Icon/Button
                     React.createElement('button', {
                         onClick: () => onToggleFavorite(component.id, 'favorite'),
-                        className: `p-1 rounded-full ${component.favorite ? 'text-red-500 hover:text-red-600' : 'text-gray-300 hover:text-red-500'}`,
+                        className: `p-1 rounded-full ${component.favorite ? "text-red-500 hover:text-red-600" : 'text-gray-300 hover:text-red-500'}`,
                         title: component.favorite ? "Remove from favorites" : "Add to favorites"
                     },
                         React.createElement('svg', {
@@ -244,7 +288,7 @@ window.App.components.InventoryView = ({
                     // Bookmark Icon/Button
                     React.createElement('button', {
                         onClick: () => onToggleFavorite(component.id, 'bookmark'),
-                        className: `p-1 rounded-full ${component.bookmark ? 'text-blue-500 hover:text-blue-600' : 'text-gray-300 hover:text-blue-500'}`,
+                        className: `p-1 rounded-full ${component.bookmark ? "text-blue-500 hover:text-blue-600" : 'text-gray-300 hover:text-blue-500'}`,
                         title: component.bookmark ? "Remove bookmark" : "Add bookmark"
                     },
                         React.createElement('svg', {
@@ -262,7 +306,7 @@ window.App.components.InventoryView = ({
                     // Star Icon/Button
                     React.createElement('button', {
                         onClick: () => onToggleFavorite(component.id, 'star'),
-                        className: `p-1 rounded-full ${component.star ? 'text-yellow-500 hover:text-yellow-600' : 'text-gray-300 hover:text-yellow-500'}`,
+                        className: `p-1 rounded-full ${component.star ? "text-yellow-500 hover:text-yellow-600" : 'text-gray-300 hover:text-yellow-500'}`,
                         title: component.star ? "Remove star" : "Add star"
                     },
                         React.createElement('svg', {
@@ -288,16 +332,16 @@ window.App.components.InventoryView = ({
                         className: UI.buttons.icon.danger,
                         title: "Decrease Quantity"
                     }, "-"),
-                    React.createElement('span', {
-                        className: `text-sm font-semibold ${lowStock ? 'text-red-600' : 'text-gray-900'}`
-                    }, component.quantity || 0),
+                    React.createElement('span', { className: UI.tables.body.cell }, component.quantity || 0),
                     React.createElement('button', {
                         onClick: () => onUpdateQuantity(component.id, 1),
                         className: UI.buttons.icon.success,
                         title: "Increase Quantity"
                     }, "+")
                 ),
-                lowStock && React.createElement('div', { className: UI.tags.red }, "Low Stock")
+                lowStock && React.createElement('div', {
+                    className: UI.tags.red,
+                }, "Low Stock")
             ),
             // Price
             React.createElement('td', { className: UI.tables.body.cell + " text-right" }, formattedPrice),
@@ -319,96 +363,94 @@ window.App.components.InventoryView = ({
         );
     };
 
-    // In InventoryView.js
+    // Pagination component
+    const renderPagination = () => {
+        if (itemsPerPage === 'all' || totalPages <= 1) {
+            return null; // Don't render pagination if showing all or only one page
+        }
 
-// Add this function inside your component before the main return
-const renderPagination = () => {
-    if (itemsPerPage === 'all' || totalPages <= 1) {
-        return null; // Don't render pagination if showing all or only one page
-    }
-    
-    return React.createElement('div', { className: "flex flex-col items-center mb-4" },
-        // Pagination controls
-        React.createElement('div', { className: "flex justify-center" },
-            React.createElement('div', { className: "bg-white shadow-sm rounded border inline-flex" },
-                // Previous button
-                React.createElement('button', {
-                    onClick: () => handlePageChange(currentPage - 1),
-                    disabled: currentPage === 1,
-                    className: `px-3 py-1 border-r ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
-                }, "Previous"),
+        return React.createElement('div', { className: "flex flex-col items-center mb-4" },
+            // Pagination controls
+            React.createElement('div', { className: "flex justify-center" },
+                React.createElement('div', { className: "bg-white shadow-sm rounded border inline-flex" },
+                    // Previous button
+                    React.createElement('button', {
+                        onClick: () => handlePageChange(currentPage - 1),
+                        disabled: currentPage === 1,
+                        className: `px-3 py-1 border-r ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
+                    }, "<"),
 
-                // Page numbers - limit visible pages for readability
-                (() => {
-                    const pages = [];
-                    const maxVisiblePages = 5; // Show max 5 page numbers at once
-                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                    // Page numbers - limit visible pages for readability
+                    (() => {
+                        const pages = [];
+                        const maxVisiblePages = 5; // Show max 5 page numbers at once
+                        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-                    // Adjust if we're near the end
-                    if (endPage - startPage + 1 < maxVisiblePages) {
-                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                    }
-
-                    // Add first page if not in range
-                    if (startPage > 1) {
-                        pages.push(React.createElement('button', {
-                            key: 1,
-                            onClick: () => handlePageChange(1),
-                            className: `px-3 py-1 border-r ${1 === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
-                        }, "1"));
-
-                        if (startPage > 2) {
-                            pages.push(React.createElement('span', {
-                                key: 'start-ellipsis',
-                                className: "px-2 py-1 border-r text-gray-500"
-                            }, "..."));
-                        }
-                    }
-
-                    // Add visible page numbers
-                    for (let i = startPage; i <= endPage; i++) {
-                        pages.push(React.createElement('button', {
-                            key: i,
-                            onClick: () => handlePageChange(i),
-                            className: `px-3 py-1 border-r ${i === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
-                        }, i.toString()));
-                    }
-
-                    // Add last page if not in range
-                    if (endPage < totalPages) {
-                        if (endPage < totalPages - 1) {
-                            pages.push(React.createElement('span', {
-                                key: 'end-ellipsis',
-                                className: "px-2 py-1 border-r text-gray-500"
-                            }, "..."));
+                        // Adjust if we're near the end
+                        if (endPage - startPage + 1 < maxVisiblePages) {
+                            startPage = Math.max(1, endPage - maxVisiblePages + 1);
                         }
 
-                        pages.push(React.createElement('button', {
-                            key: totalPages,
-                            onClick: () => handlePageChange(totalPages),
-                            className: `px-3 py-1 border-r ${totalPages === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
-                        }, totalPages.toString()));
-                    }
+                        // Add first page if not in range
+                        if (startPage > 1) {
+                            pages.push(React.createElement('button', {
+                                key: 1,
+                                onClick: () => handlePageChange(1),
+                                className: `px-3 py-1 border-r ${1 === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                            }, "1"));
 
-                    return pages;
-                })(),
+                            if (startPage > 2) {
+                                pages.push(React.createElement('span', {
+                                    key: 'start-ellipsis',
+                                    className: "px-2 py-1 border-r text-gray-500"
+                                }, "..."));
+                            }
+                        }
 
-                // Next button
-                React.createElement('button', {
-                    onClick: () => handlePageChange(currentPage + 1),
-                    disabled: currentPage === totalPages,
-                    className: `px-3 py-1 ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
-                }, "Next")
+                        // Add visible page numbers
+                        for (let i = startPage; i <= endPage; i++) {
+                            pages.push(React.createElement('button', {
+                                key: i,
+                                onClick: () => handlePageChange(i),
+                                className: `px-3 py-1 border-r ${i === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                            }, i.toString()));
+                        }
+
+                        // Add last page if not in range
+                        if (endPage < totalPages) {
+                            if (endPage < totalPages - 1) {
+                                pages.push(React.createElement('span', {
+                                    key: 'end-ellipsis',
+                                    className: "px-2 py-1 border-r text-gray-500"
+                                }, "..."));
+                            }
+
+                            pages.push(React.createElement('button', {
+                                key: totalPages,
+                                onClick: () => handlePageChange(totalPages),
+                                className: `px-3 py-1 border-r ${totalPages === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'}`
+                            }, totalPages.toString()));
+                        }
+
+                        return pages;
+                    })(),
+
+                    // Next button
+                    React.createElement('button', {
+                        onClick: () => handlePageChange(currentPage + 1),
+                        disabled: currentPage === totalPages,
+                        className: `px-3 py-1 ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'}`
+                    }, ">")
+                )
+            ),
+
+            // Pagination status text
+            filteredComponents.length > 0 && React.createElement('div', { className: "text-center text-sm text-gray-600 mt-2" },
+                `Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, filteredComponents.length)} of ${filteredComponents.length} items`
             )
-        ),
-        
-        // Pagination status text
-        filteredComponents.length > 0 && React.createElement('div', { className: "text-center text-sm text-gray-600 mt-2" },
-            `Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, filteredComponents.length)} of ${filteredComponents.length} items`
-        )
-    );
-};
+        );
+    };
 
     // Renders a single card in the card view
     const renderCard = (component) => {
@@ -416,7 +458,6 @@ const renderPagination = () => {
         const lowStock = helpers.isLowStock(component, lowStockConfig);
         const formattedPrice = helpers.formatCurrency(component.price, currencySymbol);
         const datasheetLinks = helpers.formatDatasheets(component.datasheets);
-        const imageUrl = component.image || `https://placehold.co/200x150/e2e8f0/94a3b8?text=No+Image`; // Placeholder
 
         return React.createElement('div', {
             key: component.id,
@@ -435,30 +476,41 @@ const renderPagination = () => {
             // Image Area
             React.createElement('div', { className: "relative h-40 bg-gray-100 rounded-t-lg flex items-center justify-center overflow-hidden" },
                 React.createElement('img', {
-                    src: component.image || '', // Use component image if available
+                    src: component.image || '',
                     alt: component.name || 'Component Image',
                     className: "w-full h-full object-contain p-2",
                     // Fallback placeholder if image fails to load
-                    onError: (e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x150/e2e8f0/94a3b8?text=No+Image`; }
+                    //onError: (e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x150/e2e8f0/94a3b8?text=No+Image`; }
                 }),
-                lowStock && React.createElement('span', { className: UI.tags.red + " absolute bottom-1 right-1" }, "LOW")
+                lowStock && React.createElement('span', {
+                    className: UI.tags.red + " absolute bottom-1 right-1"
+                }, "LOW")
             ),
             // Card Content
             React.createElement('div', { className: UI.cards.body },
                 // Name & Type
                 React.createElement('div', { className: "flex justify-between items-start mb-2" },
-                    React.createElement('h3', { className: UI.typography.heading.h4 + " truncate mr-2", title: component.name }, component.name),
-                    component.type && React.createElement('span', { className: UI.tags.gray }, component.type)
+                    React.createElement('h3', {
+                        className: UI.typography.heading.h4 + " truncate mr-2",
+                        title: component.name
+                    }, component.name),
+                    component.type && React.createElement('span', {
+                        className: UI.tags.gray
+                    }, component.type)
                 ),
                 // Footprint
                 React.createElement('div', { className: "text-sm text-gray-600 mb-1 flex justify-between" },
                     React.createElement('span', { className: "font-medium" }, "Footprint:"),
                     component.footprint ?
-                        React.createElement('span', { className: UI.tags.gray }, component.footprint)
+                        React.createElement('span', {
+                            className: UI.tags.gray
+                        }, component.footprint)
                         : React.createElement('span', { className: "text-gray-400" }, "-")
                 ),
                 // Category
-                React.createElement('div', { className: UI.typography.small + " mb-1" }, component.category),
+                React.createElement('div', {
+                    className: UI.typography.small + " mb-1"
+                }, component.category),
                 // Price
                 React.createElement('div', { className: "text-md font-semibold text-green-700 mb-3" }, formattedPrice),
                 // Quantity Controls
@@ -482,7 +534,10 @@ const renderPagination = () => {
                             React.createElement('path', { fillRule: "evenodd", d: "M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z", clipRule: "evenodd" })))
                 ),
                 // Info
-                component.info && React.createElement('p', { className: UI.typography.small + " mb-2 truncate", title: component.info },
+                component.info && React.createElement('p', {
+                    className: UI.typography.small + " mb-2 truncate",
+                    title: component.info
+                },
                     React.createElement('span', { className: "font-medium" }, "Uses: "), component.info),
                 // Datasheets
                 React.createElement('div', { className: "mb-3" },
@@ -518,48 +573,42 @@ const renderPagination = () => {
         React.createElement('div', null,
 
             // --- Inventory Summary Stats ---
-            React.createElement('div', { className: UI.layout.sectionAlt + " mb-6" },
-                React.createElement('h2', { className: UI.typography.subtitle + " mb-3" }, "Inventory Summary"),
-                React.createElement('div', { className: "grid grid-cols-2 md:grid-cols-5 gap-4 text-center mb-4" }, // 5 cols for potential total value
-                    // Total Components Stat
-                    React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Components"),
-                        React.createElement('p', { className: "text-2xl font-semibold text-blue-600" }, totalComponents)
-                    ),
-                    // Total Items Stat
-                    React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Total Items"),
-                        React.createElement('p', { className: "text-2xl font-semibold text-green-600" }, totalItems)
-                    ),
-                    // Total Value Stat (Conditional)
-                    showTotalValue && React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Total Value"),
-                        React.createElement('p', { className: "text-2xl font-semibold text-purple-600" }, helpers.formatCurrency(totalValue, currencySymbol))
-                    ),
-                    // Categories Stat
-                    React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Categories"),
-                        React.createElement('p', { className: "text-2xl font-semibold text-indigo-600" }, (categories || []).length)
-                    ),
-                    // Low Stock Stat
-                    React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
-                        React.createElement('h3', { className: UI.typography.small + " font-medium text-gray-500" }, "Low Stock"),
-                        React.createElement('p', { className: `text-2xl font-semibold ${lowStockCount > 0 ? 'text-red-600' : 'text-gray-600'}` }, lowStockCount)
-                    ),
+            React.createElement('div', { className: UI.layout.sectionAlt },
+                React.createElement('h2', { className: `${UI.typography.subtitle} mb-3` }, 'Inventory Summary'),
+
+                React.createElement('div', {
+                    className: 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'
+                },
+                    renderSummaryCard('Components', totalComponents, UI.colors.primary.text),
+                    renderSummaryCard('Total Items', totalItems, UI.colors.success.text),
+                    showTotalValue && renderSummaryCard('Total Value', helpers.formatCurrency(totalValue, currencySymbol), UI.colors.accent.text),
+                    renderSummaryCard('Categories', categories.length, UI.colors.info.text),
+                    renderSummaryCard('Low Stock', lowStockCount, lowStockCount ? UI.colors.danger.text : UI.colors.secondary.text),
+                    renderSummaryCard('Out of Stock', outOfStockCount, outOfStockCount ? UI.colors.danger.text : UI.colors.secondary.text),
+                    renderSummaryCard('Locations', locationCount, UI.colors.info.text),
+                    renderSummaryCard('Drawers', drawerCount, UI.colors.info.text),
+                    renderSummaryCard('Cells', cellCount, UI.colors.info.text),
+                    renderSummaryCard('Footprints', footprintCount, UI.colors.info.text)
                 ),
-                // Category Counts Section
-                totalComponents > 0 && React.createElement('div', { className: UI.utils.borderTop + " pt-3 mt-3" },
-                    React.createElement('h3', { className: UI.typography.subtitle + " mb-2" }, "Item Counts by Category"),
-                    React.createElement('div', { className: "flex flex-wrap gap-3" },
-                        categoryCounts.length > 0 ? categoryCounts.map(([category, count]) =>
-                            React.createElement('div', { key: category, className: "bg-white border border-gray-200 rounded-md px-3 py-1 shadow-sm" },
-                                React.createElement('span', { className: "text-sm font-medium text-gray-700" }, category, ":"),
-                                React.createElement('span', { className: "text-sm font-semibold text-blue-700 ml-1" }, count)
-                            )
-                        ) : React.createElement('p', { className: UI.typography.small + " italic" }, "No items with categories found.")
+
+                totalComponents > 0 && React.createElement('div', {
+                    className: `${UI.utils.borderTop} pt-3 mt-3 border-${UI.getThemeColors().border}`
+                },
+                    React.createElement('h3', { className: `${UI.typography.subtitle} mb-2` }, 'Item Counts by Category'),
+                    React.createElement('div', { className: 'flex flex-wrap gap-3' },
+                        categoryCounts.length ? categoryCounts.map(([cat, cnt]) => React.createElement('div', {
+                            key: cat,
+                            className: `${UI.cards.container} px-3 py-1`
+                        },
+                            React.createElement('span', { className: `${UI.typography.small} mr-1` }, `${cat}:`),
+                            React.createElement('span', { className: `${UI.typography.small} font-semibold ${UI.colors.primary.text}` }, cnt)
+                        )) : React.createElement('p', { className: `${UI.typography.small} italic` }, 'No items with categories found.')
                     )
                 )
-            ), // End Summary Stats
+
+
+
+            ),
 
             // --- Advanced Filters Card ---
             React.createElement(window.App.components.AdvancedFilters, {
@@ -569,7 +618,8 @@ const renderPagination = () => {
                 locations: locations,
                 footprints: footprints,
                 viewMode: viewMode,
-                
+                searchTerm: searchTerm,
+
                 // Filter states
                 selectedCategories: selectedCategories,
                 selectedTypes: selectedTypes,
@@ -579,7 +629,7 @@ const renderPagination = () => {
                 quantityRange: quantityRange,
                 priceRange: priceRange,
                 itemsPerPage: itemsPerPage, // Pass the prop
-                
+
                 // Callbacks
                 onAddComponent: onAddComponent,
                 onCategoriesChange: setSelectedCategories,
@@ -592,12 +642,12 @@ const renderPagination = () => {
                 onItemsPerPageChange: onItemsPerPageChange, // Pass the callback
                 onClearFilters: handleClearAdvancedFilters,
                 onChangeViewMode: handleViewChange,
-                
+                onChangeSearchTerm: handleSearchChange,
+
                 // UI state
                 isExpanded: advancedFiltersExpanded,
                 onToggleExpand: () => setAdvancedFiltersExpanded(!advancedFiltersExpanded)
             }),
-
 
             // --- Bulk Action Bar (Conditional) ---
             selectedComponents.length > 0 && React.createElement('div', { className: UI.status.info + " mb-4 flex flex-wrap justify-between items-center gap-2" },
@@ -612,12 +662,18 @@ const renderPagination = () => {
                         title: selectedComponents.length === filteredComponents.length ? "Deselect All Visible" : "Select All Visible",
                         disabled: filteredComponents.length === 0
                     }),
-                    React.createElement('label', { htmlFor: "select-all-filtered-bulk", className: "text-sm text-blue-800" }, ` ${selectedComponents.length} component(s) selected `)
+                    React.createElement('label', { htmlFor: "select-all-filtered-bulk", className: UI.forms.label }, ` ${selectedComponents.length} component(s) selected `)
                 ),
                 // Bulk Action Buttons
                 React.createElement('div', { className: "flex gap-2" },
-                    React.createElement('button', { onClick: onBulkEdit, className: UI.buttons.small.primary }, "Edit Selected"),
-                    React.createElement('button', { onClick: onBulkDelete, className: UI.buttons.small.danger }, "Delete Selected")
+                    React.createElement('button', {
+                        onClick: onBulkEdit,
+                        className: UI.buttons.small.primary
+                    }, "Edit Selected"),
+                    React.createElement('button', {
+                        onClick: onBulkDelete,
+                        className: UI.buttons.small.danger
+                    }, "Delete Selected")
                 )
             ), // End Bulk Action Bar
             renderPagination(),
@@ -694,4 +750,4 @@ const renderPagination = () => {
     );
 };
 
-console.log("InventoryView component loaded with UI constants."); // For debugging
+console.log("InventoryView component loaded with clean direct UI references."); // For debugging
