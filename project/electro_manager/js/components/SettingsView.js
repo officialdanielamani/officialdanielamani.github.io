@@ -45,7 +45,7 @@ window.App.components.SettingsView = ({
     const [newLowStockCategory, setNewLowStockCategory] = useState(''); // Category for new low stock threshold
     const [newLowStockThreshold, setNewLowStockThreshold] = useState(5); // Threshold value
     const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
-    const [itemsPerPage, setItemsPerPage] = useState('50'); //
+    const [itemsPerPage, setItemsPerPage] = useState('all'); //
 
     // State for import/export
     const [importError, setImportError] = useState(''); // Error or success message after import
@@ -109,7 +109,8 @@ window.App.components.SettingsView = ({
                 const backup = JSON.parse(e.target.result);
 
                 // Confirm import
-                if (window.confirm(`This will replace your current data with the backup from ${new Date(backup.meta.d).toLocaleString()}. Continue?`)) {    restoreFromBackup(backup);
+                if (window.confirm(`This will replace your current data with the backup from ${new Date(backup.metadata.date).toLocaleString()}. Continue?`)) {
+                    restoreFromBackup(backup);
                 }
             } catch (err) {
                 console.error("Error parsing backup file:", err);
@@ -273,7 +274,7 @@ window.App.components.SettingsView = ({
 
                     // Reset local state
                     setViewMode('table');
-                    setItemsPerPage('50');
+                    setItemsPerPage('all');
 
                     setExportMessage('All storage cleared successfully! Application state reset. You may need to refresh the page to see all changes.');
                 } else {
@@ -299,7 +300,7 @@ window.App.components.SettingsView = ({
                 React.createElement('div', { className: UI.cards.body },
                     React.createElement('h3', { className: UI.typography.heading.h3 }, "Electro Manager"),
                     React.createElement('div', { className: "flex items-center mb-3" },
-                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.2.2beta"),
+                        React.createElement('span', { className: `${UI.typography.weight.semibold} ${UI.colors.primary.text}` }, "Version 0.2.3beta"),
                         React.createElement('span', { className: `ml-2 px-2 py-1 ${UI.colors.success.bg} text-white text-xs rounded-full` }, "Latest Update")
                     ),
                     // Update date
@@ -309,12 +310,11 @@ window.App.components.SettingsView = ({
                     React.createElement('div', { className: "mb-4 mt-4" },
                         React.createElement('h4', { className: UI.typography.sectionTitle }, "Changes in this version:"),
                         React.createElement('ul', { className: "list-disc list-inside text-sm space-y-1 ml-2" },
+                            React.createElement('li', null, "Fixed error in import export"),
                             React.createElement('li', null, "Re-structuring the export to all in one file"),
                             React.createElement('li', null, "Using IndexedDB, reducing LocalStorage usage"),
-                            React.createElement('li', null, "Updated Location and Drawers system"),
                             React.createElement('li', null, "Import and Export the location and drawers data"),
-                            React.createElement('li', null, "Better system settings"),
-                            React.createElement('li', null, "Overall UI consistancy"),
+                            React.createElement('li', null, "Updated Location and Drawers system"),
                             React.createElement('li', null, "Note: Card View in holding development"),
                         )
                     ),

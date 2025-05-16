@@ -31,7 +31,7 @@ window.App.components.ComponentForm = ({
 
     // Internal state to manage form inputs, initialized from props
     const [formData, setFormData] = useState(componentData || {});
-    
+
     // Add state for managing location/drawer mode
     const [storageMode, setStorageMode] = useState('location'); // 'location' or 'drawer'
 
@@ -59,11 +59,11 @@ window.App.components.ComponentForm = ({
 
         // Determine initial storage mode based on existing data
         let initialMode = 'location';
-if (storageInfo.drawerId) {
-    initialMode = 'drawer';
-} else if (locationInfo.locationId) {
-    initialMode = 'location';
-}
+        if (storageInfo.drawerId) {
+            initialMode = 'drawer';
+        } else if (locationInfo.locationId) {
+            initialMode = 'location';
+        }
 
         // Set form data
         setFormData({
@@ -81,23 +81,23 @@ if (storageInfo.drawerId) {
 
     // Handle storage mode change
     const handleStorageModeChange = (mode) => {
-    setStorageMode(mode);
-    
-    // Clear the opposite data based on mode selection
-    if (mode === 'location') {
-        // Clear drawer data but keep location data
-        setFormData(prev => ({
-            ...prev,
-            storageInfo: { locationId: '', drawerId: '', cells: [] }
-        }));
-    } else if (mode === 'drawer') {
-        // Clear location data but keep drawer data
-        setFormData(prev => ({
-            ...prev,
-            locationInfo: { locationId: '', details: '' }
-        }));
-    }
-};
+        setStorageMode(mode);
+
+        // Clear the opposite data based on mode selection
+        if (mode === 'location') {
+            // Clear drawer data but keep location data
+            setFormData(prev => ({
+                ...prev,
+                storageInfo: { locationId: '', drawerId: '', cells: [] }
+            }));
+        } else if (mode === 'drawer') {
+            // Clear location data but keep drawer data
+            setFormData(prev => ({
+                ...prev,
+                locationInfo: { locationId: '', details: '' }
+            }));
+        }
+    };
 
     // Handle numeric field changes with proper conversion and validation
     const handleNumericChange = (e) => {
@@ -380,27 +380,27 @@ if (storageInfo.drawerId) {
                             React.createElement('h3', { className: `text-lg font-medium mb-3 text-${UI.getThemeColors().textSecondary}` },
                                 "Physical Storage Location"
                             ),
-                            
+
                             // Storage Mode Selector (only show if not view-only)
                             !isViewOnly && React.createElement('div', { className: "mb-4" },
                                 React.createElement('label', { className: UI.forms.label }, "Storage Assignment Type"),
                                 React.createElement('div', { className: "flex space-x-2" },
-    React.createElement('button', {
-        type: "button",
-        onClick: () => handleStorageModeChange('location'),
-        className: `px-3 py-1 text-sm rounded ${storageMode === 'location' ? 
-            UI.buttons.primary : UI.buttons.secondary}`
-    }, "General Location"),
-    React.createElement('button', {
-        type: "button",
-        onClick: () => handleStorageModeChange('drawer'),
-        className: `px-3 py-1 text-sm rounded ${storageMode === 'drawer' ? 
-            UI.buttons.primary : UI.buttons.secondary}`
-    }, "Drawer Storage")
-),
+                                    React.createElement('button', {
+                                        type: "button",
+                                        onClick: () => handleStorageModeChange('location'),
+                                        className: `px-3 py-1 text-sm rounded ${storageMode === 'location' ?
+                                            UI.buttons.primary : UI.buttons.secondary}`
+                                    }, "General Location"),
+                                    React.createElement('button', {
+                                        type: "button",
+                                        onClick: () => handleStorageModeChange('drawer'),
+                                        className: `px-3 py-1 text-sm rounded ${storageMode === 'drawer' ?
+                                            UI.buttons.primary : UI.buttons.secondary}`
+                                    }, "Drawer Storage")
+                                ),
                                 React.createElement('p', { className: UI.forms.hint },
-    "Choose how to store this component: general location or specific drawer cells."
-)
+                                    "Choose how to store this component: general location or specific drawer cells."
+                                )
                             ),
 
                             // Location Selector (when mode is 'location' or 'both')
@@ -412,7 +412,7 @@ if (storageInfo.drawerId) {
                                     drawers: [],
                                     cells: [],
                                     onLocationChange: (locationInfo) => setFormData(prev => ({ ...prev, locationInfo })),
-                                    onStorageChange: () => {}, // No-op for location-only mode
+                                    onStorageChange: () => { }, // No-op for location-only mode
                                     readOnly: isViewOnly,
                                     showDrawerSelector: false, // Never show drawer selector in location mode
                                     showLocationDetails: true,
@@ -432,7 +432,7 @@ if (storageInfo.drawerId) {
                                     locations: locations,
                                     drawers: drawers,
                                     cells: cells,
-                                    onLocationChange: () => {}, // No-op for drawer-only mode
+                                    onLocationChange: () => { }, // No-op for drawer-only mode
                                     onStorageChange: (storageInfo) => setFormData(prev => ({ ...prev, storageInfo })),
                                     readOnly: isViewOnly,
                                     showDrawerSelector: true, // Always show drawer selector in drawer mode
