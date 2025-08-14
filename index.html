@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,32 +15,32 @@
             border-radius: 5px;
             max-width: 600px;
         }
-        
+
         .dark-mode #quote-container {
             border-color: var(--border-dark);
         }
-        
+
         #quote {
             margin-bottom: 15px;
             font-style: italic;
         }
-        
+
         #project-gallery {
             margin: 40px auto;
             max-width: 800px;
         }
-        
+
         .carousel-container {
             position: relative;
             overflow: hidden;
             margin-top: 20px;
         }
-        
+
         .carousel-track {
             display: flex;
             transition: transform 0.3s ease;
         }
-        
+
         .project-card {
             min-width: calc(100% / 3 - 20px);
             margin: 0 10px;
@@ -47,17 +48,17 @@
             border-radius: 8px;
             padding: 15px;
             text-align: center;
-            background: rgba(0,0,0,0.02);
+            background: rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
             height: 280px;
         }
-        
+
         .dark-mode .project-card {
             border-color: var(--border-dark);
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
-        
+
         .project-card img {
             width: 100%;
             height: 100px;
@@ -66,23 +67,23 @@
             margin-bottom: 10px;
             background-color: var(--border-light);
         }
-        
+
         .dark-mode .project-card img {
             background-color: var(--border-dark);
         }
-        
+
         .project-card h4 {
             margin: 10px 0 8px 0;
             font-size: 1.1em;
         }
-        
+
         .project-card p {
             font-size: 0.9em;
             margin: 8px 0;
             opacity: 0.8;
             flex-grow: 1;
         }
-        
+
         .project-btn {
             background: var(--link-color);
             color: white;
@@ -94,19 +95,19 @@
             transition: background 0.2s;
             margin-top: auto;
         }
-        
+
         .project-btn:hover {
             background: var(--link-hover);
             color: white;
         }
-        
+
         .carousel-nav {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
         }
-        
+
         .nav-btn {
             background: var(--button-bg-light);
             border: 2px solid var(--button-border-light);
@@ -116,23 +117,23 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .nav-btn:hover {
             background: var(--button-border-light);
             color: var(--button-bg-light);
         }
-        
+
         .dark-mode .nav-btn {
             background: var(--button-bg-dark);
             border-color: var(--button-border-dark);
             color: var(--text-dark);
         }
-        
+
         .dark-mode .nav-btn:hover {
             background: var(--button-border-dark);
             color: var(--button-bg-dark);
         }
-        
+
         @media (max-width: 768px) {
             .project-card {
                 min-width: calc(100% - 20px);
@@ -140,9 +141,10 @@
         }
     </style>
 </head>
+
 <body>
     <h1 style="text-align:center;">Welcome to my personal site.</h1>
-    
+
     <div id="siteSetting" style="text-align: center;">
         <button id="themeSetting">Theme Settings ⚙️</button>
         <div id="themeButtons">
@@ -153,11 +155,11 @@
             <button id="toggleFont">Font Accessibility: ❌</button>
         </div>
     </div>
-    
+
     <div style="text-align: center;">
         <p><img src="image/logo.jpg" alt="logo" style="width:20%;height:20%"></p>
         <h3><a href="search.html">Posts/Project</a> | <a href="info.html">Info</a></h3>
-        
+
         <div id="project-gallery">
             <h3>Projects</h3>
             <div class="carousel-container">
@@ -175,20 +177,23 @@
             </strong>
             <button id="generate-button">Generate Quote</button>
         </div>
-        
+
+
         <p style="font-style: italic;">
-            Please note I don't have any social media as being bound by NDA, only open by email only 
-            (also I don't trust social media company to handle private data) if you found any one that 
+            Please note I don't have any social media as being bound by NDA, only open by email only
+            (also I don't trust social media company to handle private data) if you found any one that
             using my name meaning it is scammer.<br>
-            Note: to login EDNA Archive ensure you connected to internal VPN and refresh this page. 
+            Note: to login EDNA Archive ensure you connected to internal VPN and refresh this page.
             This will redirect you EDNA login page (in testing)
         </p>
     </div>
-    
+
     <hr>
-    <p>Hosted on Github. By accessing this page you also need to know <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank">Github privacy policy.</a></p>
+    <p>Hosted on Github. By accessing this page you also need to know <a
+            href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement"
+            target="_blank">Github privacy policy.</a></p>
     <p>In The System We Trust</p>
-    
+
     <footer>
         <p>Powered by EDNA. Copyright DANP 2016-2025</p>
     </footer>
@@ -196,7 +201,7 @@
     <script src="core/script-theme.js"></script>
     <script>
         let currentQuote = '';
-        
+
         let projects = [];
         let currentIndex = 0;
 
@@ -204,20 +209,20 @@
             try {
                 console.log('Loading projects...');
                 const response = await fetch('core/projects.json');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 projects = await response.json();
                 console.log('Projects loaded:', projects.length);
-                
+
                 if (!projects || projects.length === 0) {
                     throw new Error('No projects found');
                 }
-                
+
                 createCarousel();
-                
+
             } catch (error) {
                 console.error('Error loading projects:', error);
                 // Fallback projects if JSON fails
@@ -236,13 +241,13 @@
         function createCarousel() {
             const track = document.getElementById('carousel-track');
             if (!track) return;
-            
+
             // Clear existing content
             track.innerHTML = '';
-            
+
             // Create enough cards to show seamless loop (projects + 2 extra for smooth transition)
             const allProjects = [...projects, ...projects, ...projects]; // Triple for seamless loop
-            
+
             allProjects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
@@ -254,7 +259,7 @@
                 `;
                 track.appendChild(card);
             });
-            
+
             // Start from the middle set to allow smooth looping
             currentIndex = projects.length;
             updateCarousel();
@@ -263,11 +268,11 @@
         function updateCarousel() {
             const track = document.getElementById('carousel-track');
             if (!track.children.length) return;
-            
+
             const cardWidth = track.children[0].offsetWidth + 20; // width + margin
             const offset = -currentIndex * cardWidth;
             track.style.transform = `translateX(${offset}px)`;
-            
+
             // Reset position when reaching boundaries for infinite loop
             setTimeout(() => {
                 if (currentIndex >= projects.length * 2) {
@@ -305,11 +310,11 @@
             try {
                 console.log('Attempting to fetch quotes...');
                 const response = await fetch('core/quotes.json');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('Quotes loaded:', data.length);
 
@@ -328,12 +333,12 @@
                 currentQuote = randomQuote.quote;
                 const quoteText = `"${randomQuote.quote}" - ${randomQuote.author}`;
                 document.getElementById("quote").textContent = quoteText;
-                
+
             } catch (error) {
                 console.error('Error fetching quotes:', error);
                 console.error('Error details:', error.message);
                 console.warn('Using fallback quotes instead');
-                
+
                 // Use fallback quotes if fetch fails
                 const data = fallbackQuotes;
                 let randomQuote = '';
@@ -351,18 +356,19 @@
         }
 
         document.getElementById("generate-button").addEventListener("click", fetchRandomQuote);
-        
+
         window.addEventListener("load", () => {
             fetchRandomQuote();
             loadProjects();
-            
+
             // Add carousel navigation
             document.getElementById('next-btn').addEventListener('click', nextProject);
             document.getElementById('prev-btn').addEventListener('click', prevProject);
-            
+
             // Auto-resize carousel on window resize
             window.addEventListener('resize', updateCarousel);
         });
     </script>
 </body>
+
 </html>
