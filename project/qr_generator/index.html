@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <div class="header">
+            <h1>QR Code Generator</h1>
+            <div class="theme-selector">
+                <button class="theme-btn active" onclick="setTheme('light')">Light</button>
+                <button class="theme-btn" onclick="setTheme('dark')">Dark</button>
+                <button class="theme-btn" onclick="setTheme('keqing')">Keqing</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="qrText">Text/URL Content:</label>
+                    <textarea id="qrText" placeholder="Enter text, URL, or any information..." oninput="generateQR()">Hello World!</textarea>
+                </div>
+
+                <div class="control-group">
+                    <label for="qrImage">Logo/Image (Optional):</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="qrImage" class="file-input" accept="image/*" onchange="handleImageUpload(event)">
+                        <label for="qrImage" class="file-input-label">
+                            Click to upload image or drag & drop
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="fileName">File Name (Optional):</label>
+                    <input type="text" id="fileName" placeholder="e.g., myQRcode (extension auto-added)">
+                </div>
+
+                <div class="control-group">
+                    <label for="downloadFormat">Download Format:</label>
+                    <select id="downloadFormat">
+                        <option value="png">PNG</option>
+                        <option value="jpg">JPG</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Preview</h3>
+                <div class="qr-container">
+                    <canvas id="qrCanvas" class="qr-canvas"></canvas>
+                </div>
+                
+                <div class="download-buttons">
+                    <button class="btn btn-primary" onclick="downloadQR()">📥 Download</button>
+                    <button class="btn btn-secondary" onclick="saveQR()">💾 Save to Collection</button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Configuration</h3>
+                <div class="config-container">
+                    <div class="config-content">
+                        <div class="control-group">
+                            <label>Colors:</label>
+                            <div class="color-inputs">
+                                <div class="color-input">
+                                    <div>
+                                        <input type="color" id="fgColor" value="#000000" onchange="generateQR()">
+                                        <span>Foreground</span>
+                                    </div>
+                                    <label>
+                                        <input type="checkbox" id="fgTransparent" onchange="toggleTransparent('fg')">
+                                        Transparent
+                                    </label>
+                                </div>
+                                <div class="color-input">
+                                    <div>
+                                        <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()">
+                                        <span>Background</span>
+                                    </div>
+                                    <label>
+                                        <input type="checkbox" id="bgTransparent" onchange="toggleTransparent('bg')">
+                                        Transparent
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>Border:</label>
+                            <div class="border-controls">
+                                <div class="border-size">
+                                    <label>Size (px):</label>
+                                    <div class="size-input">
+                                        <input type="range" id="borderSize" min="0" max="50" value="0" oninput="updateBorderDisplay(); generateQR()">
+                                        <input type="number" id="borderSizeInput" min="0" max="50" value="0" oninput="syncBorderSize(); generateQR()">
+                                    </div>
+                                </div>
+                                <div class="border-color">
+                                    <label>Color:</label>
+                                    <div class="color-input">
+                                        <div>
+                                            <input type="color" id="borderColor" value="#ffffff" onchange="generateQR()">
+                                        </div>
+                                        <label>
+                                            <input type="checkbox" id="borderTransparent" onchange="toggleTransparent('border')">
+                                            Transparent
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>Size:</label>
+                            <div class="size-input">
+                                <input type="range" id="qrSize" min="128" max="4096" value="1080" oninput="syncSizeSlider()">
+                                <input type="number" id="qrSizeInput" min="128" max="4096" value="1080" oninput="syncSizeInput()">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="errorLevel">Error Correction:</label>
+                            <select id="errorLevel" onchange="generateQR()">
+                                <option value="L">Low (~7%)</option>
+                                <option value="M" selected>Medium (~15%)</option>
+                                <option value="Q">Quartile (~25%)</option>
+                                <option value="H">High (~30%)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="saved-qrs">
+            <h3>Saved QR Codes</h3>
+            <div class="saved-grid" id="savedGrid">
+                <!-- Saved QR codes will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

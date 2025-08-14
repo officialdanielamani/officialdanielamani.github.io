@@ -8,14 +8,23 @@
         "Date": "",
         "Tag": "Project, Selfhosted"
     },
+        {
+        "Post": {
+            "text": "Journey to Build custom PCB",
+            "link": "#"
+        },
+        "Info": "-",
+        "Date": "",
+        "Tag": "Project"
+    },
     {
         "Post": {
-            "text": "Anime2Movie",
-            "link": "/project/anime2movie/index.html"
+            "text": "Electro Manager",
+            "link": "/project/electro_manager/index.html"
         },
-        "Info": "My simple internal tool to find related movie from anime series",
-        "Date": "2023-11-04",
-        "Tag": "Project, Tool"
+        "Info": "Simple Electronics Inventory System that still WIP",
+        "Date": "2024-04-25",
+        "Tag": "Project"
     },
     {
         "Post": {
@@ -37,47 +46,11 @@
     },
     {
         "Post": {
-            "text": "Proteus Arduino Library Collection",
-            "link": "https://github.com/officialdanielamani/proteus-library-collection"
-        },
-        "Info": "Collection of library component simulaton for Arduino",
-        "Date": "2023-09-01",
-        "Tag": "Github, Project"
-    },
-    {
-        "Post": {
             "text": "Line Following Time Ranking",
             "link": "/project/time_score/index.html"
         },
         "Info": "Simple system to rank based on time",
         "Date": "2023-07-25",
-        "Tag": "Project"
-    },
-    {
-        "Post": {
-            "text": "ESP8266 Web-Stopwatch",
-            "link": "#"
-        },
-        "Info": "Sensor + ESP8266 + Webserver",
-        "Date": "-",
-        "Tag": "Project"
-    },    
-    {
-        "Post": {
-            "text": "Sumo Robot Calculate",
-            "link": "/project/sumo_score/index.html"
-        },
-        "Info": "Simple system to calculate winner for sumo robot",
-        "Date": "2023-08-05",
-        "Tag": "Project"
-    },
-    {
-        "Post": {
-            "text": "Insight of Projects - Time Rank & Sumo",
-            "link": "#"
-        },
-        "Info": "-",
-        "Date": "-",
         "Tag": "Project"
     },
     {
