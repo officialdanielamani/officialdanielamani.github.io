@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,13 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
+
 <body data-theme="light">
     <div class="container">
         <div class="header">
             <h1>QR Code Generator</h1>
+            <p style="text-align:center;"> <a href="https://danielamani.com" target="_self">Home</a></p>
+        </br>
             <div class="theme-selector">
                 <button class="theme-btn active" onclick="setTheme(event, 'light')">Light</button>
                 <button class="theme-btn" onclick="setTheme(event, 'dark')">Dark</button>
@@ -31,7 +35,9 @@
                 <div id="textContent" class="content-panel active">
                     <div class="control-group">
                         <label for="qrText">Text/URL Content:</label>
-                        <textarea id="qrText" placeholder="Enter text, URL, or any information...For URL start with https://" oninput="generateQR()">Hello World!</textarea>
+                        <textarea id="qrText"
+                            placeholder="Enter text, URL, or any information...For URL start with https://"
+                            oninput="generateQR()">Hello World!</textarea>
                     </div>
                 </div>
 
@@ -40,40 +46,42 @@
                         <label for="vcardName">Full Name:</label>
                         <input type="text" id="vcardName" placeholder="John Doe" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardOrg">Organization:</label>
                         <input type="text" id="vcardOrg" placeholder="Company Name" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardTitle">Job Title:</label>
                         <input type="text" id="vcardTitle" placeholder="Software Engineer" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardPhone">Phone:</label>
                         <input type="tel" id="vcardPhone" placeholder="+1234567890" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardEmail">Email:</label>
                         <input type="email" id="vcardEmail" placeholder="john@example.com" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardWebsite">Website:</label>
                         <input type="url" id="vcardWebsite" placeholder="https://example.com" oninput="generateVCard()">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardAddress">Address:</label>
-                        <textarea id="vcardAddress" placeholder="123 GMI, City, State, ZIP" rows="3" oninput="generateVCard()"></textarea>
+                        <textarea id="vcardAddress" placeholder="123 GMI, City, State, ZIP" rows="3"
+                            oninput="generateVCard()"></textarea>
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="vcardNotes">Notes:</label>
-                        <textarea id="vcardNotes" placeholder="Additional information..." rows="2" oninput="generateVCard()"></textarea>
+                        <textarea id="vcardNotes" placeholder="Additional information..." rows="2"
+                            oninput="generateVCard()"></textarea>
                     </div>
                 </div>
             </div>
@@ -83,7 +91,7 @@
                 <div class="qr-container">
                     <canvas id="qrCanvas" class="qr-canvas"></canvas>
                 </div>
-                
+
                 <div class="download-buttons">
                     <button class="btn btn-primary" onclick="downloadQR()">💾 Download</button>
                     <button class="btn btn-secondary" onclick="saveQR()">🗾 Save to Collection</button>
@@ -92,34 +100,23 @@
 
             <div class="config-section">
                 <h3>Configuration</h3>
-                
+
                 <div class="control-group">
-                    <label for="qrImage">Logo/Image (Optional):</label>
+                    <label for="qrImage">Logo/Image(Optional):</label>
                     <div class="file-input-wrapper">
-                        <input type="file" id="qrImage" class="file-input" accept="image/*" onchange="handleImageUpload(event)">
+                        <input type="file" id="qrImage" class="file-input" accept="image/*"
+                            onchange="handleImageUpload(event)">
                         <label for="qrImage" class="file-input-label">
                             Click to upload image or drag & drop
                         </label>
                     </div>
                     <!-- Image preview will be dynamically inserted here by JavaScript -->
+                    <p>Picture will put at center of QR</p>
+                    <p>Note: circle / square picture is better</p>
                 </div>
 
-                <div class="control-group">
-                    <label for="fileName">File Name (Optional):</label>
-                    <input type="text" id="fileName" placeholder="e.g., myQRcode (extension auto-added)">
-                </div>
-
-                <div class="control-group">
-                    <label for="downloadFormat">Download Format:</label>
-                    <select id="downloadFormat">
-                        <option value="png">PNG</option>
-                        <option value="jpg">JPG</option>
-                    </select>
-                    <p>Note: For JPG, transparent colour will convert to Black</p>
-                </div>
-                
-                <div class="control-group">
-                    <label>Colors:</label>
+                                <div class="control-group">
+                    <label>QR Colors:</label>
                     <div class="color-inputs">
                         <div class="color-input">
                             <div>
@@ -145,13 +142,15 @@
                 </div>
 
                 <div class="control-group">
-                    <label>Border:</label>
+                    <label>Image Border:</label>
                     <div class="border-controls">
                         <div class="border-size">
                             <label>Size (px):</label>
                             <div class="size-input">
-                                <input type="range" id="borderSize" min="0" max="50" value="0" oninput="updateBorderDisplay(); generateQR()">
-                                <input type="number" id="borderSizeInput" min="0" max="50" value="0" oninput="syncBorderSize(); generateQR()">
+                                <input type="range" id="borderSize" min="0" max="50" value="0"
+                                    oninput="updateBorderDisplay(); generateQR()">
+                                <input type="number" id="borderSizeInput" min="0" max="50" value="0"
+                                    oninput="syncBorderSize(); generateQR()">
                             </div>
                         </div>
                         <div class="border-color">
@@ -161,7 +160,8 @@
                                     <input type="color" id="borderColor" value="#ffffff" onchange="generateQR()">
                                 </div>
                                 <label>
-                                    <input type="checkbox" id="borderTransparent" onchange="toggleTransparent('border')">
+                                    <input type="checkbox" id="borderTransparent"
+                                        onchange="toggleTransparent('border')">
                                     Transparent
                                 </label>
                             </div>
@@ -169,11 +169,176 @@
                     </div>
                 </div>
 
+                <!-- Header Section -->
+                <div class="control-group">
+                    <label>Header:</label>
+                    <div class="text-section-controls" data-section="header">
+                        <label class="text-section-toggle">
+                            <input type="checkbox" id="headerEnabled" onchange="toggleTextSection('header')">
+                            Enable Header
+                        </label>
+
+                        <div id="headerOptions" class="text-section-options" style="display: none;">
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label for="headerText">Text:</label>
+                                    <input type="text" id="headerText" placeholder="My QR Code"
+                                        value="My QR Code" oninput="generateQR()">
+                                </div>
+                            </div>
+
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label for="headerFont">Font:</label>
+                                    <select id="headerFont" onchange="generateQR()">
+                                        <option value="Arial" selected>Arial</option>
+                                        <option value="Helvetica">Helvetica</option>
+                                        <option value="Times New Roman">Times New Roman</option>
+                                        <option value="Courier New">Courier New</option>
+                                        <option value="Verdana">Verdana</option>
+                                        <option value="Georgia">Georgia</option>
+                                    </select>
+                                </div>
+                                <div class="text-section-col">
+                                    <label for="headerSize">Size:</label>
+                                    <div class="size-input">
+                                        <input type="range" id="headerSize" min="12" max="48" value="16"
+                                            oninput="syncTextSectionSize('header'); generateQR()">
+                                        <input type="number" id="headerSizeInput" min="12" max="48" value="16"
+                                            oninput="syncTextSectionSizeSlider('header'); generateQR()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label>Text Color:</label>
+                                    <div class="color-input">
+                                        <div>
+                                            <input type="color" id="headerTextColor" value="#000000"
+                                                onchange="generateQR()">
+                                        </div>
+                                        <label>
+                                            <input type="checkbox" id="headerTextTransparent"
+                                                onchange="toggleTextSectionTransparent('header', 'text')">
+                                            Transparent
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="text-section-col">
+                                    <label>Background:</label>
+                                    <div class="color-input">
+                                        <div>
+                                            <input type="color" id="headerBgColor" value="#ffffff"
+                                                onchange="generateQR()">
+                                        </div>
+                                        <label>
+                                            <input type="checkbox" id="headerBgTransparent"
+                                                onchange="toggleTextSectionTransparent('header', 'bg')">
+                                            Transparent
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Section -->
+                <div class="control-group">
+                    <label>Footer:</label>
+                    <div class="text-section-controls" data-section="footer">
+                        <label class="text-section-toggle">
+                            <input type="checkbox" id="footerEnabled" onchange="toggleTextSection('footer')">
+                            Enable Footer
+                        </label>
+
+                        <div id="footerOptions" class="text-section-options" style="display: none;">
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label for="footerText">Text:</label>
+                                    <input type="text" id="footerText" placeholder="example.com"
+                                        value="example.com" oninput="generateQR()">
+                                </div>
+                            </div>
+
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label for="footerFont">Font:</label>
+                                    <select id="footerFont" onchange="generateQR()">
+                                        <option value="Arial" selected>Arial</option>
+                                        <option value="Helvetica">Helvetica</option>
+                                        <option value="Times New Roman">Times New Roman</option>
+                                        <option value="Courier New">Courier New</option>
+                                        <option value="Verdana">Verdana</option>
+                                        <option value="Georgia">Georgia</option>
+                                    </select>
+                                </div>
+                                <div class="text-section-col">
+                                    <label for="footerSize">Size:</label>
+                                    <div class="size-input">
+                                        <input type="range" id="footerSize" min="12" max="48" value="16"
+                                            oninput="syncTextSectionSize('footer'); generateQR()">
+                                        <input type="number" id="footerSizeInput" min="12" max="48" value="16"
+                                            oninput="syncTextSectionSizeSlider('footer'); generateQR()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-section-row">
+                                <div class="text-section-col">
+                                    <label>Text Color:</label>
+                                    <div class="color-input">
+                                        <div>
+                                            <input type="color" id="footerTextColor" value="#ffffff"
+                                                onchange="generateQR()">
+                                        </div>
+                                        <label>
+                                            <input type="checkbox" id="footerTextTransparent"
+                                                onchange="toggleTextSectionTransparent('footer', 'text')">
+                                            Transparent
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="text-section-col">
+                                    <label>Background:</label>
+                                    <div class="color-input">
+                                        <div>
+                                            <input type="color" id="footerBgColor" value="#000000"
+                                                onchange="generateQR()">
+                                        </div>
+                                        <label>
+                                            <input type="checkbox" id="footerBgTransparent"
+                                                onchange="toggleTextSectionTransparent('footer', 'bg')">
+                                            Transparent
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="fileName">File Name (Optional):</label>
+                    <input type="text" id="fileName" placeholder="e.g., myQRcode (extension auto-added)">
+                </div>
+
+                <div class="control-group">
+                    <label for="downloadFormat">Download Format:</label>
+                    <select id="downloadFormat">
+                        <option value="png">PNG</option>
+                        <option value="jpg">JPG</option>
+                    </select>
+                    <p>Note: For JPG, transparent colour will convert to Black</p>
+                </div>
+
                 <div class="control-group">
                     <label>Size:</label>
                     <div class="size-input">
                         <input type="range" id="qrSize" min="128" max="4096" value="1080" oninput="syncSizeSlider()">
-                        <input type="number" id="qrSizeInput" min="128" max="4096" value="1080" oninput="syncSizeInput()">
+                        <input type="number" id="qrSizeInput" min="128" max="4096" value="1080"
+                            oninput="syncSizeInput()">
                     </div>
                 </div>
 
@@ -197,9 +362,10 @@
         </div>
     </div>
     <footer>
-        <p style="text-align:center;"> Back to home | API Doc | Version 0.1.4b August 2025</p>
-    </br>
+        <p style="text-align:center;"> <a href="https://danielamani.com" target="_self">Back to Home</a> | API Doc | Version 0.1.5b August 2025</p>
+        </br>
     </footer>
     <script src="scripts.js"></script>
 </body>
+
 </html>

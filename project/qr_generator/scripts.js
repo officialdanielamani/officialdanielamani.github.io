@@ -5,17 +5,17 @@ let currentContentType = 'text';
 // Initialize IndexedDB
 function initDB() {
     const request = indexedDB.open('QRDatabase', 1);
-    
-    request.onerror = function(event) {
+
+    request.onerror = function (event) {
         console.error('Database error:', event.target.error);
     };
-    
-    request.onsuccess = function(event) {
+
+    request.onsuccess = function (event) {
         db = event.target.result;
         loadSavedQRs();
     };
-    
-    request.onupgradeneeded = function(event) {
+
+    request.onupgradeneeded = function (event) {
         db = event.target.result;
         const objectStore = db.createObjectStore('qrcodes', { keyPath: 'id', autoIncrement: true });
         objectStore.createIndex('timestamp', 'timestamp', { unique: false });
@@ -26,14 +26,14 @@ function initDB() {
 function setTheme(event, theme) {
     try {
         console.log('Setting theme to:', theme);
-        
+
         document.body.setAttribute('data-theme', theme);
-        
+
         // Remove active class from all theme buttons
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        
+
         // Add active class to clicked button
         if (event && event.target) {
             event.target.classList.add('active');
@@ -45,10 +45,10 @@ function setTheme(event, theme) {
                 }
             });
         }
-        
+
         localStorage.setItem('theme', theme);
         console.log('Theme set successfully');
-        
+
     } catch (error) {
         console.error('Error setting theme:', error);
     }
@@ -59,9 +59,9 @@ function loadTheme() {
     try {
         const savedTheme = localStorage.getItem('theme') || 'light';
         console.log('Loading saved theme:', savedTheme);
-        
+
         document.body.setAttribute('data-theme', savedTheme);
-        
+
         // Set active button
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -70,7 +70,7 @@ function loadTheme() {
                 btn.classList.add('active');
             }
         });
-        
+
         console.log('Theme loaded successfully');
     } catch (error) {
         console.error('Error loading theme:', error);
@@ -102,11 +102,11 @@ function syncSizeInput() {
     const input = document.getElementById('qrSizeInput');
     if (slider && input) {
         let value = parseInt(input.value);
-        
+
         // Clamp value to valid range
         if (value < 128) value = 128;
         if (value > 4096) value = 4096;
-        
+
         input.value = value;
         slider.value = value;
         generateQR();
@@ -126,11 +126,11 @@ function syncBorderSize() {
     const input = document.getElementById('borderSizeInput');
     if (slider && input) {
         let value = parseInt(input.value);
-        
+
         // Clamp value to valid range
         if (value < 0) value = 0;
         if (value > 50) value = 50;
-        
+
         input.value = value;
         slider.value = value;
     }
@@ -139,20 +139,20 @@ function syncBorderSize() {
 // Switch between content types
 function switchContentType(event, type) {
     currentContentType = type;
-    
+
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     if (event && event.target) {
         event.target.classList.add('active');
     }
-    
+
     // Update content panels
     document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
     const targetPanel = document.getElementById(type === 'text' ? 'textContent' : 'vcardContent');
     if (targetPanel) {
         targetPanel.classList.add('active');
     }
-    
+
     // Generate QR with current content
     generateQR();
 }
@@ -167,7 +167,7 @@ function generateVCardString() {
     const websiteEl = document.getElementById('vcardWebsite');
     const addressEl = document.getElementById('vcardAddress');
     const notesEl = document.getElementById('vcardNotes');
-    
+
     const name = nameEl ? nameEl.value.trim() : '';
     const org = orgEl ? orgEl.value.trim() : '';
     const title = titleEl ? titleEl.value.trim() : '';
@@ -176,13 +176,13 @@ function generateVCardString() {
     const website = websiteEl ? websiteEl.value.trim() : '';
     const address = addressEl ? addressEl.value.trim() : '';
     const notes = notesEl ? notesEl.value.trim() : '';
-    
+
     if (!name && !org && !phone && !email) {
         return 'BEGIN:VCARD\nVERSION:3.0\nFN:Sample Contact\nEND:VCARD';
     }
-    
+
     let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
-    
+
     if (name) {
         vcard += `FN:${name}\n`;
         // Split name into first and last name
@@ -191,7 +191,7 @@ function generateVCardString() {
         const firstName = nameParts.join(' ') || '';
         vcard += `N:${lastName};${firstName};;;\n`;
     }
-    
+
     if (org) vcard += `ORG:${org}\n`;
     if (title) vcard += `TITLE:${title}\n`;
     if (phone) vcard += `TEL:${phone}\n`;
@@ -202,7 +202,7 @@ function generateVCardString() {
         vcard += `ADR:;;${address.replace(/\n/g, ' ').replace(/,/g, ';')};;;;\n`;
     }
     if (notes) vcard += `NOTE:${notes}\n`;
-    
+
     vcard += 'END:VCARD';
     return vcard;
 }
@@ -227,7 +227,7 @@ function getCurrentContent() {
 function toggleTransparent(type) {
     const checkbox = document.getElementById(`${type}Transparent`);
     const colorInput = document.getElementById(`${type}Color`);
-    
+
     if (checkbox && colorInput) {
         if (checkbox.checked) {
             colorInput.disabled = true;
@@ -244,7 +244,7 @@ function toggleTransparent(type) {
 function getColorValue(type) {
     const checkbox = document.getElementById(`${type}Transparent`);
     const colorInput = document.getElementById(`${type}Color`);
-    
+
     if (checkbox && checkbox.checked) {
         return 'transparent';
     }
@@ -255,9 +255,9 @@ function handleImageUpload(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const img = new Image();
-            img.onload = function() {
+            img.onload = function () {
                 currentQRImage = img;
                 showImagePreview(file.name, e.target.result);
                 generateQR();
@@ -287,23 +287,23 @@ function showImagePreview(fileName, imageSrc) {
                 <button type="button" class="btn-remove" onclick="removeImage()">✕ Remove</button>
             </div>
         `;
-        
+
         // Insert after the file input wrapper
         const fileWrapper = document.querySelector('.file-input-wrapper');
         if (fileWrapper && fileWrapper.parentNode) {
             fileWrapper.parentNode.insertBefore(previewContainer, fileWrapper.nextSibling);
         }
     }
-    
+
     // Update preview content
     const previewImg = document.getElementById('previewImg');
     const previewText = document.getElementById('previewText');
     const fileInputLabel = document.querySelector('.file-input-label');
-    
+
     if (previewImg) previewImg.src = imageSrc;
     if (previewText) previewText.textContent = `Selected: ${fileName}`;
     if (previewContainer) previewContainer.style.display = 'block';
-    
+
     // Hide the file input label
     if (fileInputLabel) {
         fileInputLabel.style.display = 'none';
@@ -314,11 +314,11 @@ function showImagePreview(fileName, imageSrc) {
 function hideImagePreview() {
     const previewContainer = document.getElementById('imagePreview');
     const fileInputLabel = document.querySelector('.file-input-label');
-    
+
     if (previewContainer) {
         previewContainer.style.display = 'none';
     }
-    
+
     // Show the file input label again
     if (fileInputLabel) {
         fileInputLabel.style.display = 'block';
@@ -332,56 +332,333 @@ function removeImage() {
     if (fileInput) {
         fileInput.value = '';
     }
-    
+
     // Clear the current image
     currentQRImage = null;
-    
+
     // Hide preview
     hideImagePreview();
-    
+
     // Regenerate QR without image
     generateQR();
 }
 
-// Generate QR code for preview (fixed 300px size)
+// ===== UNIFIED TEXT SECTION FUNCTIONS (Header & Footer) =====
+
+// Unified Text Section Functions
+function toggleTextSection(section) {
+    const checkbox = document.getElementById(`${section}Enabled`);
+    const options = document.getElementById(`${section}Options`);
+
+    if (checkbox && options) {
+        options.style.display = checkbox.checked ? 'block' : 'none';
+        generateQR();
+    }
+}
+
+function syncTextSectionSize(section) {
+    const slider = document.getElementById(`${section}Size`);
+    const input = document.getElementById(`${section}SizeInput`);
+    if (slider && input) {
+        input.value = slider.value;
+    }
+}
+
+function syncTextSectionSizeSlider(section) {
+    const slider = document.getElementById(`${section}Size`);
+    const input = document.getElementById(`${section}SizeInput`);
+    if (slider && input) {
+        let value = parseInt(input.value);
+        if (value < 12) value = 12;
+        if (value > 48) value = 48;
+        input.value = value;
+        slider.value = value;
+    }
+}
+
+function toggleTextSectionTransparent(section, type) {
+    const checkbox = document.getElementById(`${section}${type === 'text' ? 'Text' : 'Bg'}Transparent`);
+    const colorInput = document.getElementById(`${section}${type === 'text' ? 'Text' : 'Bg'}Color`);
+
+    if (checkbox && colorInput) {
+        if (checkbox.checked) {
+            colorInput.disabled = true;
+            colorInput.style.opacity = '0.5';
+        } else {
+            colorInput.disabled = false;
+            colorInput.style.opacity = '1';
+        }
+        generateQR();
+    }
+}
+
+function getTextSectionColorValue(section, type) {
+    const checkbox = document.getElementById(`${section}${type === 'text' ? 'Text' : 'Bg'}Transparent`);
+    const colorInput = document.getElementById(`${section}${type === 'text' ? 'Text' : 'Bg'}Color`);
+
+    if (checkbox && checkbox.checked) {
+        return 'transparent';
+    }
+    
+    const defaultColors = {
+        footer: { text: '#ffffff', bg: '#000000' },
+        header: { text: '#000000', bg: '#ffffff' }
+    };
+    
+    return colorInput ? colorInput.value : defaultColors[section][type];
+}
+
+// Backward compatibility aliases (so existing code still works)
+function toggleFooter() { toggleTextSection('footer'); }
+function toggleHeader() { toggleTextSection('header'); }
+function syncFooterSize() { syncTextSectionSize('footer'); }
+function syncHeaderSize() { syncTextSectionSize('header'); }
+function syncFooterSizeSlider() { syncTextSectionSizeSlider('footer'); }
+function syncHeaderSizeSlider() { syncTextSectionSizeSlider('header'); }
+function toggleFooterTransparent(type) { toggleTextSectionTransparent('footer', type); }
+function toggleHeaderTransparent(type) { toggleTextSectionTransparent('header', type); }
+function getFooterColorValue(type) { return getTextSectionColorValue('footer', type); }
+function getHeaderColorValue(type) { return getTextSectionColorValue('header', type); }
+
+// ===== MODULAR QR GENERATION FUNCTIONS =====
+
+// Get QR configuration
+function getQRConfig() {
+    return {
+        text: getCurrentContent(),
+        fgColor: getColorValue('fg'),
+        bgColor: getColorValue('bg'),
+        errorLevel: document.getElementById('errorLevel')?.value || 'M',
+        borderSize: parseInt(document.getElementById('borderSize')?.value || 0),
+        borderColor: getColorValue('border'),
+        footerEnabled: document.getElementById('footerEnabled')?.checked || false,
+        footerText: document.getElementById('footerText')?.value || 'example.com',
+        footerFont: document.getElementById('footerFont')?.value || 'Arial',
+        footerSize: parseInt(document.getElementById('footerSize')?.value || 16),
+        footerTextColor: getTextSectionColorValue('footer', 'text'),
+        footerBgColor: getTextSectionColorValue('footer', 'bg'),
+        headerEnabled: document.getElementById('headerEnabled')?.checked || false,
+        headerText: document.getElementById('headerText')?.value || 'My QR Code',
+        headerFont: document.getElementById('headerFont')?.value || 'Arial',
+        headerSize: parseInt(document.getElementById('headerSize')?.value || 16),
+        headerTextColor: getTextSectionColorValue('header', 'text'),
+        headerBgColor: getTextSectionColorValue('header', 'bg'),
+        hasImage: !!currentQRImage
+    };
+}
+
+// Calculate canvas dimensions
+function calculateCanvasDimensions(qrSize, config) {
+    const { borderSize, footerEnabled, headerEnabled } = config;
+    
+    // Calculate header and footer heights based on QR size (proportional)
+    const footerHeight = footerEnabled ? Math.floor(qrSize * 0.15) : 0;
+    const headerHeight = headerEnabled ? Math.floor(qrSize * 0.15) : 0;
+    
+    // Width: QR size + left border + right border
+    const width = qrSize + (borderSize * 2);
+    
+    // Height: header + QR size + footer + borders
+    // Borders: top + (middle if header) + (middle if footer) + bottom
+    let borderCount = 2; // Always have top and bottom
+    if (headerEnabled) borderCount += 1; // Add middle border after header
+    if (footerEnabled) borderCount += 1; // Add middle border before footer
+    
+    const height = headerHeight + qrSize + footerHeight + (borderSize * borderCount);
+    
+    return { width, height, headerHeight, footerHeight };
+}
+
+// Create base QR code
+function createBaseQR(size, config) {
+    const tempCanvas = document.createElement('canvas');
+    
+    const qr = new QRious({
+        element: tempCanvas,
+        value: config.text,
+        size: size,
+        foreground: config.fgColor,
+        background: config.bgColor,
+        level: config.errorLevel
+    });
+
+    // Add image if present
+    if (config.hasImage && currentQRImage) {
+        addImageToQR(tempCanvas, currentQRImage);
+    }
+    
+    return tempCanvas;
+}
+
+// Draw background and borders
+function drawBackground(ctx, dimensions, config) {
+    const { width, height } = dimensions;
+    const { borderSize, borderColor, bgColor } = config;
+    
+    // Clear canvas first for transparency support
+    ctx.clearRect(0, 0, width, height);
+    
+    // Only fill with border color if border is enabled and not transparent
+    if (borderSize > 0 && borderColor !== 'transparent') {
+        ctx.fillStyle = borderColor;
+        ctx.fillRect(0, 0, width, height);
+    }
+    // If no border but QR background is set and not transparent, fill QR area only
+    else if (borderSize === 0 && bgColor !== 'transparent') {
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+    }
+}
+
+// Draw header
+function drawHeader(ctx, dimensions, config, isPreview = false) {
+    if (!config.headerEnabled) return;
+    
+    const { width, headerHeight } = dimensions;
+    const { borderSize, headerText, headerFont, headerSize, headerTextColor, headerBgColor } = config;
+    
+    const headerY = borderSize; // Header starts after top border
+    const headerWidth = width - (borderSize * 2); // Exclude left and right borders
+    
+    // Draw header background if not transparent
+    if (headerBgColor !== 'transparent') {
+        ctx.fillStyle = headerBgColor;
+        ctx.fillRect(borderSize, headerY, headerWidth, headerHeight);
+    }
+    
+    // Draw header text if not transparent
+    if (headerTextColor !== 'transparent') {
+        // Use actual font size with scaling for download vs preview
+        let fontSize;
+        if (isPreview) {
+            // For preview, use the selected size directly (since preview QR is ~260px)
+            fontSize = headerSize;
+        } else {
+            // For download, scale the font size proportionally
+            const scaleFactor = (width - (borderSize * 2)) / 260; // Scale based on content width vs preview
+            fontSize = Math.floor(headerSize * scaleFactor);
+        }
+        
+        ctx.fillStyle = headerTextColor;
+        ctx.font = `${fontSize}px ${headerFont}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const textX = width / 2;
+        const textY = headerY + headerHeight / 2;
+        ctx.fillText(headerText, textX, textY);
+    }
+}
+
+// Draw footer
+function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0) {
+    if (!config.footerEnabled) return;
+    
+    const { width, footerHeight } = dimensions;
+    const { borderSize, footerText, footerFont, footerSize, footerTextColor, footerBgColor } = config;
+    
+    const footerY = qrY + qrSize + borderSize; // After QR + middle border
+    const footerWidth = width - (borderSize * 2); // Exclude left and right borders
+    
+    // Draw footer background if not transparent
+    if (footerBgColor !== 'transparent') {
+        ctx.fillStyle = footerBgColor;
+        ctx.fillRect(borderSize, footerY, footerWidth, footerHeight);
+    }
+    
+    // Draw footer text if not transparent
+    if (footerTextColor !== 'transparent') {
+        // Use actual font size with scaling for download vs preview
+        let fontSize;
+        if (isPreview) {
+            // For preview, use the selected size directly (since preview QR is ~260px)
+            fontSize = footerSize;
+        } else {
+            // For download, scale the font size proportionally
+            const scaleFactor = qrSize / 260; // Scale based on QR size vs preview size
+            fontSize = Math.floor(footerSize * scaleFactor);
+        }
+        
+        ctx.fillStyle = footerTextColor;
+        ctx.font = `${fontSize}px ${footerFont}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const textX = width / 2;
+        const textY = footerY + footerHeight / 2;
+        ctx.fillText(footerText, textX, textY);
+    }
+}
+
+// Main QR generation function (unified for both preview and download)
+function generateQRCanvas(targetSize, isPreview = false) {
+    const config = getQRConfig();
+    const dimensions = calculateCanvasDimensions(targetSize, config);
+    
+    // Create target canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw background and borders
+    drawBackground(ctx, dimensions, config);
+    
+    // Draw header
+    drawHeader(ctx, dimensions, config, isPreview);
+    
+    // Create and draw base QR
+    const qrCanvas = createBaseQR(targetSize, config);
+    
+    // Calculate QR position (after header and borders)
+    const qrX = config.borderSize; // Left border
+    let qrY = config.borderSize; // Start with top border
+    if (config.headerEnabled) {
+        qrY += dimensions.headerHeight + config.borderSize; // Add header height + middle border
+    }
+    
+    // If QR background is transparent but we have borders, we need to clear the QR area first
+    if (config.bgColor === 'transparent' && config.borderSize > 0 && config.borderColor !== 'transparent') {
+        ctx.clearRect(qrX, qrY, targetSize, targetSize);
+    }
+    
+    ctx.drawImage(qrCanvas, qrX, qrY);
+    
+    // Draw footer
+    drawFooter(ctx, targetSize, dimensions, config, isPreview, qrY);
+    
+    return canvas;
+}
+
+// Generate QR code for preview
 function generateQR() {
     try {
-        const text = getCurrentContent();
-        const fgColor = getColorValue('fg');
-        const bgColor = getColorValue('bg');
-        const errorLevelEl = document.getElementById('errorLevel');
-        const errorLevel = errorLevelEl ? errorLevelEl.value : 'M';
         const canvas = document.getElementById('qrCanvas');
-
         if (!canvas) {
             console.error('Canvas element not found');
             return;
         }
 
-        if (!text) {
+        const config = getQRConfig();
+        if (!config.text) {
             console.error('No text content to generate QR');
             return;
         }
 
-        const qr = new QRious({
-            element: canvas,
-            value: text,
-            size: 300, // Fixed preview size
-            foreground: fgColor,
-            background: bgColor,
-            level: errorLevel
-        });
-
-        // Add border if specified
-        addBorderToQR(canvas);
-
-        // Add logo/image if uploaded
-        if (currentQRImage) {
-            addImageToQR(canvas, currentQRImage);
-        }
+        // Generate QR at preview size (260px for QR content)
+        const previewQR = generateQRCanvas(260, true);
+        
+        // Copy to preview canvas
+        canvas.width = previewQR.width;
+        canvas.height = previewQR.height;
+        canvas.style.width = Math.min(previewQR.width, 300) + 'px';
+        canvas.style.height = 'auto';
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(previewQR, 0, 0);
+        
     } catch (error) {
         console.error('Error generating QR code:', error);
-        // Fallback for Safari
         setTimeout(() => {
             try {
                 generateQR();
@@ -392,75 +669,19 @@ function generateQR() {
     }
 }
 
-// Generate QR code at actual size for download
+// Generate QR code for download
 function generateDownloadQR() {
-    const text = getCurrentContent();
-    const sizeEl = document.getElementById('qrSize');
-    const size = sizeEl ? parseInt(sizeEl.value) : 1080;
-    const fgColor = getColorValue('fg');
-    const bgColor = getColorValue('bg');
-    const errorLevelEl = document.getElementById('errorLevel');
-    const errorLevel = errorLevelEl ? errorLevelEl.value : 'M';
-    
-    // Create a temporary canvas for download
-    const tempCanvas = document.createElement('canvas');
-    
     try {
-        const qr = new QRious({
-            element: tempCanvas,
-            value: text,
-            size: size, // Actual selected size
-            foreground: fgColor,
-            background: bgColor,
-            level: errorLevel
-        });
-
-        // Add border if specified
-        addBorderToQR(tempCanvas);
-
-        // Add logo/image if uploaded
-        if (currentQRImage) {
-            addImageToQR(tempCanvas, currentQRImage);
-        }
+        const sizeEl = document.getElementById('qrSize');
+        const qrSize = sizeEl ? parseInt(sizeEl.value) : 1080;
         
-        return tempCanvas;
+        // Generate QR at full download size
+        return generateQRCanvas(qrSize, false);
+        
     } catch (error) {
         console.error('Error generating QR code for download:', error);
         return null;
     }
-}
-
-// Add border to QR code
-function addBorderToQR(canvas) {
-    const borderSizeEl = document.getElementById('borderSize');
-    const borderSize = borderSizeEl ? parseInt(borderSizeEl.value) : 0;
-    
-    if (borderSize === 0) return;
-
-    const borderColor = getColorValue('border');
-    const ctx = canvas.getContext('2d');
-    const originalSize = canvas.width;
-    
-    // Create a new canvas with border
-    const newSize = originalSize + (borderSize * 2);
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = newSize;
-    tempCanvas.height = newSize;
-    const tempCtx = tempCanvas.getContext('2d');
-    
-    // Draw border background
-    if (borderColor !== 'transparent') {
-        tempCtx.fillStyle = borderColor;
-        tempCtx.fillRect(0, 0, newSize, newSize);
-    }
-    
-    // Draw original QR code in center
-    tempCtx.drawImage(canvas, borderSize, borderSize);
-    
-    // Resize original canvas and copy back
-    canvas.width = newSize;
-    canvas.height = newSize;
-    ctx.drawImage(tempCanvas, 0, 0);
 }
 
 // Add image overlay to QR code
@@ -474,7 +695,7 @@ function addImageToQR(canvas, image) {
     // Create circular clipping path
     ctx.save();
     ctx.beginPath();
-    ctx.arc(x + imageSize/2, y + imageSize/2, imageSize/2, 0, Math.PI * 2);
+    ctx.arc(x + imageSize / 2, y + imageSize / 2, imageSize / 2, 0, Math.PI * 2);
     ctx.clip();
 
     // Draw white background circle
@@ -492,20 +713,20 @@ function downloadQR() {
         alert('Error generating QR code for download');
         return;
     }
-    
+
     const formatEl = document.getElementById('downloadFormat');
     const format = formatEl ? formatEl.value : 'png';
     const fileNameEl = document.getElementById('fileName');
     const customFileName = fileNameEl ? fileNameEl.value.trim() : '';
     const link = document.createElement('a');
-    
+
     // Generate filename
     let fileName = customFileName || 'qrcode';
     // Remove any existing extensions
     fileName = fileName.replace(/\.(png|jpg|jpeg)$/i, '');
     // Add appropriate extension
     fileName += `.${format}`;
-    
+
     if (format === 'jpg') {
         link.download = fileName;
         link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -513,7 +734,7 @@ function downloadQR() {
         link.download = fileName;
         link.href = canvas.toDataURL('image/png');
     }
-    
+
     link.click();
 }
 
@@ -524,12 +745,12 @@ function saveQR() {
         alert('Error generating QR code for saving');
         return;
     }
-    
+
     const text = getCurrentContent();
     const fileNameEl = document.getElementById('fileName');
     const customFileName = fileNameEl ? fileNameEl.value.trim() : '';
     const dataURL = canvas.toDataURL('image/png');
-    
+
     const qrData = {
         text: text,
         contentType: currentContentType,
@@ -544,7 +765,23 @@ function saveQR() {
         errorLevel: document.getElementById('errorLevel')?.value || 'M',
         fgTransparent: document.getElementById('fgTransparent')?.checked || false,
         bgTransparent: document.getElementById('bgTransparent')?.checked || false,
-        borderTransparent: document.getElementById('borderTransparent')?.checked || false
+        borderTransparent: document.getElementById('borderTransparent')?.checked || false,
+        footerEnabled: document.getElementById('footerEnabled')?.checked || false,
+        footerText: document.getElementById('footerText')?.value || '',
+        footerFont: document.getElementById('footerFont')?.value || 'Arial',
+        footerSize: parseInt(document.getElementById('footerSize')?.value || 16),
+        footerTextColor: document.getElementById('footerTextColor')?.value || '#ffffff',
+        footerBgColor: document.getElementById('footerBgColor')?.value || '#000000',
+        footerTextTransparent: document.getElementById('footerTextTransparent')?.checked || false,
+        footerBgTransparent: document.getElementById('footerBgTransparent')?.checked || false,
+        headerEnabled: document.getElementById('headerEnabled')?.checked || false,
+        headerText: document.getElementById('headerText')?.value || '',
+        headerFont: document.getElementById('headerFont')?.value || 'Arial',
+        headerSize: parseInt(document.getElementById('headerSize')?.value || 16),
+        headerTextColor: document.getElementById('headerTextColor')?.value || '#000000',
+        headerBgColor: document.getElementById('headerBgColor')?.value || '#ffffff',
+        headerTextTransparent: document.getElementById('headerTextTransparent')?.checked || false,
+        headerBgTransparent: document.getElementById('headerBgTransparent')?.checked || false,
     };
 
     // If it's a vCard, also save the individual fields for better display
@@ -570,12 +807,12 @@ function saveQR() {
     const objectStore = transaction.objectStore('qrcodes');
     const request = objectStore.add(qrData);
 
-    request.onsuccess = function() {
+    request.onsuccess = function () {
         alert('QR code saved successfully!');
         loadSavedQRs();
     };
 
-    request.onerror = function() {
+    request.onerror = function () {
         alert('Error saving QR code.');
     };
 }
@@ -588,12 +825,12 @@ function loadSavedQRs() {
     const objectStore = transaction.objectStore('qrcodes');
     const request = objectStore.getAll();
 
-    request.onsuccess = function() {
+    request.onsuccess = function () {
         const qrs = request.result;
         const grid = document.getElementById('savedGrid');
-        
+
         if (!grid) return;
-        
+
         if (qrs.length === 0) {
             grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No saved QR codes yet.</p>';
             return;
@@ -602,7 +839,7 @@ function loadSavedQRs() {
         grid.innerHTML = qrs.map(qr => {
             let preview = qr.text;
             let typeIcon = '📄';
-            
+
             // Better preview for vCard
             if (qr.contentType === 'vcard' && qr.vcardData) {
                 typeIcon = '👤';
@@ -614,7 +851,7 @@ function loadSavedQRs() {
             } else if (qr.text.length > 50) {
                 preview = qr.text.substring(0, 50) + '...';
             }
-            
+
             return `
                 <div class="saved-item">
                     <img src="${qr.image}" alt="QR Code">
@@ -635,23 +872,23 @@ function loadSavedQRs() {
 // Download saved QR code
 function downloadSavedQR(id) {
     if (!db) return;
-    
+
     const transaction = db.transaction(['qrcodes'], 'readonly');
     const objectStore = transaction.objectStore('qrcodes');
     const request = objectStore.get(id);
 
-    request.onsuccess = function() {
+    request.onsuccess = function () {
         const qr = request.result;
         if (qr) {
             const link = document.createElement('a');
-            
+
             // Use saved filename or generate default
             let fileName = qr.fileName || `qrcode_${qr.id}`;
             // Remove any existing extensions
             fileName = fileName.replace(/\.(png|jpg|jpeg)$/i, '');
             // Add PNG extension (saved QRs are always PNG)
             fileName += '.png';
-            
+
             link.download = fileName;
             link.href = qr.image;
             link.click();
@@ -663,63 +900,63 @@ function downloadSavedQR(id) {
 function deleteQR(id) {
     if (confirm('Are you sure you want to delete this QR code?')) {
         if (!db) return;
-        
+
         const transaction = db.transaction(['qrcodes'], 'readwrite');
         const objectStore = transaction.objectStore('qrcodes');
         const request = objectStore.delete(id);
 
-        request.onsuccess = function() {
+        request.onsuccess = function () {
             loadSavedQRs();
         };
     }
 }
 
 // Initialize everything
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM loaded, initializing...');
-    
+
     try {
         loadTheme();
         initDB();
-        
+
         // Add mobile-friendly event listeners for theme buttons
         document.querySelectorAll('.theme-btn').forEach(btn => {
             // Add both click and touchend for better mobile support
-            btn.addEventListener('click', function(e) {
+            btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const theme = this.textContent.toLowerCase().trim();
                 setTheme(e, theme);
             });
-            
-            btn.addEventListener('touchend', function(e) {
+
+            btn.addEventListener('touchend', function (e) {
                 e.preventDefault();
                 const theme = this.textContent.toLowerCase().trim();
                 setTheme(e, theme);
             });
         });
-        
+
         // Add mobile-friendly event listeners for content type tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
+            btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const isTextTab = this.textContent.includes('Text');
                 const type = isTextTab ? 'text' : 'vcard';
                 switchContentType(e, type);
             });
-            
-            btn.addEventListener('touchend', function(e) {
+
+            btn.addEventListener('touchend', function (e) {
                 e.preventDefault();
                 const isTextTab = this.textContent.includes('Text');
                 const type = isTextTab ? 'text' : 'vcard';
                 switchContentType(e, type);
             });
         });
-        
+
         // Ensure elements exist before generating QR
         setTimeout(() => {
             const canvas = document.getElementById('qrCanvas');
             const textInput = document.getElementById('qrText');
-            
+
             if (canvas && textInput) {
                 console.log('Elements found, generating initial QR');
                 generateQR();
@@ -727,7 +964,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Required elements not found:', { canvas: !!canvas, textInput: !!textInput });
             }
         }, 100);
-        
+
+        // Initialize text section transparent states on page load
+        setTimeout(() => {
+            const sections = ['footer', 'header'];
+            const types = ['Text', 'Bg'];
+            
+            sections.forEach(section => {
+                types.forEach(type => {
+                    const checkbox = document.getElementById(`${section}${type}Transparent`);
+                    const colorInput = document.getElementById(`${section}${type}Color`);
+                    if (checkbox && colorInput && checkbox.checked) {
+                        colorInput.disabled = true;
+                        colorInput.style.opacity = '0.5';
+                    }
+                });
+            });
+        }, 200);
+
     } catch (error) {
         console.error('Initialization error:', error);
     }

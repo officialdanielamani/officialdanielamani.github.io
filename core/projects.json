@@ -1,31 +1,31 @@
 [
     {
         "title": "Electronics Inventory Manager",
-        "image": "image/projects/project1.png",
+        "image": "../image/project/project1.png",
         "description": "Personal archive system for project documentation and knowledge management.",
         "url": "https://danielamani.com/project/electro_manager/index.html"
     },
     {
         "title": "QR Code Generator",
-        "image": "image/projects/project2.png",
+        "image": "../image/project/project2.png",
         "description": "Simple QR generator for text, URL or Vcard. No popup or tracking after scan",
         "url": "https://danielamani.com/project/qr_generator/index.html"
     },
     {
         "title": "ESP32 WebConnect",
-        "image": "image/projects/project3.png",
+        "image": "../image/project/project3.png",
         "description": "Deploy IoT faster. Come with Dashboard, OTA, Wifi-Manager and many more",
         "url": "#"
     },
     {
         "title": "ESP32 OLED Menu",
-        "image": "image/projects/project4.png",
+        "image": "../image/project/project4.png",
         "description": "Menu navigation much easier with OLED + Button/Rotary encoder",
         "url": "#"
     },
     {
         "title": "ESP32 FileManager",
-        "image": "image/projects/project5.png",
+        "image": "../image/project/project5.png",
         "description": "Simple Web-Interface to manage file in SPIFFS and SD-Card for ESP32",
         "url": "#"
     }    

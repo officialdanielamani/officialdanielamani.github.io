@@ -46,7 +46,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -371,9 +371,10 @@ body {
     border-radius: 10px;
     box-shadow: 0 3px 10px var(--shadow);
     max-width: 300px;
-    max-height: 300px;
-    width: 300px;
-    height: 300px;
+    /* Remove fixed height to allow dynamic sizing */
+    /* height: 300px; */
+    width: auto;
+    height: auto;
 }
 
 .download-buttons {
@@ -500,6 +501,65 @@ body {
 
 .delete-btn:hover {
     background: #c82333;
+}
+
+/* Unified Text Section Styles (Header & Footer) */
+.text-section-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.text-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 500;
+}
+
+.text-section-toggle input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    margin: 0;
+}
+
+.text-section-options {
+    padding: 15px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-primary);
+}
+
+.text-section-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.text-section-row:last-child {
+    margin-bottom: 0;
+}
+
+.text-section-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.text-section-col label {
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.text-section-col input,
+.text-section-col select {
+    padding: 8px;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
@@ -653,6 +713,16 @@ body {
         max-width: 80px;
         max-height: 80px;
     }
+    
+    /* Mobile responsive for text sections */
+    .text-section-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .text-section-options {
+        padding: 12px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -699,7 +769,7 @@ body {
     }
 }
 
-@media (max-width: 1200px) and (min-width: 769px) {
+@media (max-width: 1400px) and (min-width: 769px) {
     .main-content {
         grid-template-columns: 1fr 1fr;
         gap: 20px;
