@@ -81,47 +81,59 @@ function loadTheme() {
 
 // Update size display and sync inputs
 function updateSizeDisplay() {
+    const sizeDisplay = document.getElementById('sizeDisplay');
     const size = document.getElementById('qrSize').value;
-    document.getElementById('sizeDisplay').textContent = size + 'px';
+    if (sizeDisplay) {
+        sizeDisplay.textContent = size + 'px';
+    }
 }
 
 function syncSizeSlider() {
     const slider = document.getElementById('qrSize');
     const input = document.getElementById('qrSizeInput');
-    input.value = slider.value;
-    generateQR();
+    if (slider && input) {
+        input.value = slider.value;
+        generateQR();
+    }
 }
 
 function syncSizeInput() {
     const slider = document.getElementById('qrSize');
     const input = document.getElementById('qrSizeInput');
-    let value = parseInt(input.value);
-    
-    // Clamp value to valid range
-    if (value < 128) value = 128;
-    if (value > 4096) value = 4096;
-    
-    input.value = value;
-    slider.value = value;
-    generateQR();
+    if (slider && input) {
+        let value = parseInt(input.value);
+        
+        // Clamp value to valid range
+        if (value < 128) value = 128;
+        if (value > 4096) value = 4096;
+        
+        input.value = value;
+        slider.value = value;
+        generateQR();
+    }
 }
 
 function updateBorderDisplay() {
     const size = document.getElementById('borderSize').value;
-    document.getElementById('borderSizeInput').value = size;
+    const input = document.getElementById('borderSizeInput');
+    if (input) {
+        input.value = size;
+    }
 }
 
 function syncBorderSize() {
     const slider = document.getElementById('borderSize');
     const input = document.getElementById('borderSizeInput');
-    let value = parseInt(input.value);
-    
-    // Clamp value to valid range
-    if (value < 0) value = 0;
-    if (value > 50) value = 50;
-    
-    input.value = value;
-    slider.value = value;
+    if (slider && input) {
+        let value = parseInt(input.value);
+        
+        // Clamp value to valid range
+        if (value < 0) value = 0;
+        if (value > 50) value = 50;
+        
+        input.value = value;
+        slider.value = value;
+    }
 }
 
 // Switch between content types
@@ -130,11 +142,16 @@ function switchContentType(event, type) {
     
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     
     // Update content panels
     document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
-    document.getElementById(type === 'text' ? 'textContent' : 'vcardContent').classList.add('active');
+    const targetPanel = document.getElementById(type === 'text' ? 'textContent' : 'vcardContent');
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
     
     // Generate QR with current content
     generateQR();
@@ -142,14 +159,23 @@ function switchContentType(event, type) {
 
 // Generate vCard string
 function generateVCardString() {
-    const name = document.getElementById('vcardName').value.trim();
-    const org = document.getElementById('vcardOrg').value.trim();
-    const title = document.getElementById('vcardTitle').value.trim();
-    const phone = document.getElementById('vcardPhone').value.trim();
-    const email = document.getElementById('vcardEmail').value.trim();
-    const website = document.getElementById('vcardWebsite').value.trim();
-    const address = document.getElementById('vcardAddress').value.trim();
-    const notes = document.getElementById('vcardNotes').value.trim();
+    const nameEl = document.getElementById('vcardName');
+    const orgEl = document.getElementById('vcardOrg');
+    const titleEl = document.getElementById('vcardTitle');
+    const phoneEl = document.getElementById('vcardPhone');
+    const emailEl = document.getElementById('vcardEmail');
+    const websiteEl = document.getElementById('vcardWebsite');
+    const addressEl = document.getElementById('vcardAddress');
+    const notesEl = document.getElementById('vcardNotes');
+    
+    const name = nameEl ? nameEl.value.trim() : '';
+    const org = orgEl ? orgEl.value.trim() : '';
+    const title = titleEl ? titleEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const email = emailEl ? emailEl.value.trim() : '';
+    const website = websiteEl ? websiteEl.value.trim() : '';
+    const address = addressEl ? addressEl.value.trim() : '';
+    const notes = notesEl ? notesEl.value.trim() : '';
     
     if (!name && !org && !phone && !email) {
         return 'BEGIN:VCARD\nVERSION:3.0\nFN:Sample Contact\nEND:VCARD';
@@ -191,23 +217,27 @@ function generateVCard() {
 // Get current content for QR generation
 function getCurrentContent() {
     if (currentContentType === 'text') {
-        return document.getElementById('qrText').value || 'Hello World!';
+        const textEl = document.getElementById('qrText');
+        return textEl ? (textEl.value || 'Hello World!') : 'Hello World!';
     } else {
         return generateVCardString();
     }
 }
+
 function toggleTransparent(type) {
     const checkbox = document.getElementById(`${type}Transparent`);
     const colorInput = document.getElementById(`${type}Color`);
     
-    if (checkbox.checked) {
-        colorInput.disabled = true;
-        colorInput.style.opacity = '0.5';
-    } else {
-        colorInput.disabled = false;
-        colorInput.style.opacity = '1';
+    if (checkbox && colorInput) {
+        if (checkbox.checked) {
+            colorInput.disabled = true;
+            colorInput.style.opacity = '0.5';
+        } else {
+            colorInput.disabled = false;
+            colorInput.style.opacity = '1';
+        }
+        generateQR();
     }
-    generateQR();
 }
 
 // Get color value (returns transparent if checkbox is checked)
@@ -215,11 +245,12 @@ function getColorValue(type) {
     const checkbox = document.getElementById(`${type}Transparent`);
     const colorInput = document.getElementById(`${type}Color`);
     
-    if (checkbox.checked) {
+    if (checkbox && checkbox.checked) {
         return 'transparent';
     }
-    return colorInput.value;
+    return colorInput ? colorInput.value : '#000000';
 }
+
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (file) {
@@ -228,6 +259,7 @@ function handleImageUpload(event) {
             const img = new Image();
             img.onload = function() {
                 currentQRImage = img;
+                showImagePreview(file.name, e.target.result);
                 generateQR();
             };
             img.src = e.target.result;
@@ -235,8 +267,80 @@ function handleImageUpload(event) {
         reader.readAsDataURL(file);
     } else {
         currentQRImage = null;
+        hideImagePreview();
         generateQR();
     }
+}
+
+// Show image preview with remove button
+function showImagePreview(fileName, imageSrc) {
+    let previewContainer = document.getElementById('imagePreview');
+    if (!previewContainer) {
+        // Create preview container if it doesn't exist
+        previewContainer = document.createElement('div');
+        previewContainer.id = 'imagePreview';
+        previewContainer.className = 'image-preview';
+        previewContainer.innerHTML = `
+            <div class="image-preview-content">
+                <img id="previewImg" src="" alt="Preview" style="max-width: 60px; max-height: 60px; border-radius: 5px;">
+                <div id="previewText" style="flex: 1; text-align: left; margin-left: 10px;"></div>
+                <button type="button" class="btn-remove" onclick="removeImage()">✕ Remove</button>
+            </div>
+        `;
+        
+        // Insert after the file input wrapper
+        const fileWrapper = document.querySelector('.file-input-wrapper');
+        if (fileWrapper && fileWrapper.parentNode) {
+            fileWrapper.parentNode.insertBefore(previewContainer, fileWrapper.nextSibling);
+        }
+    }
+    
+    // Update preview content
+    const previewImg = document.getElementById('previewImg');
+    const previewText = document.getElementById('previewText');
+    const fileInputLabel = document.querySelector('.file-input-label');
+    
+    if (previewImg) previewImg.src = imageSrc;
+    if (previewText) previewText.textContent = `Selected: ${fileName}`;
+    if (previewContainer) previewContainer.style.display = 'block';
+    
+    // Hide the file input label
+    if (fileInputLabel) {
+        fileInputLabel.style.display = 'none';
+    }
+}
+
+// Hide image preview
+function hideImagePreview() {
+    const previewContainer = document.getElementById('imagePreview');
+    const fileInputLabel = document.querySelector('.file-input-label');
+    
+    if (previewContainer) {
+        previewContainer.style.display = 'none';
+    }
+    
+    // Show the file input label again
+    if (fileInputLabel) {
+        fileInputLabel.style.display = 'block';
+    }
+}
+
+// Remove image function
+function removeImage() {
+    // Clear the file input
+    const fileInput = document.getElementById('qrImage');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+    
+    // Clear the current image
+    currentQRImage = null;
+    
+    // Hide preview
+    hideImagePreview();
+    
+    // Regenerate QR without image
+    generateQR();
 }
 
 // Generate QR code for preview (fixed 300px size)
@@ -245,7 +349,8 @@ function generateQR() {
         const text = getCurrentContent();
         const fgColor = getColorValue('fg');
         const bgColor = getColorValue('bg');
-        const errorLevel = document.getElementById('errorLevel').value;
+        const errorLevelEl = document.getElementById('errorLevel');
+        const errorLevel = errorLevelEl ? errorLevelEl.value : 'M';
         const canvas = document.getElementById('qrCanvas');
 
         if (!canvas) {
@@ -290,10 +395,12 @@ function generateQR() {
 // Generate QR code at actual size for download
 function generateDownloadQR() {
     const text = getCurrentContent();
-    const size = parseInt(document.getElementById('qrSize').value);
+    const sizeEl = document.getElementById('qrSize');
+    const size = sizeEl ? parseInt(sizeEl.value) : 1080;
     const fgColor = getColorValue('fg');
     const bgColor = getColorValue('bg');
-    const errorLevel = document.getElementById('errorLevel').value;
+    const errorLevelEl = document.getElementById('errorLevel');
+    const errorLevel = errorLevelEl ? errorLevelEl.value : 'M';
     
     // Create a temporary canvas for download
     const tempCanvas = document.createElement('canvas');
@@ -325,7 +432,9 @@ function generateDownloadQR() {
 
 // Add border to QR code
 function addBorderToQR(canvas) {
-    const borderSize = parseInt(document.getElementById('borderSize').value);
+    const borderSizeEl = document.getElementById('borderSize');
+    const borderSize = borderSizeEl ? parseInt(borderSizeEl.value) : 0;
+    
     if (borderSize === 0) return;
 
     const borderColor = getColorValue('border');
@@ -384,8 +493,10 @@ function downloadQR() {
         return;
     }
     
-    const format = document.getElementById('downloadFormat').value;
-    const customFileName = document.getElementById('fileName').value.trim();
+    const formatEl = document.getElementById('downloadFormat');
+    const format = formatEl ? formatEl.value : 'png';
+    const fileNameEl = document.getElementById('fileName');
+    const customFileName = fileNameEl ? fileNameEl.value.trim() : '';
     const link = document.createElement('a');
     
     // Generate filename
@@ -415,7 +526,8 @@ function saveQR() {
     }
     
     const text = getCurrentContent();
-    const customFileName = document.getElementById('fileName').value.trim();
+    const fileNameEl = document.getElementById('fileName');
+    const customFileName = fileNameEl ? fileNameEl.value.trim() : '';
     const dataURL = canvas.toDataURL('image/png');
     
     const qrData = {
@@ -424,29 +536,34 @@ function saveQR() {
         image: dataURL,
         fileName: customFileName || null,
         timestamp: new Date().toISOString(),
-        size: parseInt(document.getElementById('qrSize').value),
+        size: parseInt(document.getElementById('qrSize')?.value || 1080),
         fgColor: getColorValue('fg'),
         bgColor: getColorValue('bg'),
-        borderSize: parseInt(document.getElementById('borderSize').value),
+        borderSize: parseInt(document.getElementById('borderSize')?.value || 0),
         borderColor: getColorValue('border'),
-        errorLevel: document.getElementById('errorLevel').value,
-        fgTransparent: document.getElementById('fgTransparent').checked,
-        bgTransparent: document.getElementById('bgTransparent').checked,
-        borderTransparent: document.getElementById('borderTransparent').checked
+        errorLevel: document.getElementById('errorLevel')?.value || 'M',
+        fgTransparent: document.getElementById('fgTransparent')?.checked || false,
+        bgTransparent: document.getElementById('bgTransparent')?.checked || false,
+        borderTransparent: document.getElementById('borderTransparent')?.checked || false
     };
 
     // If it's a vCard, also save the individual fields for better display
     if (currentContentType === 'vcard') {
         qrData.vcardData = {
-            name: document.getElementById('vcardName').value.trim(),
-            org: document.getElementById('vcardOrg').value.trim(),
-            title: document.getElementById('vcardTitle').value.trim(),
-            phone: document.getElementById('vcardPhone').value.trim(),
-            email: document.getElementById('vcardEmail').value.trim(),
-            website: document.getElementById('vcardWebsite').value.trim(),
-            address: document.getElementById('vcardAddress').value.trim(),
-            notes: document.getElementById('vcardNotes').value.trim()
+            name: document.getElementById('vcardName')?.value.trim() || '',
+            org: document.getElementById('vcardOrg')?.value.trim() || '',
+            title: document.getElementById('vcardTitle')?.value.trim() || '',
+            phone: document.getElementById('vcardPhone')?.value.trim() || '',
+            email: document.getElementById('vcardEmail')?.value.trim() || '',
+            website: document.getElementById('vcardWebsite')?.value.trim() || '',
+            address: document.getElementById('vcardAddress')?.value.trim() || '',
+            notes: document.getElementById('vcardNotes')?.value.trim() || ''
         };
+    }
+
+    if (!db) {
+        alert('Database not initialized. Please refresh the page.');
+        return;
     }
 
     const transaction = db.transaction(['qrcodes'], 'readwrite');
@@ -475,6 +592,8 @@ function loadSavedQRs() {
         const qrs = request.result;
         const grid = document.getElementById('savedGrid');
         
+        if (!grid) return;
+        
         if (qrs.length === 0) {
             grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No saved QR codes yet.</p>';
             return;
@@ -482,7 +601,7 @@ function loadSavedQRs() {
 
         grid.innerHTML = qrs.map(qr => {
             let preview = qr.text;
-            let typeIcon = '📝';
+            let typeIcon = '📄';
             
             // Better preview for vCard
             if (qr.contentType === 'vcard' && qr.vcardData) {
@@ -506,7 +625,7 @@ function loadSavedQRs() {
                         Size: ${qr.size}px | Level: ${qr.errorLevel || 'M'}
                     </div>
                     <button class="btn delete-btn" onclick="deleteQR(${qr.id})">🗑️ Delete</button>
-                    <button class="btn btn-primary" onclick="downloadSavedQR(${qr.id})" style="margin-top: 5px; font-size: 0.8rem;">📥 Download</button>
+                    <button class="btn btn-primary" onclick="downloadSavedQR(${qr.id})" style="margin-top: 5px; font-size: 0.8rem;">💾 Download</button>
                 </div>
             `;
         }).join('');
@@ -515,6 +634,8 @@ function loadSavedQRs() {
 
 // Download saved QR code
 function downloadSavedQR(id) {
+    if (!db) return;
+    
     const transaction = db.transaction(['qrcodes'], 'readonly');
     const objectStore = transaction.objectStore('qrcodes');
     const request = objectStore.get(id);
@@ -541,6 +662,8 @@ function downloadSavedQR(id) {
 // Delete QR code
 function deleteQR(id) {
     if (confirm('Are you sure you want to delete this QR code?')) {
+        if (!db) return;
+        
         const transaction = db.transaction(['qrcodes'], 'readwrite');
         const objectStore = transaction.objectStore('qrcodes');
         const request = objectStore.delete(id);
@@ -591,9 +714,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 switchContentType(e, type);
             });
         });
-        
-        // Copy buttons are ready
-        console.log('Copy buttons ready');
         
         // Ensure elements exist before generating QR
         setTimeout(() => {
