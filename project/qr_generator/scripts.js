@@ -377,7 +377,38 @@ function addImageToQR(canvas, image) {
     ctx.restore();
 }
 
-// Share QR code using Web Share API
+// Check if share functionality is available
+function isShareSupported() {
+    const hasWebShare = 'share' in navigator;
+    const hasClipboard = 'clipboard' in navigator;
+    const isSecureContext = window.isSecureContext || location.protocol === 'https:';
+    
+    console.log('Share support check:', {
+        hasWebShare,
+        hasClipboard,
+        isSecureContext,
+        protocol: location.protocol,
+        host: location.host
+    });
+    
+    return hasWebShare || hasClipboard || true; // Always show button, handle in function
+}
+
+// Update button visibility based on support
+function updateShareButtonVisibility() {
+    const shareButtons = document.querySelectorAll('.btn-share');
+    const isSupported = isShareSupported();
+    
+    console.log('Updating share button visibility:', isSupported);
+    
+    shareButtons.forEach(btn => {
+        if (isSupported) {
+            btn.style.display = 'inline-flex';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+}
 async function shareQR() {
     try {
         const canvas = generateDownloadQR();
@@ -729,6 +760,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 switchContentType(e, type);
             });
         });
+        
+        // Check and update share button visibility
+        setTimeout(() => {
+            updateShareButtonVisibility();
+        }, 200);
         
         // Ensure elements exist before generating QR
         setTimeout(() => {
