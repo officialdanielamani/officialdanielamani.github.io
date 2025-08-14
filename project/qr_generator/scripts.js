@@ -1,5 +1,6 @@
 let currentQRImage = null;
 let db;
+let currentContentType = 'text';
 
 // Initialize IndexedDB
 function initDB() {
@@ -86,7 +87,78 @@ function syncBorderSize() {
     slider.value = value;
 }
 
-// Toggle transparent colors
+// Switch between content types
+function switchContentType(type) {
+    currentContentType = type;
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update content panels
+    document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+    document.getElementById(type === 'text' ? 'textContent' : 'vcardContent').classList.add('active');
+    
+    // Generate QR with current content
+    generateQR();
+}
+
+// Generate vCard string
+function generateVCardString() {
+    const name = document.getElementById('vcardName').value.trim();
+    const org = document.getElementById('vcardOrg').value.trim();
+    const title = document.getElementById('vcardTitle').value.trim();
+    const phone = document.getElementById('vcardPhone').value.trim();
+    const email = document.getElementById('vcardEmail').value.trim();
+    const website = document.getElementById('vcardWebsite').value.trim();
+    const address = document.getElementById('vcardAddress').value.trim();
+    const notes = document.getElementById('vcardNotes').value.trim();
+    
+    if (!name && !org && !phone && !email) {
+        return 'BEGIN:VCARD\nVERSION:3.0\nFN:Sample Contact\nEND:VCARD';
+    }
+    
+    let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+    
+    if (name) {
+        vcard += `FN:${name}\n`;
+        // Split name into first and last name
+        const nameParts = name.split(' ');
+        const lastName = nameParts.pop() || '';
+        const firstName = nameParts.join(' ') || '';
+        vcard += `N:${lastName};${firstName};;;\n`;
+    }
+    
+    if (org) vcard += `ORG:${org}\n`;
+    if (title) vcard += `TITLE:${title}\n`;
+    if (phone) vcard += `TEL:${phone}\n`;
+    if (email) vcard += `EMAIL:${email}\n`;
+    if (website) vcard += `URL:${website}\n`;
+    if (address) {
+        // Format address for vCard
+        vcard += `ADR:;;${address.replace(/\n/g, ' ').replace(/,/g, ';')};;;;\n`;
+    }
+    if (notes) vcard += `NOTE:${notes}\n`;
+    
+    vcard += 'END:VCARD';
+    return vcard;
+}
+
+// Generate vCard and update QR
+function generateVCard() {
+    if (currentContentType === 'vcard') {
+        generateQR();
+    }
+}
+
+// Get current content for QR generation
+function getCurrentContent() {
+    if (currentContentType === 'text') {
+        return document.getElementById('qrText').value || 'Hello World!';
+    } else {
+        return generateVCardString();
+    }
+}
 function toggleTransparent(type) {
     const checkbox = document.getElementById(`${type}Transparent`);
     const colorInput = document.getElementById(`${type}Color`);
@@ -132,7 +204,7 @@ function handleImageUpload(event) {
 
 // Generate QR code for preview (fixed 300px size)
 function generateQR() {
-    const text = document.getElementById('qrText').value || 'Hello World!';
+    const text = getCurrentContent();
     const fgColor = getColorValue('fg');
     const bgColor = getColorValue('bg');
     const errorLevel = document.getElementById('errorLevel').value;
@@ -162,7 +234,7 @@ function generateQR() {
 
 // Generate QR code at actual size for download
 function generateDownloadQR() {
-    const text = document.getElementById('qrText').value || 'Hello World!';
+    const text = getCurrentContent();
     const size = parseInt(document.getElementById('qrSize').value);
     const fgColor = getColorValue('fg');
     const bgColor = getColorValue('bg');
@@ -288,12 +360,13 @@ function saveQR() {
         return;
     }
     
-    const text = document.getElementById('qrText').value;
+    const text = getCurrentContent();
     const customFileName = document.getElementById('fileName').value.trim();
     const dataURL = canvas.toDataURL('image/png');
     
     const qrData = {
         text: text,
+        contentType: currentContentType,
         image: dataURL,
         fileName: customFileName || null,
         timestamp: new Date().toISOString(),
@@ -307,6 +380,20 @@ function saveQR() {
         bgTransparent: document.getElementById('bgTransparent').checked,
         borderTransparent: document.getElementById('borderTransparent').checked
     };
+
+    // If it's a vCard, also save the individual fields for better display
+    if (currentContentType === 'vcard') {
+        qrData.vcardData = {
+            name: document.getElementById('vcardName').value.trim(),
+            org: document.getElementById('vcardOrg').value.trim(),
+            title: document.getElementById('vcardTitle').value.trim(),
+            phone: document.getElementById('vcardPhone').value.trim(),
+            email: document.getElementById('vcardEmail').value.trim(),
+            website: document.getElementById('vcardWebsite').value.trim(),
+            address: document.getElementById('vcardAddress').value.trim(),
+            notes: document.getElementById('vcardNotes').value.trim()
+        };
+    }
 
     const transaction = db.transaction(['qrcodes'], 'readwrite');
     const objectStore = transaction.objectStore('qrcodes');
@@ -339,19 +426,36 @@ function loadSavedQRs() {
             return;
         }
 
-        grid.innerHTML = qrs.map(qr => `
-            <div class="saved-item">
-                <img src="${qr.image}" alt="QR Code">
-                <div class="text-preview">${qr.text}</div>
-                ${qr.fileName ? `<div style="font-size: 0.8rem; color: var(--accent); margin-bottom: 5px; font-weight: bold;">${qr.fileName}</div>` : ''}
-                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">
-                    ${new Date(qr.timestamp).toLocaleDateString()}<br>
-                    Size: ${qr.size}px | Level: ${qr.errorLevel || 'M'}
+        grid.innerHTML = qrs.map(qr => {
+            let preview = qr.text;
+            let typeIcon = '📝';
+            
+            // Better preview for vCard
+            if (qr.contentType === 'vcard' && qr.vcardData) {
+                typeIcon = '👤';
+                const vcard = qr.vcardData;
+                preview = `${vcard.name || 'Contact'}`;
+                if (vcard.org) preview += ` (${vcard.org})`;
+                if (vcard.email) preview += ` • ${vcard.email}`;
+                if (vcard.phone) preview += ` • ${vcard.phone}`;
+            } else if (qr.text.length > 50) {
+                preview = qr.text.substring(0, 50) + '...';
+            }
+            
+            return `
+                <div class="saved-item">
+                    <img src="${qr.image}" alt="QR Code">
+                    <div class="text-preview">${typeIcon} ${preview}</div>
+                    ${qr.fileName ? `<div style="font-size: 0.8rem; color: var(--accent); margin-bottom: 5px; font-weight: bold;">${qr.fileName}</div>` : ''}
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">
+                        ${new Date(qr.timestamp).toLocaleDateString()}<br>
+                        Size: ${qr.size}px | Level: ${qr.errorLevel || 'M'}
+                    </div>
+                    <button class="btn delete-btn" onclick="deleteQR(${qr.id})">🗑️ Delete</button>
+                    <button class="btn btn-primary" onclick="downloadSavedQR(${qr.id})" style="margin-top: 5px; font-size: 0.8rem;">📥 Download</button>
                 </div>
-                <button class="btn delete-btn" onclick="deleteQR(${qr.id})">🗑️ Delete</button>
-                <button class="btn btn-primary" onclick="downloadSavedQR(${qr.id})" style="margin-top: 5px; font-size: 0.8rem;">📥 Download</button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     };
 }
 

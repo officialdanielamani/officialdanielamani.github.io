@@ -21,10 +21,78 @@
         <div class="main-content">
             <div class="controls">
                 <div class="control-group">
-                    <label for="qrText">Text/URL Content:</label>
-                    <textarea id="qrText" placeholder="Enter text, URL, or any information..." oninput="generateQR()">Hello World!</textarea>
+                    <label>Content Type:</label>
+                    <div class="content-type-tabs">
+                        <button class="tab-btn active" onclick="switchContentType('text')">📝 Text/URL</button>
+                        <button class="tab-btn" onclick="switchContentType('vcard')">👤 vCard</button>
+                    </div>
                 </div>
 
+                <div id="textContent" class="content-panel active">
+                    <div class="control-group">
+                        <label for="qrText">Text/URL Content:</label>
+                        <textarea id="qrText" placeholder="Enter text, URL, or any information..." oninput="generateQR()">Hello World!</textarea>
+                    </div>
+                </div>
+
+                <div id="vcardContent" class="content-panel">
+                    <div class="control-group">
+                        <label for="vcardName">Full Name:</label>
+                        <input type="text" id="vcardName" placeholder="John Doe" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardOrg">Organization:</label>
+                        <input type="text" id="vcardOrg" placeholder="Company Name" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardTitle">Job Title:</label>
+                        <input type="text" id="vcardTitle" placeholder="Software Engineer" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardPhone">Phone:</label>
+                        <input type="tel" id="vcardPhone" placeholder="+1234567890" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardEmail">Email:</label>
+                        <input type="email" id="vcardEmail" placeholder="john@example.com" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardWebsite">Website:</label>
+                        <input type="url" id="vcardWebsite" placeholder="https://example.com" oninput="generateVCard()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardAddress">Address:</label>
+                        <textarea id="vcardAddress" placeholder="123 Main St, City, State, ZIP" rows="3" oninput="generateVCard()"></textarea>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="vcardNotes">Notes:</label>
+                        <textarea id="vcardNotes" placeholder="Additional information..." rows="2" oninput="generateVCard()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Preview</h3>
+                <div class="qr-container">
+                    <canvas id="qrCanvas" class="qr-canvas"></canvas>
+                </div>
+                
+                <div class="download-buttons">
+                    <button class="btn btn-primary" onclick="downloadQR()">📥 Download</button>
+                    <button class="btn btn-secondary" onclick="saveQR()">💾 Save to Collection</button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Configuration</h3>
+                
                 <div class="control-group">
                     <label for="qrImage">Logo/Image (Optional):</label>
                     <div class="file-input-wrapper">
@@ -47,93 +115,74 @@
                         <option value="jpg">JPG</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="preview-section">
-                <h3>Preview</h3>
-                <div class="qr-container">
-                    <canvas id="qrCanvas" class="qr-canvas"></canvas>
-                </div>
                 
-                <div class="download-buttons">
-                    <button class="btn btn-primary" onclick="downloadQR()">📥 Download</button>
-                    <button class="btn btn-secondary" onclick="saveQR()">💾 Save to Collection</button>
-                </div>
-            </div>
-
-            <div class="config-section">
-                <h3>Configuration</h3>
-                <div class="config-container">
-                    <div class="config-content">
-                        <div class="control-group">
-                            <label>Colors:</label>
-                            <div class="color-inputs">
-                                <div class="color-input">
-                                    <div>
-                                        <input type="color" id="fgColor" value="#000000" onchange="generateQR()">
-                                        <span>Foreground</span>
-                                    </div>
-                                    <label>
-                                        <input type="checkbox" id="fgTransparent" onchange="toggleTransparent('fg')">
-                                        Transparent
-                                    </label>
-                                </div>
-                                <div class="color-input">
-                                    <div>
-                                        <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()">
-                                        <span>Background</span>
-                                    </div>
-                                    <label>
-                                        <input type="checkbox" id="bgTransparent" onchange="toggleTransparent('bg')">
-                                        Transparent
-                                    </label>
-                                </div>
+                <div class="control-group">
+                    <label>Colors:</label>
+                    <div class="color-inputs">
+                        <div class="color-input">
+                            <div>
+                                <input type="color" id="fgColor" value="#000000" onchange="generateQR()">
+                                <span>Foreground</span>
                             </div>
+                            <label>
+                                <input type="checkbox" id="fgTransparent" onchange="toggleTransparent('fg')">
+                                Transparent
+                            </label>
                         </div>
-
-                        <div class="control-group">
-                            <label>Border:</label>
-                            <div class="border-controls">
-                                <div class="border-size">
-                                    <label>Size (px):</label>
-                                    <div class="size-input">
-                                        <input type="range" id="borderSize" min="0" max="50" value="0" oninput="updateBorderDisplay(); generateQR()">
-                                        <input type="number" id="borderSizeInput" min="0" max="50" value="0" oninput="syncBorderSize(); generateQR()">
-                                    </div>
-                                </div>
-                                <div class="border-color">
-                                    <label>Color:</label>
-                                    <div class="color-input">
-                                        <div>
-                                            <input type="color" id="borderColor" value="#ffffff" onchange="generateQR()">
-                                        </div>
-                                        <label>
-                                            <input type="checkbox" id="borderTransparent" onchange="toggleTransparent('border')">
-                                            Transparent
-                                        </label>
-                                    </div>
-                                </div>
+                        <div class="color-input">
+                            <div>
+                                <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()">
+                                <span>Background</span>
                             </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label>Size:</label>
-                            <div class="size-input">
-                                <input type="range" id="qrSize" min="128" max="4096" value="1080" oninput="syncSizeSlider()">
-                                <input type="number" id="qrSizeInput" min="128" max="4096" value="1080" oninput="syncSizeInput()">
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="errorLevel">Error Correction:</label>
-                            <select id="errorLevel" onchange="generateQR()">
-                                <option value="L">Low (~7%)</option>
-                                <option value="M" selected>Medium (~15%)</option>
-                                <option value="Q">Quartile (~25%)</option>
-                                <option value="H">High (~30%)</option>
-                            </select>
+                            <label>
+                                <input type="checkbox" id="bgTransparent" onchange="toggleTransparent('bg')">
+                                Transparent
+                            </label>
                         </div>
                     </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Border:</label>
+                    <div class="border-controls">
+                        <div class="border-size">
+                            <label>Size (px):</label>
+                            <div class="size-input">
+                                <input type="range" id="borderSize" min="0" max="50" value="0" oninput="updateBorderDisplay(); generateQR()">
+                                <input type="number" id="borderSizeInput" min="0" max="50" value="0" oninput="syncBorderSize(); generateQR()">
+                            </div>
+                        </div>
+                        <div class="border-color">
+                            <label>Color:</label>
+                            <div class="color-input">
+                                <div>
+                                    <input type="color" id="borderColor" value="#ffffff" onchange="generateQR()">
+                                </div>
+                                <label>
+                                    <input type="checkbox" id="borderTransparent" onchange="toggleTransparent('border')">
+                                    Transparent
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Size:</label>
+                    <div class="size-input">
+                        <input type="range" id="qrSize" min="128" max="4096" value="1080" oninput="syncSizeSlider()">
+                        <input type="number" id="qrSizeInput" min="128" max="4096" value="1080" oninput="syncSizeInput()">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="errorLevel">Error Correction:</label>
+                    <select id="errorLevel" onchange="generateQR()">
+                        <option value="L">Low (~7%)</option>
+                        <option value="M" selected>Medium (~15%)</option>
+                        <option value="Q">Quartile (~25%)</option>
+                        <option value="H">High (~30%)</option>
+                    </select>
                 </div>
             </div>
         </div>
