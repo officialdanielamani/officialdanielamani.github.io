@@ -73,7 +73,7 @@ body {
 }
 
 .theme-btn {
-    padding: 8px 16px;
+    padding: 10px 16px;
     border: 2px solid var(--border);
     background: var(--bg-secondary);
     color: var(--text-primary);
@@ -85,9 +85,17 @@ body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.theme-btn:hover, .theme-btn:focus, .theme-btn.active {
+.theme-btn:hover, 
+.theme-btn:focus, 
+.theme-btn:active,
+.theme-btn.active {
     border-color: var(--accent);
     background: var(--accent);
     color: white;

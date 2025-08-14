@@ -24,22 +24,59 @@ function initDB() {
 
 // Theme management
 function setTheme(event, theme) {
-    document.body.setAttribute('data-theme', theme);
-    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    localStorage.setItem('theme', theme);
+    try {
+        console.log('Setting theme to:', theme);
+        
+        document.body.setAttribute('data-theme', theme);
+        
+        // Remove active class from all theme buttons
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        if (event && event.target) {
+            event.target.classList.add('active');
+        } else {
+            // Fallback: find button by text content
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().trim() === theme.toLowerCase()) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        localStorage.setItem('theme', theme);
+        console.log('Theme set successfully');
+        
+    } catch (error) {
+        console.error('Error setting theme:', error);
+    }
 }
 
 // Load saved theme
 function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase() === savedTheme) {
-            btn.classList.add('active');
-        }
-    });
+    try {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        console.log('Loading saved theme:', savedTheme);
+        
+        document.body.setAttribute('data-theme', savedTheme);
+        
+        // Set active button
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.remove('active');
+            const btnText = btn.textContent.toLowerCase().trim();
+            if (btnText === savedTheme.toLowerCase()) {
+                btn.classList.add('active');
+            }
+        });
+        
+        console.log('Theme loaded successfully');
+    } catch (error) {
+        console.error('Error loading theme:', error);
+        // Fallback to light theme
+        document.body.setAttribute('data-theme', 'light');
+    }
 }
 
 // Update size display and sync inputs
@@ -523,6 +560,39 @@ document.addEventListener('DOMContentLoaded', function() {
         loadTheme();
         initDB();
         
+        // Add mobile-friendly event listeners for theme buttons
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            // Add both click and touchend for better mobile support
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const theme = this.textContent.toLowerCase().trim();
+                setTheme(e, theme);
+            });
+            
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                const theme = this.textContent.toLowerCase().trim();
+                setTheme(e, theme);
+            });
+        });
+        
+        // Add mobile-friendly event listeners for content type tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const isTextTab = this.textContent.includes('Text');
+                const type = isTextTab ? 'text' : 'vcard';
+                switchContentType(e, type);
+            });
+            
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                const isTextTab = this.textContent.includes('Text');
+                const type = isTextTab ? 'text' : 'vcard';
+                switchContentType(e, type);
+            });
+        });
+        
         // Ensure elements exist before generating QR
         setTimeout(() => {
             const canvas = document.getElementById('qrCanvas');
@@ -534,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.error('Required elements not found:', { canvas: !!canvas, textInput: !!textInput });
             }
-        }, 50);
+        }, 100);
         
     } catch (error) {
         console.error('Initialization error:', error);
