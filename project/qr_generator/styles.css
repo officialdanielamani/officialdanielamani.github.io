@@ -378,6 +378,18 @@ body {
     transform: translateY(-2px);
 }
 
+.btn-share {
+    background: #28a745;
+    color: white;
+    border: 2px solid #28a745;
+}
+
+.btn-share:hover {
+    background: #218838;
+    border-color: #218838;
+    transform: translateY(-2px);
+}
+
 .saved-qrs {
     margin-top: 30px;
     background: var(--bg-secondary);
@@ -503,6 +515,10 @@ body {
     .download-buttons {
         flex-direction: column;
         gap: 10px;
+    }
+    
+    .download-buttons .btn {
+        width: 100%;
     }
     
     .btn {

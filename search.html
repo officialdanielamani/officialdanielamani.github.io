@@ -1,196 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<link rel="stylesheet" type="text/css" href="core/styles-theme.css">
-<style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Post/Project List</title>
+    <link rel="stylesheet" type="text/css" href="core/styles-theme.css">
+    <style>
+        #dataTable {
+            font-family: inherit;
+            font-size: inherit;
+        }
 
-#dataTable {
-    font-family: inherit;
-    font-size: inherit;
-}
+        input.largerRadio {
+            width: 1.2em;
+            height: 1.2em;
+        }
 
-input.largerRadio {
-    width: 1.2em;
-    height: 1.2em;
-}
-  
-</style>
+        #searchInput {
+            width: 98%;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .search-options {
+            margin: 15px 0;
+        }
+
+        .dark-mode th {
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
 <body>
-
     <h1 style="text-align:center;">Post/Project List</h1>
-    <h3  style="text-align:center;"> <a href="index.html">Home</a></h3> 
+    <h3 style="text-align:center;"><a href="index.html">Home</a></h3>
+    
     <hr>
+    
     <div id="siteSetting" style="text-align: center;">
-      <button id="themeSetting">Theme Settings ⚙️</button>
-      <div id="themeButtons" style="display: none;">
-          <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
-      </div>
-<br/>
-<div>
-<div style="width: 98%;">
-<p>This list project/post. Search to filter any post, and click to view detail (If no redirect means the project/post not available)</p>
-<p><a href="index.html">Go Back Home</a></p>
-<br/>
+        <button id="themeSetting">Theme Settings ⚙️</button>
+        <div id="themeButtons">
+            <button id="toggleMode">🌙 Dark Mode</button>
+            <button id="decreaseFont">◀️ Decrease</button>
+            <button id="resetFont">🔁 Default Font Size</button>
+            <button id="increaseFont">Increase ▶️</button>
+            <button id="toggleFont">Font Accessibility: ❌</button>
+        </div>
+    </div>
+    
+    <div style="width: 98%;">
+        <p>This list project/post. Search to filter any post, and click to view detail (If no redirect means the project/post not available)</p>
+        <p><a href="index.html">Go Back Home</a></p>
+        
+        <input type="text" placeholder="Search" id="searchInput">
+        
+        <div class="search-options">
+            <p>Select a row to search:</p>
+            <h3>
+                Post: <input class="largerRadio" type="radio" name="searchRow" value="Post" checked>
+                Info: <input class="largerRadio" type="radio" name="searchRow" value="Info">
+                Date: <input class="largerRadio" type="radio" name="searchRow" value="Date">
+                Tag: <input class="largerRadio" type="radio" name="searchRow" value="Tag">
+            </h3>
+        </div>
+    </div>
+    
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th data-sort="default" style="width: 50%;">Post</th>
+                <th data-sort="default">Info</th>
+                <th data-sort="default" style="width: 15%;">Date</th>
+                <th data-sort="default">Tag</th>
+            </tr>
+        </thead>
+        <tbody><!-- Table data will be populated here --></tbody>
+    </table>
+    
+    <p><a href="index.html">Go Back Home</a></p>
+    
+    <hr>
+    
+    <footer>
+        <p>Powered by EDNA. Copyright DANP 2016-2023</p>
+    </footer>
 
-<input type="text" placeholder="Search" id="searchInput" style="width: 98%; text-align: center;">
-<br/>    
-<div>
-    <p>Select a row to search:</p>
-    <h3>Post: <input class="largerRadio" type="radio" name="searchRow" value="Post" checked>
-    Info: <input class="largerRadio" type="radio" name="searchRow" value="Info">
-    Date: <input class="largerRadio" type="radio" name="searchRow" value="Date">
-    Tag: <input class="largerRadio" type="radio" name="searchRow" value="Tag"></h3>
-</div>
-</div>
-<br/>
-<table id="dataTable">
-    <thead>
-        <tr>
-            <th data-sort="default" style="width: 50%;">Post</th>
-            <th data-sort="default">Info</th>
-            <th data-sort="default"  style="width: 15%;">Date</th>
-            <th data-sort="default">Tag</th>
-        </tr>
-    </thead>
-    <tbody><!-- This is where the table data will be populated --></tbody>
-</table>
-<br/>
-</div>
-<p><a href="index.html">Go Back Home</a></p>
-<br/>
-<hr>
-<footer>
-    <p>Powered by EDNA. Copyright DANP 2016-2023</p>
-  </footer>
-<script src="core/script-theme.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("searchInput");
-    const searchRowRadioButtons = document.querySelectorAll('input[name="searchRow"]');
-    const dataTable = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
-    const tableHeaders = document.querySelectorAll('th[data-sort]');
-    const sortingOrder = { asc: 1, desc: -1, default: 0 };
+    <script src="core/script-theme.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const searchRowRadioButtons = document.querySelectorAll('input[name="searchRow"]');
+            const dataTable = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+            const tableHeaders = document.querySelectorAll('th[data-sort]');
+            const sortingOrder = { asc: 1, desc: -1, default: 0 };
 
-    let currentSortColumn = null;
-    let currentSortOrder = "default";
-    let tableData = []; // Store the JSON data here
+            let currentSortColumn = null;
+            let currentSortOrder = "default";
+            let tableData = [];
 
-    // Function to fetch data from the JSON file
-    function fetchData() {
-        fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/core/table.json") // Replace with the path to your JSON file
-            .then(response => response.json())
-            .then(data => {
-                tableData = data;
-                populateTable(tableData); // Call this function to populate the table
-                resetTableSort();
-            })
-            .catch(error => console.error("Error fetching data: ", error));
-    }
+            function fetchData() {
+                fetch("https://raw.githubusercontent.com/officialdanielamani/officialdanielamani.github.io/main/core/table.json")
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        return response.json();
+                    })
+                    .then(data => {
+                        tableData = data;
+                        populateTable(tableData);
+                        resetTableSort();
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data:", error);
+                        dataTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Failed to load data</td></tr>';
+                    });
+            }
 
-    // Function to populate the table
-    function populateTable(data) {
-        const rows = data.map(rowData => {
-            const row = document.createElement("tr");
-            for (const key in rowData) {
-                const cell = document.createElement("td");
-                if (key === "Post") {
-                    // Create an <a> element for the "Post" column
-                    const link = document.createElement("a");
-                    link.href = rowData[key].link;
-                    link.textContent = rowData[key].text;
-                    cell.appendChild(link);
+            function populateTable(data) {
+                const rows = data.map(rowData => {
+                    const row = document.createElement("tr");
+                    for (const key in rowData) {
+                        const cell = document.createElement("td");
+                        if (key === "Post" && rowData[key].link) {
+                            const link = document.createElement("a");
+                            link.href = rowData[key].link;
+                            link.textContent = rowData[key].text;
+                            cell.appendChild(link);
+                        } else {
+                            cell.textContent = typeof rowData[key] === 'object' ? rowData[key].text : rowData[key];
+                        }
+                        row.appendChild(cell);
+                    }
+                    return row;
+                });
+
+                dataTable.innerHTML = '';
+                rows.forEach(row => dataTable.appendChild(row));
+            }
+
+            function resetTableSort() {
+                currentSortColumn = null;
+                currentSortOrder = "default";
+                sortTable(0, sortingOrder[currentSortOrder]);
+            }
+
+            function sortTable(column, order) {
+                const rowsArray = Array.from(dataTable.getElementsByTagName('tr'));
+                
+                rowsArray.sort((a, b) => {
+                    const cellA = a.getElementsByTagName("td")[column].textContent || a.getElementsByTagName("td")[column].innerText;
+                    const cellB = b.getElementsByTagName("td")[column].textContent || b.getElementsByTagName("td")[column].innerText;
+                    return order * cellA.localeCompare(cellB);
+                });
+
+                dataTable.innerHTML = '';
+                rowsArray.forEach(row => dataTable.appendChild(row));
+            }
+
+            function toggleSortOrder(column) {
+                if (currentSortColumn !== column) {
+                    currentSortOrder = "asc";
                 } else {
-                    cell.textContent = rowData[key];
+                    currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
                 }
-                row.appendChild(cell);
-            }
-            return row;
-        });
-
-        // Clear existing rows
-        while (dataTable.firstChild) {
-            dataTable.removeChild(dataTable.firstChild);
-        }
-
-        // Append new rows
-        rows.forEach(row => {
-            dataTable.appendChild(row);
-        });
-    }
-
-    // Function to initialize the table sorting
-    function resetTableSort() {
-        currentSortColumn = null;
-        currentSortOrder = "default";
-        sortTable(0, sortingOrder[currentSortOrder]);
-    }
-
-
-    function sortTable(column, order) {
-            const rowsArray = Array.from(dataTable.getElementsByTagName('tr'));
-            
-            rowsArray.sort((a, b) => {
-                const cellA = a.getElementsByTagName("td")[column].textContent || a.getElementsByTagName("td")[column].innerText;
-                const cellB = b.getElementsByTagName("td")[column].textContent || b.getElementsByTagName("td")[column].innerText;
-                return order * cellA.localeCompare(cellB);
-            });
-
-            while (dataTable.firstChild) {
-                dataTable.removeChild(dataTable.firstChild);
+                sortTable(column, sortingOrder[currentSortOrder]);
+                currentSortColumn = column;
             }
 
-            rowsArray.forEach(row => {
-                dataTable.appendChild(row);
+            tableHeaders.forEach((header, index) => {
+                header.addEventListener("click", () => toggleSortOrder(index));
             });
-        }
 
-        function toggleSortOrder(column) {
-            if (currentSortColumn !== column) {
-                currentSortOrder = "asc";
-            } else {
-                currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
-            }
-            sortTable(column, sortingOrder[currentSortOrder]);
-            currentSortColumn = column;
-        }
+            function filterTable() {
+                const searchText = searchInput.value.toLowerCase();
+                const selectedColumn = document.querySelector('input[name="searchRow"]:checked').value;
+                const columnIndex = selectedColumn === "Date" ? 2 : selectedColumn === "Tag" ? 3 : selectedColumn === "Info" ? 1 : 0;
+                
+                const rows = dataTable.getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.getElementsByTagName("td");
+                    const cellText = cells[columnIndex].textContent || cells[columnIndex].innerText;
 
-        tableHeaders.forEach((header, index) => {
-            header.addEventListener("click", () => {
-                toggleSortOrder(index);
-            });
-        });
-
-        function filterTable() {
-            const searchText = searchInput.value.toLowerCase();
-            const selectedColumn = document.querySelector('input[name="searchRow"]:checked').value;
-            
-            const rows = dataTable.getElementsByTagName('tr');
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const cells = row.getElementsByTagName("td");
-                const cellText = cells[selectedColumn === "Date" ? 2 : selectedColumn === "Tag" ? 3 : 0].textContent || cells[selectedColumn === "Tag" ? 3 : 0].innerText;
-
-                if (cellText.toLowerCase().indexOf(searchText) > -1) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
+                    row.style.display = cellText.toLowerCase().indexOf(searchText) > -1 ? "" : "none";
                 }
             }
-        }
 
-        searchInput.addEventListener("input", filterTable);
-        searchRowRadioButtons.forEach(radio => radio.addEventListener("change", filterTable));
+            searchInput.addEventListener("input", filterTable);
+            searchRowRadioButtons.forEach(radio => radio.addEventListener("change", filterTable));
 
-    // Fetch data when the page loads
-    fetchData();
-
-    // Initialize the table sorting
-    resetTableSort();
-});
-
+            fetchData();
+        });
     </script>
 </body>
 </html>

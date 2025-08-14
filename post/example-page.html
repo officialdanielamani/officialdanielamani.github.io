@@ -1,105 +1,104 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
+    <title>POST TITLE</title>
     <link rel="stylesheet" type="text/css" href="../core/styles-theme.css">
     <link rel="stylesheet" type="text/css" href="../core/prism.css">
-    <style>
-    </style>
-  </head>
+</head>
 <body>
+    <header>
+        <h1 style="text-align:center;">POST TITLE</h1>
+        <nav style="text-align:center;">
+            <a href="../index.html">Home</a> | 
+            <a href="../search.html">Posts/Project</a> | 
+            <time datetime="2023-09-27">2023-09-27</time>
+        </nav>
+    </header>
+    
+    <hr>
+    
+    <section id="siteSetting" style="text-align: center;">
+        <button id="themeSetting" aria-expanded="false">Theme Settings ⚙️</button>
+        <div id="themeButtons" role="toolbar" aria-label="Theme options">
+            <button id="toggleMode">🌙 Dark Mode</button>
+            <button id="decreaseFont" title="Decrease font size">◀️ Smaller</button>
+            <button id="resetFont" title="Reset font size">🔁 Reset</button>
+            <button id="increaseFont" title="Increase font size">▶️ Larger</button>
+            <button id="toggleFont" title="Toggle dyslexia-friendly font">👁️ Dyslexic Font</button>
+        </div>
+    </section>
+    
+    <main>
+        <p><em>Last updated: <time datetime="2023-09-27">2023-09-27</time></em></p>
+        
+        <section>
+            <h1>Header 1</h1>
+            <h2>Header 2</h2>
+            <h3>Header 3</h3>
+            
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            
+            <figure style="text-align: center;">
+                <img src="../image/example.png" alt="Example demonstration image" loading="lazy">
+                <figcaption><em>Image information</em></figcaption>
+            </figure>
+            
+            <h3>Example Code</h3>
+            <pre class="line-numbers"><code class="language-css">/* Updated code box styles */
+.code-box {
+    position: relative;
+    background-color: #4c3f33;
+    border: 1px solid #7a6651;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    overflow-x: auto;
+}</code></pre>
+            
+            <h3>Example Table</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>ONE</td><td>1</td></tr>
+                    <tr><td>TWO</td><td>2</td></tr>
+                    <tr><td>THREE</td><td>3</td></tr>
+                    <tr><td>FOUR</td><td>4</td></tr>
+                    <tr><td>FIVE</td><td>5</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>Example Lists</h3>
+            <ul>
+                <li>Point One</li>
+                <li>Point Two</li>
+                <li>Point Three</li>
+            </ul>
+            
+            <ol>
+                <li><a href="https://example.com/" rel="noopener">example.com</a></li>
+                <li><a href="https://help.example.com/" rel="noopener">help.example.com</a></li>
+                <li><a href="https://test.example.com/" rel="noopener">test.example.com</a></li>
+            </ol>
+        </section>
+    </main>
+    
+    <hr>
+    
+    <footer>
+        <p>Powered by EDNA. Copyright DANP 2016-2023</p>
+    </footer>
 
-<h1 style="text-align:center;">POST TITLE</h1>
-<h3  style="text-align:center;"> <a href="../index.html">Home</a> | <a href="../search.html">Posts/Project</a> | 2023-09-27</h3> 
-<!--Adding Horizontal Line before "siteSetting"-->
-<hr>
-<div id="siteSetting" style="text-align: center;">
-  <button id="themeSetting">Theme Settings ⚙️</button>
-  <div id="themeButtons" style="display: none;">
-      <button id="toggleModeButton">Switch to Dark Mode 🌑</button>    <button id="decreaseFontSize">◀️ Decrease</button>    <button id="defaultFontSize">🔠 Default Font Size</button>    <button id="increaseFontSize">Increase ▶️</button>    <button id="toggleFontAccessibility">Font Accessibility: ❌</button>
-  </div>
-</div>
-<!--Post Information starting here-->
-<br/>
-<br/>
-<!--Adding Last Update (Optional)-->
-<p>Last edit on: 2023-09-27</p>
-<br/>
-<br/>
-<!--Example Header-->
-<h1>Header 1</h1>
-<h2>Header 2</h2>
-<h3>Header 3</h3>
-<!--Example Paragraph-->
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-<!--Example Image and text about image-->
-<p style="text-align: center;"><img src="../image/example.png" atl="example-image" style="width:90%;height:90%"></p>
-<p style="text-align: center;"><em>Image information</p></em>
-<br />
-<!--Example "code-box"-->
-<p>Example code</p>
-
-<pre class="line-numbers"><code class="language-css">   /* Updated code box styles */
-    .code-box {
-        position: relative;
-        background-color: #4c3f33;
-        border: 1px solid #7a6651;
-        padding: 5px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        font-family: 'Courier New', monospace;
-        white-space: pre;
-        overflow-x: auto;
-    }
-</code></pre>
-
-<!--Example Table-->
-<p>Example Table;</p>
-
-<table>
-	<tbody>
-		<tr>
-			<td>ONE</td>
-			<td>1</td>
-		</tr>
-		<tr>
-			<td>TWO</td>
-			<td>2</td>
-		</tr>
-		<tr>
-			<td>THREE</td>
-			<td>3</td>
-		</tr>
-		<tr>
-			<td>FOUR</td>
-			<td>4</td>
-		</tr>
-		<tr>
-			<td>FIVE</td>
-			<td>5</td>
-		</tr>
-	</tbody>
-</table>
-<!--Example List (Point)-->
-<ul>
-	<li>Point One</li>
-	<li>Point Two</li>
-	<li>Point Three</li>
-</ul>
-<!--Example List (Number)-->
-<ol>
-	<li><a href="https://example.com/">https://example.com/</a></li>
-    <li><a href="https://help.example.com/">https://help.example.com</a></li>
-    <li><a href="https://test.example.com/">https://test.example.com</a></li>
-</ol>
-
-<br />
-<!--Adding Horizontal Line before footer-->
-<hr>
-<footer>
-  <p>Powered by EDNA. Copyright DANP 2016-2023</p>
-</footer>
-<script src="../core/script-theme.js"></script>
-<script src="../core/prism.js"></script>
+    <script src="../core/script-theme.js"></script>
+    <script src="../core/prism.js"></script>
 </body>
-<html>
+</html>

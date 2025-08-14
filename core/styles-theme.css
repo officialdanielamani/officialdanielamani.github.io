@@ -1,141 +1,306 @@
-/* Import the 'Open Dyslexic' font*/
+/* Optimized styles-theme.css */
 @import url('https://fonts.cdnfonts.com/css/open-dyslexic');
-/*No-Google Font*/
 
-/* Apply font-family to the body */
+/* CSS Variables for consistent theming */
+:root {
+    --bg-light: #fff;
+    --text-light: #000;
+    --border-light: #ddd;
+    --button-bg-light: #fff;
+    --button-border-light: #101010;
+    --th-bg-light: #212121;
+    
+    --bg-dark: #101010;
+    --text-dark: #fff;
+    --border-dark: #444;
+    --button-bg-dark: #000;
+    --button-border-dark: #fff;
+    --th-bg-dark: #333;
+    
+    --link-color: #6699ff;
+    --link-hover: #99ccff;
+    --link-visited: #d9b3ff;
+    --link-active: #6699ff;
+    
+    --transition-speed: 0.3s;
+    --border-radius: 4px;
+}
+
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+}
+
+/* Body and typography */
 body {
     font-family: 'Open-Dyslexic', Arial, Helvetica, sans-serif;
     max-width: 1080px;
-    margin: 0 auto !important;
-    float: none !important;
-    padding: 25px !important;
+    margin: 0 auto;
+    padding: 25px;
     line-height: 1.4;
     font-size: 1.25em;
+    background: var(--bg-light);
+    color: var(--text-light);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
+/* Headings */
 h1 {
-    font-size: 2.5em; /* Adjust the font size for h1 */
-    margin-bottom: 20px; /* Add margin at the bottom for spacing */
-    /* Additional styles for h1 if needed */
+    font-size: 2.5em;
+    margin-bottom: 20px;
 }
 
 h2 {
-    font-size: 2em; /* Adjust the font size for h2 */
-    margin-bottom: 15px; /* Add margin at the bottom for spacing */
-    /* Additional styles for h2 if needed */
+    font-size: 2em;
+    margin-bottom: 15px;
 }
 
 h3 {
-    font-size: 1.5em; /* Adjust the font size for h3 */
-    margin-bottom: 10px; /* Add margin at the bottom for spacing */
-    /* Additional styles for h3 if needed */
+    font-size: 1.5em;
+    margin-bottom: 10px;
 }
 
-/* Improve readability by increasing line-height and font-size for code */
-code {
-    font-size: 1em;
-    line-height: 1.6;
+/* Links */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-/* Group related styles together for better organization */
-#themeButtons {
-    display: none; /* Initially hide on all screens */
+a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
 }
 
-/* Media query for small screens (e.g., mobile) */
-@media (max-width: 1280px) {
-    #themeSetting {
-        display: block !important; /* Show the "Settings" button on small screens */
-    }
-
-    #themeButtons.show {
-        display: block !important; /* Show the option buttons on small screens when the class is applied */
-    }
+a:visited {
+    color: var(--link-visited);
 }
 
-/* Remove unnecessary !important declarations */
+a:active {
+    color: var(--link-active);
+}
 
-/* General styles for input, textarea, button, td, th, tr */
+/* Form elements */
 input, textarea, button, td, th, tr {
     font-family: inherit;
     font-size: inherit;
 }
 
 input[type="text"] {
-    font-size: inherit;
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--border-radius);
+    background: var(--bg-light);
+    color: var(--text-light);
 }
 
+/* Buttons */
 button {
-    font-size: inherit;
-    background-color: white;
-    padding: 5px;
-    text-align: center;
-    color: black;
-    border: 2px solid #101010;
-    cursor: pointer; /* Add a pointer cursor for buttons */
+    background: var(--button-bg-light);
+    color: var(--text-light);
+    border: 2px solid var(--button-border-light);
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
+    font-weight: normal;
 }
 
-/* Style tables for better readability */
+button:hover {
+    background: var(--button-border-light);
+    color: var(--button-bg-light);
+}
+
+button:focus {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
+/* Tables */
 table {
     border-collapse: collapse;
     width: 100%;
-    margin-left: 10px;
-    margin-right: 10px;
-    text-align: center;
+    margin: 20px 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 td, th {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border: 1px solid var(--border-light);
+    padding: 12px 8px;
+    text-align: center;
 }
 
-/*tr:nth-child(even) {
-    background-color: #f2f2f2;
-}*/
-
 th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    background-color: #212121;
+    background: var(--th-bg-light);
     color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+/* Theme settings */
+#themeButtons {
+    display: none;
+    margin-top: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#themeButtons.show {
+    display: flex;
+}
+
+/* Layout elements */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: 20px 0;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+figure {
+    margin: 20px 0;
+}
+
+figcaption {
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Code blocks */
+code {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+pre {
+    border-radius: var(--border-radius);
+}
+
+/* Lists */
+ul, ol {
+    padding-left: 30px;
+}
+
+li {
+    margin-bottom: 5px;
 }
 
 /* Dark mode styles */
 .dark-mode {
-    background-color: #101010;
-    color: #fff;
+    background: var(--bg-dark);
+    color: var(--text-dark);
 }
 
-.dark-mode a:visited {
-    color: #d9b3ff;
-}
-
-.dark-mode a:active {
-    color: #6699ff;
-}
-
-.dark-mode a {
-    color: #6699ff;
-}
-
-.dark-mode a:hover {
-    color: #99ccff;
+.dark-mode input[type="text"] {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
 }
 
 .dark-mode button {
-    font-size: inherit;
-    background-color: black;
-    padding: 5px;
-    text-align: center;
-    color: white;
-    border: 2px solid white;
-    cursor: pointer; /* Add a pointer cursor for buttons */
+    background: var(--button-bg-dark);
+    color: var(--text-dark);
+    border-color: var(--button-border-dark);
 }
 
 .dark-mode button:hover {
-    background-color: white;
-    color: black;
+    background: var(--button-border-dark);
+    color: var(--button-bg-dark);
+}
+
+.dark-mode td, .dark-mode th {
+    border-color: var(--border-dark);
+}
+
+.dark-mode th {
+    background: var(--th-bg-dark);
+}
+
+.dark-mode tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode hr {
+    border-color: var(--border-dark);
+}
+
+/* Responsive design */
+@media (max-width: 1280px) {
+    #themeSetting {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+        font-size: 1.1em;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    h2 {
+        font-size: 1.7em;
+    }
+    
+    h3 {
+        font-size: 1.3em;
+    }
+    
+    #themeButtons {
+        gap: 5px;
+    }
+    
+    #themeButtons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+    
+    table {
+        font-size: 0.9em;
+    }
+    
+    td, th {
+        padding: 8px 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+        font-size: 1em;
+    }
+    
+    #themeButtons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #themeButtons button {
+        width: 200px;
+        margin: 2px 0;
+    }
 }

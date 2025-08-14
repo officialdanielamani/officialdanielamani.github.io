@@ -31,7 +31,7 @@
                 <div id="textContent" class="content-panel active">
                     <div class="control-group">
                         <label for="qrText">Text/URL Content:</label>
-                        <textarea id="qrText" placeholder="Enter text, URL, or any information..." oninput="generateQR()">Hello World!</textarea>
+                        <textarea id="qrText" placeholder="Enter text, URL, or any information...For URL start with https://" oninput="generateQR()">Hello World!</textarea>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
                     
                     <div class="control-group">
                         <label for="vcardAddress">Address:</label>
-                        <textarea id="vcardAddress" placeholder="123 Main St, City, State, ZIP" rows="3" oninput="generateVCard()"></textarea>
+                        <textarea id="vcardAddress" placeholder="123 GMI, City, State, ZIP" rows="3" oninput="generateVCard()"></textarea>
                     </div>
                     
                     <div class="control-group">
@@ -87,6 +87,7 @@
                 <div class="download-buttons">
                     <button class="btn btn-primary" onclick="downloadQR()">📥 Download</button>
                     <button class="btn btn-secondary" onclick="saveQR()">💾 Save to Collection</button>
+                    <button class="btn btn-share" onclick="shareQR()">📤 Share</button>
                 </div>
             </div>
 
@@ -114,6 +115,7 @@
                         <option value="png">PNG</option>
                         <option value="jpg">JPG</option>
                     </select>
+                    <p>Note: For JPG, transparent colour will convert to Black</p>
                 </div>
                 
                 <div class="control-group">
@@ -194,6 +196,10 @@
             </div>
         </div>
     </div>
+    <footer>
+        <p style="text-align:center;"> Back to home | API Doc | Version 0.1.4 August 2025</p>
+    </br>
+    </footer>
 
     <script src="scripts.js"></script>
 </body>
