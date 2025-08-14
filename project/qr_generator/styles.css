@@ -317,6 +317,36 @@ body {
     background: var(--bg-secondary);
 }
 
+.image-preview {
+    margin-top: 10px;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-primary);
+}
+
+.image-preview-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-remove {
+    background: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-remove:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
 .preview-section {
     text-align: center;
 }
@@ -378,17 +408,19 @@ body {
     transform: translateY(-2px);
 }
 
-.btn-share {
-    background: #28a745;
+.btn-copy {
+    background: #17a2b8;
     color: white;
-    border: 2px solid #28a745;
+    border: 2px solid #17a2b8;
 }
 
-.btn-share:hover {
-    background: #218838;
-    border-color: #218838;
+.btn-copy:hover {
+    background: #138496;
+    border-color: #138496;
     transform: translateY(-2px);
 }
+
+
 
 .saved-qrs {
     margin-top: 30px;
@@ -437,6 +469,18 @@ body {
     word-break: break-all;
     max-height: 40px;
     overflow: hidden;
+}
+
+.saved-item-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.saved-download-btn {
+    font-size: 0.8rem !important;
+    padding: 8px 12px !important;
 }
 
 .delete-btn {
@@ -588,6 +632,18 @@ body {
     .file-input-label {
         padding: 15px;
         font-size: 0.9rem;
+    }
+    
+    .image-preview-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    .image-preview img {
+        max-width: 80px;
+        max-height: 80px;
     }
 }
 
