@@ -81,12 +81,17 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-.theme-btn:hover, .theme-btn.active {
+.theme-btn:hover, .theme-btn:focus, .theme-btn.active {
     border-color: var(--accent);
     background: var(--accent);
     color: white;
+    outline: none;
 }
 
 .main-content {
@@ -133,10 +138,15 @@ body {
     transition: all 0.3s ease;
     font-size: 0.9rem;
     font-weight: 500;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-.tab-btn:hover {
+.tab-btn:hover, .tab-btn:focus {
     border-color: var(--accent);
+    outline: none;
 }
 
 .tab-btn.active {

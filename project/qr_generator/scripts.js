@@ -23,7 +23,7 @@ function initDB() {
 }
 
 // Theme management
-function setTheme(theme) {
+function setTheme(event, theme) {
     document.body.setAttribute('data-theme', theme);
     document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
@@ -88,7 +88,7 @@ function syncBorderSize() {
 }
 
 // Switch between content types
-function switchContentType(type) {
+function switchContentType(event, type) {
     currentContentType = type;
     
     // Update tab buttons
@@ -204,13 +204,23 @@ function handleImageUpload(event) {
 
 // Generate QR code for preview (fixed 300px size)
 function generateQR() {
-    const text = getCurrentContent();
-    const fgColor = getColorValue('fg');
-    const bgColor = getColorValue('bg');
-    const errorLevel = document.getElementById('errorLevel').value;
-    const canvas = document.getElementById('qrCanvas');
-
     try {
+        const text = getCurrentContent();
+        const fgColor = getColorValue('fg');
+        const bgColor = getColorValue('bg');
+        const errorLevel = document.getElementById('errorLevel').value;
+        const canvas = document.getElementById('qrCanvas');
+
+        if (!canvas) {
+            console.error('Canvas element not found');
+            return;
+        }
+
+        if (!text) {
+            console.error('No text content to generate QR');
+            return;
+        }
+
         const qr = new QRious({
             element: canvas,
             value: text,
@@ -229,6 +239,14 @@ function generateQR() {
         }
     } catch (error) {
         console.error('Error generating QR code:', error);
+        // Fallback for Safari
+        setTimeout(() => {
+            try {
+                generateQR();
+            } catch (retryError) {
+                console.error('Retry failed:', retryError);
+            }
+        }, 100);
     }
 }
 
@@ -499,7 +517,26 @@ function deleteQR(id) {
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', function() {
-    loadTheme();
-    initDB();
-    generateQR();
+    console.log('DOM loaded, initializing...');
+    
+    try {
+        loadTheme();
+        initDB();
+        
+        // Ensure elements exist before generating QR
+        setTimeout(() => {
+            const canvas = document.getElementById('qrCanvas');
+            const textInput = document.getElementById('qrText');
+            
+            if (canvas && textInput) {
+                console.log('Elements found, generating initial QR');
+                generateQR();
+            } else {
+                console.error('Required elements not found:', { canvas: !!canvas, textInput: !!textInput });
+            }
+        }, 50);
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+    }
 });
