@@ -1,0 +1,38 @@
+[
+    {
+        "title": "Electronics Inventory Manager",
+        "image": "image/project/project1.png",
+        "description": "Personal archive system for project documentation and knowledge management.",
+        "url": "https://danielamani.com/project/electro_manager/index.html"
+    },
+    {
+        "title": "QR Code Generator",
+        "image": "image/project/project2.png",
+        "description": ".",
+        "url": "https://danielamani.com/project/qr_generator/index.html"
+    },
+    {
+        "title": "ESP32 WebConnect",
+        "image": "image/project/project3.png",
+        "description": "Deploy IoT faster. Come with Dashboard, OTA, Wifi-Manager and many more",
+        "url": "#"
+    },
+    {
+        "title": "ESP32 OLED Menu",
+        "image": "image/project/project4.png",
+        "description": "Menu navigation much easier with OLED + Button/Rotary encoder",
+        "url": "#"
+    },
+    {
+        "title": "ESP32 FileManager",
+        "image": "image/project/project5.png",
+        "description": "Simple Web-Interface to manage file in SPIFFS and SD-Card for ESP32",
+        "url": "#"
+    },      
+    {
+        "title": "Minimalist Design",
+        "image": "image/project/project6.jpg",
+        "description": "Clean, accessible web design following minimalist principles.",
+        "url": "#"
+    }
+]
