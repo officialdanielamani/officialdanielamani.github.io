@@ -2,7 +2,7 @@
     {
         "title": "Electronics Inventory Manager",
         "image": "../image/project/project1.png",
-        "description": "Personal archive system for project documentation and knowledge management.",
+        "description": "Simple Electronics Inventory manager with Drawer",
         "url": "https://danielamani.com/project/electro_manager/index.html"
     },
     {
@@ -14,7 +14,7 @@
     {
         "title": "ESP32 WebConnect",
         "image": "../image/project/project3.png",
-        "description": "Deploy IoT faster. Come with Dashboard, OTA, Wifi-Manager and many more",
+        "description": "Deploy IoT faster. Come with Dashboard, OTA, Wifi-Manager and offline mode",
         "url": "#"
     },
     {
@@ -28,5 +28,11 @@
         "image": "../image/project/project5.png",
         "description": "Simple Web-Interface to manage file in SPIFFS and SD-Card for ESP32",
         "url": "#"
-    }    
+    },
+    {
+        "title": "Homelab",
+        "image": "../image/project/project6.png",
+        "description": "Jellyfin, Nextcloud, Nodered, Home Asistance and many more",
+        "url": "#"
+    }
 ]
