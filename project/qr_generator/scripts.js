@@ -511,6 +511,7 @@ function drawBackground(ctx, dimensions, config) {
 }
 
 // Draw header
+// Fixed drawHeader function
 function drawHeader(ctx, dimensions, config, isPreview = false) {
     if (!config.headerEnabled) return;
     
@@ -528,15 +529,18 @@ function drawHeader(ctx, dimensions, config, isPreview = false) {
     
     // Draw header text if not transparent
     if (headerTextColor !== 'transparent') {
-        // Use actual font size with scaling for download vs preview
+        // Calculate font size based on context
         let fontSize;
         if (isPreview) {
-            // For preview, use the selected size directly (since preview QR is ~260px)
-            fontSize = headerSize;
+            // For preview, scale font size based on header height and selected size
+            // Use a proportion of the header height but also consider the selected size
+            const baseSize = Math.max(12, Math.min(headerSize, headerHeight * 0.6));
+            fontSize = baseSize;
         } else {
-            // For download, scale the font size proportionally
-            const scaleFactor = (width - (borderSize * 2)) / 260; // Scale based on content width vs preview
-            fontSize = Math.floor(headerSize * scaleFactor);
+            // For download, scale the font size proportionally to the header height
+            // This ensures text fits properly in larger downloads
+            const scaleFactor = headerHeight / 39; // 39px is approximate header height for 260px QR
+            fontSize = Math.max(12, Math.floor(headerSize * scaleFactor));
         }
         
         ctx.fillStyle = headerTextColor;
@@ -546,11 +550,29 @@ function drawHeader(ctx, dimensions, config, isPreview = false) {
         
         const textX = width / 2;
         const textY = headerY + headerHeight / 2;
+        
+        // Add text wrapping for long text
+        const maxWidth = headerWidth * 0.9; // Use 90% of header width
+        const words = headerText.split(' ');
+        let line = '';
+        let lineY = textY;
+        
+        // Simple text fitting - if text is too long, reduce font size
+        ctx.font = `${fontSize}px ${headerFont}`;
+        const textWidth = ctx.measureText(headerText).width;
+        
+        if (textWidth > maxWidth) {
+            // Reduce font size to fit
+            const ratio = maxWidth / textWidth;
+            fontSize = Math.max(8, Math.floor(fontSize * ratio));
+            ctx.font = `${fontSize}px ${headerFont}`;
+        }
+        
         ctx.fillText(headerText, textX, textY);
     }
 }
 
-// Draw footer
+// Fixed drawFooter function  
 function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0) {
     if (!config.footerEnabled) return;
     
@@ -568,15 +590,16 @@ function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0)
     
     // Draw footer text if not transparent
     if (footerTextColor !== 'transparent') {
-        // Use actual font size with scaling for download vs preview
+        // Calculate font size based on context
         let fontSize;
         if (isPreview) {
-            // For preview, use the selected size directly (since preview QR is ~260px)
-            fontSize = footerSize;
+            // For preview, scale font size based on footer height and selected size
+            const baseSize = Math.max(12, Math.min(footerSize, footerHeight * 0.6));
+            fontSize = baseSize;
         } else {
-            // For download, scale the font size proportionally
-            const scaleFactor = qrSize / 260; // Scale based on QR size vs preview size
-            fontSize = Math.floor(footerSize * scaleFactor);
+            // For download, scale the font size proportionally to the footer height
+            const scaleFactor = footerHeight / 39; // 39px is approximate footer height for 260px QR
+            fontSize = Math.max(12, Math.floor(footerSize * scaleFactor));
         }
         
         ctx.fillStyle = footerTextColor;
@@ -586,6 +609,21 @@ function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0)
         
         const textX = width / 2;
         const textY = footerY + footerHeight / 2;
+        
+        // Add text wrapping for long text
+        const maxWidth = footerWidth * 0.9; // Use 90% of footer width
+        
+        // Simple text fitting - if text is too long, reduce font size
+        ctx.font = `${fontSize}px ${footerFont}`;
+        const textWidth = ctx.measureText(footerText).width;
+        
+        if (textWidth > maxWidth) {
+            // Reduce font size to fit
+            const ratio = maxWidth / textWidth;
+            fontSize = Math.max(8, Math.floor(fontSize * ratio));
+            ctx.font = `${fontSize}px ${footerFont}`;
+        }
+        
         ctx.fillText(footerText, textX, textY);
     }
 }
