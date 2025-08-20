@@ -10,6 +10,16 @@
         "MD5": "0bb82227bdafa3df7c9d77f59bfcf3d0"
     },
     {
+        "Developer": "MPOB",
+        "Author": "Daniel Amani",
+        "Image": "https://danielamani.com/image/mpob.png",
+        "Title": "AC Meter",
+        "Info": "For cantas charger",
+        "Version": "V0.1.2",
+        "URL": "https://raw.githack.com/officialdanielamani/officialdanielamani.github.io/main/project/core_firmware/firmware/mpob_ACmeter/program.bin",
+        "MD5": "ae9d4ff0fc1900167e73d69e73ecc0f8"
+    },
+    {
         "Developer": "EDNA & DANP",
         "Author": "Daniel Amani",
         "Image": "https://danielamani.com/image/SmartHome.png",
