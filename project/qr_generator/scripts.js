@@ -164,13 +164,16 @@ function switchContentType(event, type) {
     // Show/hide bulk data options for header and footer
     const headerBulkOption = document.getElementById('headerBulkOption');
     const footerBulkOption = document.getElementById('footerBulkOption');
+    const bulkPreviewIndicator = document.getElementById('bulkPreviewIndicator');
     
     if (type === 'bulk') {
         if (headerBulkOption) headerBulkOption.style.display = 'grid';
         if (footerBulkOption) footerBulkOption.style.display = 'grid';
+        if (bulkPreviewIndicator) bulkPreviewIndicator.style.display = 'block';
     } else {
         if (headerBulkOption) headerBulkOption.style.display = 'none';
         if (footerBulkOption) footerBulkOption.style.display = 'none';
+        if (bulkPreviewIndicator) bulkPreviewIndicator.style.display = 'none';
         // Uncheck the options when switching away from bulk mode
         const headerCheck = document.getElementById('headerUseBulkData');
         const footerCheck = document.getElementById('footerUseBulkData');
@@ -198,6 +201,14 @@ function toggleBulkDataOption(section) {
             textInput.disabled = false;
             textInput.style.opacity = '1';
             textInput.placeholder = section === 'header' ? 'My QR Code' : 'example.com';
+        }
+        
+        // Refresh preview if in bulk mode and items exist
+        if (currentContentType === 'bulk' && bulkItems && bulkItems.length > 0) {
+            // Find currently selected row
+            const selectedRow = document.querySelector('.bulk-row.selected');
+            const selectedIndex = selectedRow ? parseInt(selectedRow.getAttribute('data-index')) : 0;
+            updateBulkPreviewQR(selectedIndex);
         }
     }
 }
@@ -397,7 +408,15 @@ function toggleTextSection(section) {
 
     if (checkbox && options) {
         options.style.display = checkbox.checked ? 'block' : 'none';
-        generateQR();
+        
+        // If in bulk mode, refresh the preview with current selection
+        if (currentContentType === 'bulk' && bulkItems && bulkItems.length > 0) {
+            const selectedRow = document.querySelector('.bulk-row.selected');
+            const selectedIndex = selectedRow ? parseInt(selectedRow.getAttribute('data-index')) : 0;
+            updateBulkPreviewQR(selectedIndex);
+        } else {
+            generateQR();
+        }
     }
 }
 
@@ -985,41 +1004,226 @@ function deleteQR(id) {
 }
 
 // Bulk QR Code Generation Functions
+let bulkItems = []; // Store parsed items globally for filtering
+
 function updateBulkPreview() {
     const bulkData = document.getElementById('bulkData').value;
-    const previewDiv = document.getElementById('bulkPreview');
     const countSpan = document.getElementById('bulkCount');
+    const tbody = document.getElementById('bulkPreviewBody');
+    const searchInput = document.getElementById('bulkSearch');
     
     if (!bulkData.trim()) {
-        previewDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Paste data to preview...</p>';
+        tbody.innerHTML = '<tr><td colspan="2" style="padding: 20px; text-align: center; color: var(--text-secondary);">Paste data to preview...</td></tr>';
         countSpan.textContent = '0 QR codes';
+        bulkItems = [];
+        if (searchInput) searchInput.value = '';
         return;
     }
     
-    const items = parseBulkData(bulkData);
-    countSpan.textContent = `${items.length} QR code${items.length !== 1 ? 's' : ''}`;
+    bulkItems = parseBulkData(bulkData);
+    
+    // Apply 1024 limit
+    const limitExceeded = bulkItems.length > 1024;
+    if (limitExceeded) {
+        bulkItems = bulkItems.slice(0, 1024);
+    }
+    
+    countSpan.textContent = `${bulkItems.length} QR code${bulkItems.length !== 1 ? 's' : ''}`;
+    if (limitExceeded) {
+        countSpan.innerHTML += ' <span style="color: #dc3545; font-weight: normal; font-size: 0.85rem;">(Limited to 1024)</span>';
+    }
+    
+    if (bulkItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="2" style="padding: 20px; text-align: center; color: var(--text-secondary);">No valid data found</td></tr>';
+        return;
+    }
+    
+    // Clear search when data changes
+    if (searchInput) searchInput.value = '';
+    
+    // Render all items in table (this will also update preview with first item)
+    renderBulkTable(bulkItems);
+}
+
+function renderBulkTable(items) {
+    const tbody = document.getElementById('bulkPreviewBody');
     
     if (items.length === 0) {
-        previewDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No valid data found</p>';
+        tbody.innerHTML = '<tr><td colspan="2" style="padding: 20px; text-align: center; color: var(--text-secondary);">No items match your search</td></tr>';
         return;
     }
     
-    const maxPreview = 10;
-    const previewItems = items.slice(0, maxPreview);
-    let html = '<ol style="margin: 0; padding-left: 20px; color: var(--text-primary);">';
-    
-    previewItems.forEach((item, index) => {
-        const displayText = item.length > 50 ? item.substring(0, 50) + '...' : item;
-        html += `<li style="margin-bottom: 5px; word-break: break-all;">${displayText}</li>`;
+    let html = '';
+    items.forEach((item, index) => {
+        const displayText = item.length > 100 ? item.substring(0, 100) + '...' : item;
+        const rowIndex = bulkItems.indexOf(item) + 1; // Original index
+        const isFirstRow = index === 0;
+        html += `
+            <tr onclick="selectBulkItem(${bulkItems.indexOf(item)})" 
+                data-index="${bulkItems.indexOf(item)}"
+                class="bulk-row ${isFirstRow ? 'selected' : ''}"
+                style="border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s;">
+                <td style="padding: 8px; color: var(--text-secondary); font-weight: 500;">${rowIndex}</td>
+                <td style="padding: 8px; word-break: break-all; font-family: monospace; font-size: 0.85rem;">${escapeHtml(displayText)}</td>
+            </tr>
+        `;
     });
     
-    html += '</ol>';
+    tbody.innerHTML = html;
     
-    if (items.length > maxPreview) {
-        html += `<p style="margin-top: 10px; color: var(--text-secondary); text-align: center;">... and ${items.length - maxPreview} more</p>`;
+    // Update preview with first item
+    if (items.length > 0) {
+        updateBulkPreviewQR(bulkItems.indexOf(items[0]));
+    }
+}
+
+function filterBulkPreview() {
+    const searchInput = document.getElementById('bulkSearch');
+    if (!searchInput) return;
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        // Show all items if search is empty
+        renderBulkTable(bulkItems);
+        return;
     }
     
-    previewDiv.innerHTML = html;
+    // Filter items that contain the search term
+    const filteredItems = bulkItems.filter(item => 
+        item.toLowerCase().includes(searchTerm)
+    );
+    
+    renderBulkTable(filteredItems);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function selectBulkItem(index) {
+    // Remove selected class from all rows
+    document.querySelectorAll('.bulk-row').forEach(row => {
+        row.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked row
+    const selectedRow = document.querySelector(`.bulk-row[data-index="${index}"]`);
+    if (selectedRow) {
+        selectedRow.classList.add('selected');
+    }
+    
+    // Update preview QR
+    updateBulkPreviewQR(index);
+}
+
+function updateBulkPreviewQR(index) {
+    if (!bulkItems || bulkItems.length === 0 || index < 0 || index >= bulkItems.length) {
+        return;
+    }
+    
+    const content = bulkItems[index];
+    
+    // Update the preview indicator
+    const bulkPreviewContent = document.getElementById('bulkPreviewContent');
+    if (bulkPreviewContent) {
+        bulkPreviewContent.textContent = content;
+    }
+    
+    // Generate QR directly with the bulk content
+    generateBulkPreview(content, index);
+}
+
+// Generate preview QR for bulk mode with specific content
+function generateBulkPreview(content, index) {
+    try {
+        const canvas = document.getElementById('qrCanvas');
+        if (!canvas) {
+            console.error('Canvas element not found');
+            return;
+        }
+
+        // Get settings but override text values
+        const headerEnabled = document.getElementById('headerEnabled')?.checked || false;
+        const footerEnabled = document.getElementById('footerEnabled')?.checked || false;
+        const headerUseBulkData = document.getElementById('headerUseBulkData')?.checked || false;
+        const footerUseBulkData = document.getElementById('footerUseBulkData')?.checked || false;
+        
+        // Determine what text to use for header/footer
+        const headerText = (headerEnabled && headerUseBulkData) ? content : (document.getElementById('headerText')?.value || 'My QR Code');
+        const footerText = (footerEnabled && footerUseBulkData) ? content : (document.getElementById('footerText')?.value || 'example.com');
+        
+        // Build config with bulk content
+        const config = {
+            text: content, // Use bulk content directly
+            fgColor: getColorValue('fg'),
+            bgColor: getColorValue('bg'),
+            errorLevel: document.getElementById('errorLevel')?.value || 'M',
+            borderSize: parseInt(document.getElementById('borderSize')?.value || 0),
+            borderColor: getColorValue('border'),
+            footerEnabled: footerEnabled,
+            footerText: footerText,
+            footerFont: document.getElementById('footerFont')?.value || 'Arial',
+            footerSize: parseInt(document.getElementById('footerSize')?.value || 16),
+            footerTextColor: getTextSectionColorValue('footer', 'text'),
+            footerBgColor: getTextSectionColorValue('footer', 'bg'),
+            headerEnabled: headerEnabled,
+            headerText: headerText,
+            headerFont: document.getElementById('headerFont')?.value || 'Arial',
+            headerSize: parseInt(document.getElementById('headerSize')?.value || 16),
+            headerTextColor: getTextSectionColorValue('header', 'text'),
+            headerBgColor: getTextSectionColorValue('header', 'bg'),
+            hasImage: !!currentQRImage
+        };
+
+        // Generate QR at preview size (260px for QR content)
+        const dimensions = calculateCanvasDimensions(260, config);
+        
+        // Create target canvas
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = dimensions.width;
+        tempCanvas.height = dimensions.height;
+        const ctx = tempCanvas.getContext('2d');
+        
+        // Draw background and borders
+        drawBackground(ctx, dimensions, config);
+        
+        // Draw header
+        drawHeader(ctx, dimensions, config, true);
+        
+        // Create and draw base QR
+        const qrCanvas = createBaseQR(260, config);
+        
+        const qrX = config.borderSize;
+        let qrY = config.borderSize;
+        if (config.headerEnabled) {
+            qrY += dimensions.headerHeight + config.borderSize;
+        }
+        
+        if (config.bgColor === 'transparent' && config.borderSize > 0 && config.borderColor !== 'transparent') {
+            ctx.clearRect(qrX, qrY, 260, 260);
+        }
+        
+        ctx.drawImage(qrCanvas, qrX, qrY);
+        
+        // Draw footer
+        drawFooter(ctx, 260, dimensions, config, true, qrY);
+        
+        // Copy to preview canvas
+        canvas.width = tempCanvas.width;
+        canvas.height = tempCanvas.height;
+        canvas.style.width = Math.min(tempCanvas.width, 300) + 'px';
+        canvas.style.height = 'auto';
+        
+        const previewCtx = canvas.getContext('2d');
+        previewCtx.clearRect(0, 0, canvas.width, canvas.height);
+        previewCtx.drawImage(tempCanvas, 0, 0);
+        
+    } catch (error) {
+        console.error('Error generating bulk preview QR code:', error);
+    }
 }
 
 function parseBulkData(data) {
@@ -1059,8 +1263,15 @@ async function generateBulkQR() {
         return;
     }
     
-    if (items.length > 500) {
-        if (!confirm(`You're about to generate ${items.length} QR codes. This might take a while. Continue?`)) {
+    // Apply 1024 limit
+    let finalItems = items;
+    if (items.length > 1024) {
+        if (!confirm(`You have ${items.length} items, but the limit is 1024. Only the first 1024 items will be generated. Continue?`)) {
+            return;
+        }
+        finalItems = items.slice(0, 1024);
+    } else if (items.length > 100) {
+        if (!confirm(`You're about to generate ${finalItems.length} QR codes. This might take a while. Continue?`)) {
             return;
         }
     }
@@ -1085,7 +1296,7 @@ async function generateBulkQR() {
         <div style="width: 100%; height: 20px; background: var(--bg-primary); border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
             <div id="progressBar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s;"></div>
         </div>
-        <p id="progressText" style="color: var(--text-secondary); margin: 0;">0 / ${items.length}</p>
+        <p id="progressText" style="color: var(--text-secondary); margin: 0;">0 / ${finalItems.length}</p>
     `;
     document.body.appendChild(progressDiv);
     
@@ -1096,8 +1307,8 @@ async function generateBulkQR() {
         // Get current settings
         const settings = getCurrentSettings();
         
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
+        for (let i = 0; i < finalItems.length; i++) {
+            const item = finalItems[i];
             
             // Generate QR for this item
             const canvas = await generateSingleQR(item, settings);
@@ -1111,9 +1322,9 @@ async function generateBulkQR() {
             qrFolder.file(filename, blob);
             
             // Update progress
-            const progress = Math.round(((i + 1) / items.length) * 100);
+            const progress = Math.round(((i + 1) / finalItems.length) * 100);
             document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `${i + 1} / ${items.length}`;
+            document.getElementById('progressText').textContent = `${i + 1} / ${finalItems.length}`;
             
             // Small delay to allow UI to update
             await new Promise(resolve => setTimeout(resolve, 10));
@@ -1131,7 +1342,7 @@ async function generateBulkQR() {
         
         // Clean up
         document.body.removeChild(progressDiv);
-        alert(`Successfully generated ${items.length} QR codes!`);
+        alert(`Successfully generated ${finalItems.length} QR codes!`);
         
     } catch (error) {
         console.error('Error generating bulk QR codes:', error);

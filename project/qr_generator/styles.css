@@ -183,6 +183,51 @@ body {
     font-size: 1.1rem;
 }
 
+/* Bulk preview table styles */
+#bulkPreviewContainer {
+    position: relative;
+}
+
+#bulkPreviewTable {
+    font-size: 0.9rem;
+}
+
+#bulkPreviewTable thead th {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+#bulkPreviewTable tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+#bulkPreviewTable tbody tr.selected {
+    background: var(--accent);
+    color: white;
+}
+
+#bulkPreviewTable tbody tr.selected td {
+    color: white !important;
+}
+
+#bulkPreviewTable tbody td {
+    color: var(--text-primary);
+}
+
+.bulk-row {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#bulkSearch {
+    font-size: 0.9rem;
+}
+
+#bulkSearch:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
 .control-group {
     margin-bottom: 20px;
 }
