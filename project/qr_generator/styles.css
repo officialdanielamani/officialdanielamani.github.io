@@ -171,6 +171,18 @@ body {
     display: block;
 }
 
+#bulkPreview {
+    font-family: 'Courier New', monospace;
+}
+
+#bulkPreview ol {
+    line-height: 1.6;
+}
+
+#bulkCount {
+    font-size: 1.1rem;
+}
+
 .control-group {
     margin-bottom: 20px;
 }

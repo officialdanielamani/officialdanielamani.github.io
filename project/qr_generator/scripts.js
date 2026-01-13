@@ -129,7 +129,7 @@ function syncBorderSize() {
 
         // Clamp value to valid range
         if (value < 0) value = 0;
-        if (value > 50) value = 50;
+        if (value > 100) value = 100;
 
         input.value = value;
         slider.value = value;
@@ -148,13 +148,58 @@ function switchContentType(event, type) {
 
     // Update content panels
     document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
-    const targetPanel = document.getElementById(type === 'text' ? 'textContent' : 'vcardContent');
+    let targetPanel;
+    if (type === 'text') {
+        targetPanel = document.getElementById('textContent');
+    } else if (type === 'vcard') {
+        targetPanel = document.getElementById('vcardContent');
+    } else if (type === 'bulk') {
+        targetPanel = document.getElementById('bulkContent');
+    }
+    
     if (targetPanel) {
         targetPanel.classList.add('active');
     }
 
-    // Generate QR with current content
-    generateQR();
+    // Show/hide bulk data options for header and footer
+    const headerBulkOption = document.getElementById('headerBulkOption');
+    const footerBulkOption = document.getElementById('footerBulkOption');
+    
+    if (type === 'bulk') {
+        if (headerBulkOption) headerBulkOption.style.display = 'grid';
+        if (footerBulkOption) footerBulkOption.style.display = 'grid';
+    } else {
+        if (headerBulkOption) headerBulkOption.style.display = 'none';
+        if (footerBulkOption) footerBulkOption.style.display = 'none';
+        // Uncheck the options when switching away from bulk mode
+        const headerCheck = document.getElementById('headerUseBulkData');
+        const footerCheck = document.getElementById('footerUseBulkData');
+        if (headerCheck) headerCheck.checked = false;
+        if (footerCheck) footerCheck.checked = false;
+    }
+
+    // Generate QR with current content (only for non-bulk types)
+    if (type !== 'bulk') {
+        generateQR();
+    }
+}
+
+// Toggle bulk data option for header/footer
+function toggleBulkDataOption(section) {
+    const checkbox = document.getElementById(`${section}UseBulkData`);
+    const textInput = document.getElementById(`${section}Text`);
+    
+    if (checkbox && textInput) {
+        if (checkbox.checked) {
+            textInput.disabled = true;
+            textInput.style.opacity = '0.5';
+            textInput.placeholder = 'Will use QR content in bulk mode';
+        } else {
+            textInput.disabled = false;
+            textInput.style.opacity = '1';
+            textInput.placeholder = section === 'header' ? 'My QR Code' : 'example.com';
+        }
+    }
 }
 
 // Generate vCard string
@@ -449,11 +494,18 @@ function getQRConfig() {
 
 // Calculate canvas dimensions
 function calculateCanvasDimensions(qrSize, config) {
-    const { borderSize, footerEnabled, headerEnabled } = config;
+    const { borderSize, footerEnabled, headerEnabled, footerSize, headerSize } = config;
     
-    // Calculate header and footer heights based on QR size (proportional)
-    const footerHeight = footerEnabled ? Math.floor(qrSize * 0.15) : 0;
-    const headerHeight = headerEnabled ? Math.floor(qrSize * 0.15) : 0;
+    // Scale font sizes proportionally to QR code size
+    // Base size is for 260px QR (preview size), scale everything else from there
+    const scaleFactor = qrSize / 260;
+    const scaledHeaderSize = headerSize * scaleFactor;
+    const scaledFooterSize = footerSize * scaleFactor;
+    
+    // Calculate proper text heights with better spacing based on scaled text size
+    const textPadding = Math.max(30, qrSize * 0.03); // Minimum 30px or 3% of QR size
+    const footerHeight = footerEnabled ? (scaledFooterSize * 1.5) + (textPadding * 2) : 0;
+    const headerHeight = headerEnabled ? (scaledHeaderSize * 1.5) + (textPadding * 2) : 0;
     
     // Width: QR size + left border + right border
     const width = qrSize + (borderSize * 2);
@@ -466,7 +518,7 @@ function calculateCanvasDimensions(qrSize, config) {
     
     const height = headerHeight + qrSize + footerHeight + (borderSize * borderCount);
     
-    return { width, height, headerHeight, footerHeight };
+    return { width, height, headerHeight, footerHeight, scaledHeaderSize, scaledFooterSize };
 }
 
 // Create base QR code
@@ -515,8 +567,8 @@ function drawBackground(ctx, dimensions, config) {
 function drawHeader(ctx, dimensions, config, isPreview = false) {
     if (!config.headerEnabled) return;
     
-    const { width, headerHeight } = dimensions;
-    const { borderSize, headerText, headerFont, headerSize, headerTextColor, headerBgColor } = config;
+    const { width, headerHeight, scaledHeaderSize } = dimensions;
+    const { borderSize, headerText, headerFont, headerTextColor, headerBgColor } = config;
     
     const headerY = borderSize; // Header starts after top border
     const headerWidth = width - (borderSize * 2); // Exclude left and right borders
@@ -529,43 +581,32 @@ function drawHeader(ctx, dimensions, config, isPreview = false) {
     
     // Draw header text if not transparent
     if (headerTextColor !== 'transparent') {
-        // Calculate font size based on context
-        let fontSize;
-        if (isPreview) {
-            // For preview, scale font size based on header height and selected size
-            // Use a proportion of the header height but also consider the selected size
-            const baseSize = Math.max(12, Math.min(headerSize, headerHeight * 0.6));
-            fontSize = baseSize;
-        } else {
-            // For download, scale the font size proportionally to the header height
-            // This ensures text fits properly in larger downloads
-            const scaleFactor = headerHeight / 39; // 39px is approximate header height for 260px QR
-            fontSize = Math.max(12, Math.floor(headerSize * scaleFactor));
-        }
+        // Use scaled font size from dimensions
+        let fontSize = scaledHeaderSize || config.headerSize;
         
         ctx.fillStyle = headerTextColor;
-        ctx.font = `${fontSize}px ${headerFont}`;
+        ctx.font = `bold ${fontSize}px ${headerFont}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        
+        // Enable better text rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         
         const textX = width / 2;
         const textY = headerY + headerHeight / 2;
         
         // Add text wrapping for long text
         const maxWidth = headerWidth * 0.9; // Use 90% of header width
-        const words = headerText.split(' ');
-        let line = '';
-        let lineY = textY;
         
         // Simple text fitting - if text is too long, reduce font size
-        ctx.font = `${fontSize}px ${headerFont}`;
-        const textWidth = ctx.measureText(headerText).width;
+        let textWidth = ctx.measureText(headerText).width;
         
         if (textWidth > maxWidth) {
             // Reduce font size to fit
             const ratio = maxWidth / textWidth;
             fontSize = Math.max(8, Math.floor(fontSize * ratio));
-            ctx.font = `${fontSize}px ${headerFont}`;
+            ctx.font = `bold ${fontSize}px ${headerFont}`;
         }
         
         ctx.fillText(headerText, textX, textY);
@@ -576,8 +617,8 @@ function drawHeader(ctx, dimensions, config, isPreview = false) {
 function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0) {
     if (!config.footerEnabled) return;
     
-    const { width, footerHeight } = dimensions;
-    const { borderSize, footerText, footerFont, footerSize, footerTextColor, footerBgColor } = config;
+    const { width, footerHeight, scaledFooterSize } = dimensions;
+    const { borderSize, footerText, footerFont, footerTextColor, footerBgColor } = config;
     
     const footerY = qrY + qrSize + borderSize; // After QR + middle border
     const footerWidth = width - (borderSize * 2); // Exclude left and right borders
@@ -590,22 +631,17 @@ function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0)
     
     // Draw footer text if not transparent
     if (footerTextColor !== 'transparent') {
-        // Calculate font size based on context
-        let fontSize;
-        if (isPreview) {
-            // For preview, scale font size based on footer height and selected size
-            const baseSize = Math.max(12, Math.min(footerSize, footerHeight * 0.6));
-            fontSize = baseSize;
-        } else {
-            // For download, scale the font size proportionally to the footer height
-            const scaleFactor = footerHeight / 39; // 39px is approximate footer height for 260px QR
-            fontSize = Math.max(12, Math.floor(footerSize * scaleFactor));
-        }
+        // Use scaled font size from dimensions
+        let fontSize = scaledFooterSize || config.footerSize;
         
         ctx.fillStyle = footerTextColor;
-        ctx.font = `${fontSize}px ${footerFont}`;
+        ctx.font = `bold ${fontSize}px ${footerFont}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        
+        // Enable better text rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         
         const textX = width / 2;
         const textY = footerY + footerHeight / 2;
@@ -614,14 +650,13 @@ function drawFooter(ctx, qrSize, dimensions, config, isPreview = false, qrY = 0)
         const maxWidth = footerWidth * 0.9; // Use 90% of footer width
         
         // Simple text fitting - if text is too long, reduce font size
-        ctx.font = `${fontSize}px ${footerFont}`;
-        const textWidth = ctx.measureText(footerText).width;
+        let textWidth = ctx.measureText(footerText).width;
         
         if (textWidth > maxWidth) {
             // Reduce font size to fit
             const ratio = maxWidth / textWidth;
             fontSize = Math.max(8, Math.floor(fontSize * ratio));
-            ctx.font = `${fontSize}px ${footerFont}`;
+            ctx.font = `bold ${fontSize}px ${footerFont}`;
         }
         
         ctx.fillText(footerText, textX, textY);
@@ -949,6 +984,340 @@ function deleteQR(id) {
     }
 }
 
+// Bulk QR Code Generation Functions
+function updateBulkPreview() {
+    const bulkData = document.getElementById('bulkData').value;
+    const previewDiv = document.getElementById('bulkPreview');
+    const countSpan = document.getElementById('bulkCount');
+    
+    if (!bulkData.trim()) {
+        previewDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Paste data to preview...</p>';
+        countSpan.textContent = '0 QR codes';
+        return;
+    }
+    
+    const items = parseBulkData(bulkData);
+    countSpan.textContent = `${items.length} QR code${items.length !== 1 ? 's' : ''}`;
+    
+    if (items.length === 0) {
+        previewDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No valid data found</p>';
+        return;
+    }
+    
+    const maxPreview = 10;
+    const previewItems = items.slice(0, maxPreview);
+    let html = '<ol style="margin: 0; padding-left: 20px; color: var(--text-primary);">';
+    
+    previewItems.forEach((item, index) => {
+        const displayText = item.length > 50 ? item.substring(0, 50) + '...' : item;
+        html += `<li style="margin-bottom: 5px; word-break: break-all;">${displayText}</li>`;
+    });
+    
+    html += '</ol>';
+    
+    if (items.length > maxPreview) {
+        html += `<p style="margin-top: 10px; color: var(--text-secondary); text-align: center;">... and ${items.length - maxPreview} more</p>`;
+    }
+    
+    previewDiv.innerHTML = html;
+}
+
+function parseBulkData(data) {
+    const lines = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const items = [];
+    
+    for (const line of lines) {
+        // Check if it's tab-separated or comma-separated (from Excel)
+        if (line.includes('\t')) {
+            // Tab-separated (Excel default)
+            const parts = line.split('\t').map(p => p.trim()).filter(p => p.length > 0);
+            // Use the last non-empty column (usually the URL or main data)
+            if (parts.length > 0) {
+                items.push(parts[parts.length - 1]);
+            }
+        } else if (line.includes(',') && (line.match(/,/g) || []).length > 1) {
+            // Comma-separated with multiple commas (likely CSV)
+            const parts = line.split(',').map(p => p.trim()).filter(p => p.length > 0);
+            if (parts.length > 0) {
+                items.push(parts[parts.length - 1]);
+            }
+        } else {
+            // Simple line
+            items.push(line);
+        }
+    }
+    
+    return items;
+}
+
+async function generateBulkQR() {
+    const bulkData = document.getElementById('bulkData').value;
+    const items = parseBulkData(bulkData);
+    
+    if (items.length === 0) {
+        alert('Please enter some data to generate QR codes.');
+        return;
+    }
+    
+    if (items.length > 500) {
+        if (!confirm(`You're about to generate ${items.length} QR codes. This might take a while. Continue?`)) {
+            return;
+        }
+    }
+    
+    // Show progress
+    const progressDiv = document.createElement('div');
+    progressDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px var(--shadow);
+        z-index: 1000;
+        text-align: center;
+        min-width: 300px;
+    `;
+    progressDiv.innerHTML = `
+        <h3 style="margin-bottom: 15px; color: var(--text-primary);">Generating QR Codes...</h3>
+        <div style="width: 100%; height: 20px; background: var(--bg-primary); border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s;"></div>
+        </div>
+        <p id="progressText" style="color: var(--text-secondary); margin: 0;">0 / ${items.length}</p>
+    `;
+    document.body.appendChild(progressDiv);
+    
+    try {
+        const zip = new JSZip();
+        const qrFolder = zip.folder('QR_Codes');
+        
+        // Get current settings
+        const settings = getCurrentSettings();
+        
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            
+            // Generate QR for this item
+            const canvas = await generateSingleQR(item, settings);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            
+            // Create filename from content (sanitize it)
+            let filename = item.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+            if (!filename) filename = 'qr';
+            filename = `${i + 1}_${filename}.png`;
+            
+            qrFolder.file(filename, blob);
+            
+            // Update progress
+            const progress = Math.round(((i + 1) / items.length) * 100);
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${i + 1} / ${items.length}`;
+            
+            // Small delay to allow UI to update
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        
+        // Generate ZIP
+        progressDiv.querySelector('h3').textContent = 'Creating ZIP file...';
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        
+        // Download ZIP
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = `QR_Codes_${new Date().toISOString().split('T')[0]}.zip`;
+        link.click();
+        
+        // Clean up
+        document.body.removeChild(progressDiv);
+        alert(`Successfully generated ${items.length} QR codes!`);
+        
+    } catch (error) {
+        console.error('Error generating bulk QR codes:', error);
+        document.body.removeChild(progressDiv);
+        alert('Error generating QR codes: ' + error.message);
+    }
+}
+
+function getCurrentSettings() {
+    return {
+        size: parseInt(document.getElementById('qrSize')?.value || 1080),
+        errorLevel: document.getElementById('errorLevel')?.value || 'M',
+        fgColor: document.getElementById('fgTransparent')?.checked ? 'transparent' : 
+                 (document.getElementById('fgColor')?.value || '#000000'),
+        bgColor: document.getElementById('bgTransparent')?.checked ? 'transparent' : 
+                 (document.getElementById('bgColor')?.value || '#ffffff'),
+        borderSize: parseInt(document.getElementById('borderSize')?.value || 0),
+        borderColor: document.getElementById('borderTransparent')?.checked ? 'transparent' : 
+                     (document.getElementById('borderColor')?.value || '#ffffff'),
+        imageData: currentQRImage,
+        headerEnabled: document.getElementById('headerEnabled')?.checked || false,
+        headerText: document.getElementById('headerText')?.value || '',
+        headerFont: document.getElementById('headerFont')?.value || 'Arial',
+        headerSize: parseInt(document.getElementById('headerSize')?.value || 16),
+        headerTextColor: document.getElementById('headerTextTransparent')?.checked ? 'transparent' :
+                        (document.getElementById('headerTextColor')?.value || '#000000'),
+        headerBgColor: document.getElementById('headerBgTransparent')?.checked ? 'transparent' :
+                      (document.getElementById('headerBgColor')?.value || '#ffffff'),
+        headerUseBulkData: document.getElementById('headerUseBulkData')?.checked || false,
+        footerEnabled: document.getElementById('footerEnabled')?.checked || false,
+        footerText: document.getElementById('footerText')?.value || '',
+        footerFont: document.getElementById('footerFont')?.value || 'Arial',
+        footerSize: parseInt(document.getElementById('footerSize')?.value || 16),
+        footerTextColor: document.getElementById('footerTextTransparent')?.checked ? 'transparent' :
+                        (document.getElementById('footerTextColor')?.value || '#ffffff'),
+        footerBgColor: document.getElementById('footerBgTransparent')?.checked ? 'transparent' :
+                      (document.getElementById('footerBgColor')?.value || '#000000'),
+        footerUseBulkData: document.getElementById('footerUseBulkData')?.checked || false
+    };
+}
+
+async function generateSingleQR(content, settings) {
+    return new Promise((resolve) => {
+        const tempCanvas = document.createElement('canvas');
+        const qr = new QRious({
+            element: tempCanvas,
+            value: content,
+            size: settings.size,
+            level: settings.errorLevel,
+            foreground: settings.fgColor,
+            background: settings.bgColor
+        });
+
+        // Determine actual header/footer text (use content if bulk data option is enabled)
+        const actualHeaderText = settings.headerUseBulkData ? content : settings.headerText;
+        const actualFooterText = settings.footerUseBulkData ? content : settings.footerText;
+
+        // If no customization needed, return simple QR
+        if (!settings.imageData && settings.borderSize === 0 && 
+            !settings.headerEnabled && !settings.footerEnabled) {
+            resolve(tempCanvas);
+            return;
+        }
+
+        // Create final canvas with customizations
+        const finalCanvas = document.createElement('canvas');
+        const ctx = finalCanvas.getContext('2d');
+        
+        const borderSize = settings.borderSize || 0;
+        
+        // Scale font sizes proportionally to QR code size
+        // Base size is for 260px QR (preview size), scale everything else from there
+        const scaleFactor = settings.size / 260;
+        const scaledHeaderSize = settings.headerSize * scaleFactor;
+        const scaledFooterSize = settings.footerSize * scaleFactor;
+        
+        // Calculate proper text heights with better spacing based on scaled text size
+        const textPadding = Math.max(30, settings.size * 0.03); // Minimum 30px or 3% of QR size
+        const headerHeight = (settings.headerEnabled && actualHeaderText) ? 
+            (scaledHeaderSize * 1.5) + (textPadding * 2) : 0;
+        const footerHeight = (settings.footerEnabled && actualFooterText) ? 
+            (scaledFooterSize * 1.5) + (textPadding * 2) : 0;
+        
+        const finalWidth = settings.size + (borderSize * 2);
+        const finalHeight = settings.size + (borderSize * 2) + headerHeight + footerHeight;
+        
+        finalCanvas.width = finalWidth;
+        finalCanvas.height = finalHeight;
+        
+        // Draw border background
+        if (borderSize > 0 || settings.headerEnabled || settings.footerEnabled) {
+            // Fill entire canvas with border color first (if border exists)
+            if (borderSize > 0) {
+                ctx.fillStyle = settings.borderColor;
+                ctx.fillRect(0, 0, finalWidth, finalHeight);
+            }
+        }
+        
+        // Draw header with better text rendering
+        if (settings.headerEnabled && actualHeaderText) {
+            ctx.fillStyle = settings.headerBgColor;
+            ctx.fillRect(0, 0, finalWidth, headerHeight);
+            
+            let fontSize = scaledHeaderSize;
+            ctx.fillStyle = settings.headerTextColor;
+            ctx.font = `bold ${fontSize}px ${settings.headerFont}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Enable better text rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Text fitting
+            const maxWidth = (finalWidth - (borderSize * 2)) * 0.9;
+            let textWidth = ctx.measureText(actualHeaderText).width;
+            
+            if (textWidth > maxWidth) {
+                const ratio = maxWidth / textWidth;
+                fontSize = Math.max(8, Math.floor(fontSize * ratio));
+                ctx.font = `bold ${fontSize}px ${settings.headerFont}`;
+            }
+            
+            // Draw text in the middle of header section
+            ctx.fillText(actualHeaderText, finalWidth / 2, headerHeight / 2);
+        }
+        
+        // Draw QR code
+        ctx.drawImage(tempCanvas, borderSize, borderSize + headerHeight, settings.size, settings.size);
+        
+        // Draw footer with better text rendering
+        if (settings.footerEnabled && actualFooterText) {
+            const footerY = borderSize + headerHeight + settings.size;
+            ctx.fillStyle = settings.footerBgColor;
+            ctx.fillRect(0, footerY, finalWidth, footerHeight);
+            
+            let fontSize = scaledFooterSize;
+            ctx.fillStyle = settings.footerTextColor;
+            ctx.font = `bold ${fontSize}px ${settings.footerFont}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Enable better text rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Text fitting
+            const maxWidth = (finalWidth - (borderSize * 2)) * 0.9;
+            let textWidth = ctx.measureText(actualFooterText).width;
+            
+            if (textWidth > maxWidth) {
+                const ratio = maxWidth / textWidth;
+                fontSize = Math.max(8, Math.floor(fontSize * ratio));
+                ctx.font = `bold ${fontSize}px ${settings.footerFont}`;
+            }
+            
+            // Draw text in the middle of footer section
+            ctx.fillText(actualFooterText, finalWidth / 2, footerY + (footerHeight / 2));
+        }
+        
+        // Draw center image if provided
+        if (settings.imageData) {
+            const img = new Image();
+            img.onload = function() {
+                const imgSize = settings.size * 0.2;
+                const imgX = borderSize + (settings.size / 2) - (imgSize / 2);
+                const imgY = borderSize + headerHeight + (settings.size / 2) - (imgSize / 2);
+                
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                
+                ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+                ctx.restore();
+                
+                resolve(finalCanvas);
+            };
+            img.src = settings.imageData;
+        } else {
+            resolve(finalCanvas);
+        }
+    });
+}
+
 // Initialize everything
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM loaded, initializing...');
@@ -977,15 +1346,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                const isTextTab = this.textContent.includes('Text');
-                const type = isTextTab ? 'text' : 'vcard';
+                const btnText = this.textContent.toLowerCase();
+                let type = 'text';
+                if (btnText.includes('vcard')) type = 'vcard';
+                else if (btnText.includes('bulk')) type = 'bulk';
                 switchContentType(e, type);
             });
 
             btn.addEventListener('touchend', function (e) {
                 e.preventDefault();
-                const isTextTab = this.textContent.includes('Text');
-                const type = isTextTab ? 'text' : 'vcard';
+                const btnText = this.textContent.toLowerCase();
+                let type = 'text';
+                if (btnText.includes('vcard')) type = 'vcard';
+                else if (btnText.includes('bulk')) type = 'bulk';
                 switchContentType(e, type);
             });
         });

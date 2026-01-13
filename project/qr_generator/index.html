@@ -7,6 +7,7 @@
     <title>QR Code Generator</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body data-theme="light">
@@ -29,6 +30,7 @@
                     <div class="content-type-tabs">
                         <button class="tab-btn active" onclick="switchContentType(event, 'text')">📄 Text/URL</button>
                         <button class="tab-btn" onclick="switchContentType(event, 'vcard')">👤 vCard</button>
+                        <button class="tab-btn" onclick="switchContentType(event, 'bulk')">📊 Bulk</button>
                     </div>
                 </div>
 
@@ -82,6 +84,43 @@
                         <label for="vcardNotes">Notes:</label>
                         <textarea id="vcardNotes" placeholder="Additional information..." rows="2"
                             oninput="generateVCard()"></textarea>
+                    </div>
+                </div>
+
+                <div id="bulkContent" class="content-panel">
+                    <div class="control-group">
+                        <label for="bulkData">Bulk Data (One item per line):</label>
+                        <textarea id="bulkData" rows="10" 
+                            placeholder="Paste your data here (one item per line):
+Example 1
+https://example.com
+Product ABC
+https://website.com/product
+
+Or paste from Excel (tab/comma separated):
+Name	URL
+Product1	https://site.com/p1
+Product2	https://site.com/p2"
+                            oninput="updateBulkPreview()"></textarea>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px;">
+                            💡 Tip: Copy data from Excel and paste here. Each row will create a separate QR code.
+                        </p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label style="margin: 0;">Preview:</label>
+                            <span id="bulkCount" style="font-weight: bold; color: var(--accent);">0 QR codes</span>
+                        </div>
+                        <div id="bulkPreview" style="max-height: 150px; overflow-y: auto; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: var(--bg-primary); font-size: 0.9rem;">
+                            <p style="color: var(--text-secondary); text-align: center;">Paste data to preview...</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <button class="btn btn-primary" onclick="generateBulkQR()" style="width: 100%;">
+                            📦 Generate & Download All QR Codes (ZIP)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -147,9 +186,9 @@
                         <div class="border-size">
                             <label>Size (px):</label>
                             <div class="size-input">
-                                <input type="range" id="borderSize" min="0" max="50" value="0"
+                                <input type="range" id="borderSize" min="0" max="100" value="0"
                                     oninput="updateBorderDisplay(); generateQR()">
-                                <input type="number" id="borderSizeInput" min="0" max="50" value="0"
+                                <input type="number" id="borderSizeInput" min="0" max="100" value="0"
                                     oninput="syncBorderSize(); generateQR()">
                             </div>
                         </div>
@@ -184,6 +223,15 @@
                                     <label for="headerText">Text:</label>
                                     <input type="text" id="headerText" placeholder="My QR Code"
                                         value="My QR Code" oninput="generateQR()">
+                                </div>
+                            </div>
+                            
+                            <div class="text-section-row" id="headerBulkOption" style="display: none;">
+                                <div class="text-section-col" style="grid-column: span 2;">
+                                    <label class="text-section-toggle">
+                                        <input type="checkbox" id="headerUseBulkData" onchange="toggleBulkDataOption('header')">
+                                        📊 Use Text Data (Bulk Mode: Shows each QR's content as header)
+                                    </label>
                                 </div>
                             </div>
 
@@ -259,6 +307,15 @@
                                     <label for="footerText">Text:</label>
                                     <input type="text" id="footerText" placeholder="example.com"
                                         value="example.com" oninput="generateQR()">
+                                </div>
+                            </div>
+                            
+                            <div class="text-section-row" id="footerBulkOption" style="display: none;">
+                                <div class="text-section-col" style="grid-column: span 2;">
+                                    <label class="text-section-toggle">
+                                        <input type="checkbox" id="footerUseBulkData" onchange="toggleBulkDataOption('footer')">
+                                        📊 Use Text Data (Bulk Mode: Shows each QR's content as footer)
+                                    </label>
                                 </div>
                             </div>
 
@@ -362,7 +419,7 @@
         </div>
     </div>
     <footer>
-        <p style="text-align:center;"> <a href="https://danielamani.com" target="_self">Back to Home</a> | API Doc | Version 0.1.5b August 2025</p>
+        <p style="text-align:center;"> <a href="https://danielamani.com" target="_self">Back to Home</a> | API Doc | Version 0.1.7b January 2026</p>
         </br>
     </footer>
     <script src="scripts.js"></script>
