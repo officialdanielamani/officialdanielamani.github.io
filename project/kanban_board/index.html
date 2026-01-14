@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanban Board</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,6 +14,7 @@
         <header class="header">
             <div class="header-left">
                 <h1>Kanban Board</h1>
+                <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.2 January 2026</span>
             </div>
             <div class="header-right">
                 <button class="btn btn-icon" id="btnAddProject" title="Add Project">
@@ -34,19 +37,37 @@
                         <circle cx="12" cy="12" r="3"/>
                         <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
                     </svg>
+                    <span>Settings</span>
+                </button>
+                <button class="btn btn-icon" id="btnInfo" title="Information">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span>Info</span>
                 </button>
             </div>
         </header>
 
-        <!-- Warning Banner -->
+        <!-- Warning Banners -->
+        <div class="overdue-banner" id="overdueBanner" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span id="overdueText">Tasks are overdue!</span>
+            <button class="btn-close-warning" id="closeOverdue">&times;</button>
+        </div>
         <div class="warning-banner" id="warningBanner" style="display: none;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
             <span id="warningText">Tasks approaching due date!</span>
-            <button class="btn-close" id="closeWarning">&times;</button>
+            <button class="btn-close-warning" id="closeWarning">&times;</button>
         </div>
 
         <!-- Kanban Board -->
@@ -87,6 +108,13 @@
                 <div class="column-cards" id="cards-done"></div>
             </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <a href="#" id="backToHome">Back to Home</a> | 
+            <span>Revision 0.1.2 January 2026</span> | 
+            <a href="#" id="showDocumentation">Documentation</a>
+        </footer>
     </div>
 
     <!-- Project Modal -->
@@ -139,21 +167,36 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="projectDueDate">Due Date</label>
-                        <input type="date" id="projectDueDate">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectStartDate">Start Date</label>
+                            <input type="date" id="projectStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectDueDate">Due Date</label>
+                            <input type="date" id="projectDueDate">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="projectDetails">Details (Markdown supported)</label>
-                        <textarea id="projectDetails" rows="4" placeholder="Enter project details..."></textarea>
+                        <div class="markdown-toggle-container">
+                            <button type="button" class="btn btn-sm btn-secondary markdown-toggle" id="projectMarkdownToggle">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Preview
+                            </button>
+                        </div>
+                        <textarea id="projectDetails" rows="5" placeholder="Enter project details..."></textarea>
+                        <div id="projectMarkdownPreview" class="markdown-preview" style="display: none;"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelProject">Cancel</button>
                 <button class="btn btn-danger" id="deleteProject" style="display: none;">Delete</button>
-                <button class="btn btn-accent" id="addTaskFromProject" style="display: none;">+ Add Task</button>
-                <button class="btn btn-primary" id="saveProject">Save Project</button>
+                <button class="btn btn-primary" id="saveProject">Save</button>
             </div>
         </div>
     </div>
@@ -179,12 +222,16 @@
                             <option value="">-- Select Project --</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="taskKeyPerson">Key Person</label>
+                        <select id="taskKeyPerson">
+                            <option value="">-- None --</option>
+                        </select>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="taskKeyPerson">Key Person</label>
-                            <select id="taskKeyPerson">
-                                <option value="">-- None --</option>
-                            </select>
+                            <label for="taskStartDate">Start Date</label>
+                            <input type="date" id="taskStartDate">
                         </div>
                         <div class="form-group">
                             <label for="taskDueDate">Due Date</label>
@@ -193,14 +240,24 @@
                     </div>
                     <div class="form-group">
                         <label for="taskDetails">Details (Markdown supported)</label>
-                        <textarea id="taskDetails" rows="4" placeholder="Enter task details..."></textarea>
+                        <div class="markdown-toggle-container">
+                            <button type="button" class="btn btn-sm btn-secondary markdown-toggle" id="taskMarkdownToggle">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Preview
+                            </button>
+                        </div>
+                        <textarea id="taskDetails" rows="5" placeholder="Enter task details..."></textarea>
+                        <div id="taskMarkdownPreview" class="markdown-preview" style="display: none;"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelTask">Cancel</button>
                 <button class="btn btn-danger" id="deleteTask" style="display: none;">Delete</button>
-                <button class="btn btn-primary" id="saveTask">Save Task</button>
+                <button class="btn btn-primary" id="saveTask">Save</button>
             </div>
         </div>
     </div>
@@ -224,6 +281,21 @@
                 <!-- General Tab -->
                 <div class="settings-panel active" id="panel-general">
                     <div class="form-group">
+                        <label for="docName">Document Name</label>
+                        <input type="text" id="docName" value="MyTasks" placeholder="MyTasks">
+                        <small>Name of this document</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="docAuthor">Author</label>
+                        <input type="text" id="docAuthor" value="Me" placeholder="Me">
+                        <small>Author of this document</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="docVersion">Version</label>
+                        <input type="text" id="docVersion" value="1.0" placeholder="1.0">
+                        <small>Document version number</small>
+                    </div>
+                    <div class="form-group">
                         <label for="warningDays">Warning Days Before Due Date</label>
                         <input type="number" id="warningDays" min="1" max="30" value="3">
                         <small>Show warning for tasks due within this many days</small>
@@ -232,6 +304,13 @@
                         <label for="autoDeleteDays">Auto-delete Completed Projects After (Days)</label>
                         <input type="number" id="autoDeleteDays" min="0" max="365" value="0">
                         <small>Set to 0 to disable. Projects with all tasks done will be deleted after this many days.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoMoveProject">
+                            <span>Auto-move project when all tasks done</span>
+                        </label>
+                        <small>When enabled: Project moves to "Done" when all tasks are completed (5/5). If a new task is added, project moves back to "Backlog".</small>
                     </div>
                     <div class="form-group">
                         <label for="themeSelect">Theme</label>
@@ -293,6 +372,15 @@
                 <!-- Data Tab -->
                 <div class="settings-panel" id="panel-data">
                     <div class="data-section">
+                        <h3>Storage Usage</h3>
+                        <div id="storageInfo" class="storage-info">
+                            <div class="storage-bar">
+                                <div class="storage-fill" id="storageFill"></div>
+                            </div>
+                            <p id="storageText" class="storage-text">Calculating...</p>
+                        </div>
+                    </div>
+                    <div class="data-section">
                         <h3>Export Data</h3>
                         <p>Download all your projects and tasks as a JSON file.</p>
                         <button class="btn btn-primary" id="exportData">Export Data</button>
@@ -329,6 +417,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="closeDetail">Close</button>
+                <button class="btn btn-accent" id="addTaskFromDetail" style="display: none;">Add Task</button>
                 <button class="btn btn-primary" id="editDetail">Edit</button>
             </div>
         </div>
@@ -354,6 +443,8 @@
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
-    <script src="app.js"></script>
+    <!-- Bootstrap JS (optional, for components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app-combined.js"></script>
 </body>
 </html>
