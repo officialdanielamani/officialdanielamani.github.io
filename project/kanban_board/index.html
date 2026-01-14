@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Kanban Board</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-icon" id="btnAddProject" title="Add Project">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    <span>Project</span>
+                </button>
+                <button class="btn btn-icon" id="btnAddTask" title="Add Task">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>Task</span>
+                </button>
+                <button class="btn btn-icon" id="btnSettings" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Warning Banner -->
+        <div class="warning-banner" id="warningBanner" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span id="warningText">Tasks approaching due date!</span>
+            <button class="btn-close" id="closeWarning">&times;</button>
+        </div>
+
+        <!-- Kanban Board -->
+        <main class="kanban-board">
+            <div class="kanban-column" data-status="backlog">
+                <div class="column-header">
+                    <h2>Backlog</h2>
+                    <span class="column-count" id="count-backlog">0</span>
+                </div>
+                <div class="column-cards" id="cards-backlog"></div>
+            </div>
+            <div class="kanban-column" data-status="not-started">
+                <div class="column-header">
+                    <h2>Not Started</h2>
+                    <span class="column-count" id="count-not-started">0</span>
+                </div>
+                <div class="column-cards" id="cards-not-started"></div>
+            </div>
+            <div class="kanban-column" data-status="in-progress">
+                <div class="column-header">
+                    <h2>In Progress</h2>
+                    <span class="column-count" id="count-in-progress">0</span>
+                </div>
+                <div class="column-cards" id="cards-in-progress"></div>
+            </div>
+            <div class="kanban-column" data-status="testing">
+                <div class="column-header">
+                    <h2>Testing</h2>
+                    <span class="column-count" id="count-testing">0</span>
+                </div>
+                <div class="column-cards" id="cards-testing"></div>
+            </div>
+            <div class="kanban-column" data-status="done">
+                <div class="column-header">
+                    <h2>Done</h2>
+                    <span class="column-count" id="count-done">0</span>
+                </div>
+                <div class="column-cards" id="cards-done"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal" id="projectModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="projectModalTitle">New Project</h2>
+                <button class="btn-close" id="closeProjectModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="projectForm">
+                    <input type="hidden" id="projectId">
+                    <div class="form-group">
+                        <label for="projectTitle">Title *</label>
+                        <input type="text" id="projectTitle" required placeholder="Enter project title">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectPriority">Priority *</label>
+                            <select id="projectPriority" required>
+                                <option value="1">Low</option>
+                                <option value="2">Medium</option>
+                                <option value="3">High</option>
+                                <option value="4">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectStatus">Status *</label>
+                            <select id="projectStatus" required>
+                                <option value="backlog">Backlog</option>
+                                <option value="not-started">Not Started</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="testing">Testing</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectCategory">Category</label>
+                            <select id="projectCategory">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectKeyPerson">Key Person</label>
+                            <select id="projectKeyPerson">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDueDate">Due Date</label>
+                        <input type="date" id="projectDueDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDetails">Details (Markdown supported)</label>
+                        <textarea id="projectDetails" rows="4" placeholder="Enter project details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelProject">Cancel</button>
+                <button class="btn btn-danger" id="deleteProject" style="display: none;">Delete</button>
+                <button class="btn btn-accent" id="addTaskFromProject" style="display: none;">+ Add Task</button>
+                <button class="btn btn-primary" id="saveProject">Save Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="taskModalTitle">New Task</h2>
+                <button class="btn-close" id="closeTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <input type="hidden" id="taskId">
+                    <div class="form-group">
+                        <label for="taskTitle">Title *</label>
+                        <input type="text" id="taskTitle" required placeholder="Enter task title">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskProject">Project *</label>
+                        <select id="taskProject" required>
+                            <option value="">-- Select Project --</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskKeyPerson">Key Person</label>
+                            <select id="taskKeyPerson">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDueDate">Due Date</label>
+                            <input type="date" id="taskDueDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDetails">Details (Markdown supported)</label>
+                        <textarea id="taskDetails" rows="4" placeholder="Enter task details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTask">Cancel</button>
+                <button class="btn btn-danger" id="deleteTask" style="display: none;">Delete</button>
+                <button class="btn btn-primary" id="saveTask">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="btn-close" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="general">General</button>
+                    <button class="settings-tab" data-tab="categories">Categories</button>
+                    <button class="settings-tab" data-tab="keypersons">Key Persons</button>
+                    <button class="settings-tab" data-tab="data">Data</button>
+                </div>
+                
+                <!-- General Tab -->
+                <div class="settings-panel active" id="panel-general">
+                    <div class="form-group">
+                        <label for="warningDays">Warning Days Before Due Date</label>
+                        <input type="number" id="warningDays" min="1" max="30" value="3">
+                        <small>Show warning for tasks due within this many days</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="autoDeleteDays">Auto-delete Completed Projects After (Days)</label>
+                        <input type="number" id="autoDeleteDays" min="0" max="365" value="0">
+                        <small>Set to 0 to disable. Projects with all tasks done will be deleted after this many days.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="themeSelect">Theme</label>
+                        <div class="theme-buttons">
+                            <button class="theme-btn" data-theme="light">Light</button>
+                            <button class="theme-btn active" data-theme="dark">Dark</button>
+                            <button class="theme-btn" data-theme="keqing">Keqing</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fontSelect">Font</label>
+                        <div class="font-buttons">
+                            <button class="font-btn active" data-font="default">Default</button>
+                            <button class="font-btn" data-font="consolas">Consolas</button>
+                            <button class="font-btn" data-font="dyslexic">OpenDyslexic</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Categories Tab -->
+                <div class="settings-panel" id="panel-categories">
+                    <div class="manager-section">
+                        <div class="manager-input-row">
+                            <input type="text" id="newCategory" placeholder="New category name">
+                        </div>
+                        <div class="manager-input-row">
+                            <label>Color:</label>
+                            <div class="color-palette" id="categoryColorPalette">
+                                <button type="button" class="color-swatch active" data-color="#6b7280" style="background:#6b7280" title="Gray"></button>
+                                <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+                                <button type="button" class="color-swatch" data-color="#f97316" style="background:#f97316" title="Orange"></button>
+                                <button type="button" class="color-swatch" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
+                                <button type="button" class="color-swatch" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
+                                <button type="button" class="color-swatch" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+                                <button type="button" class="color-swatch" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
+                                <button type="button" class="color-swatch" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+                                <button type="button" class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+                                <button type="button" class="color-swatch" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
+                                <button type="button" class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+                                <button type="button" class="color-swatch" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="addCategory">Add</button>
+                        </div>
+                        <ul class="manager-list" id="categoryList"></ul>
+                    </div>
+                </div>
+                
+                <!-- Key Persons Tab -->
+                <div class="settings-panel" id="panel-keypersons">
+                    <div class="manager-section">
+                        <div class="manager-input">
+                            <input type="text" id="newKeyPerson" placeholder="New key person name">
+                            <button class="btn btn-primary btn-sm" id="addKeyPerson">Add</button>
+                        </div>
+                        <ul class="manager-list" id="keyPersonList"></ul>
+                    </div>
+                </div>
+                
+                <!-- Data Tab -->
+                <div class="settings-panel" id="panel-data">
+                    <div class="data-section">
+                        <h3>Export Data</h3>
+                        <p>Download all your projects and tasks as a JSON file.</p>
+                        <button class="btn btn-primary" id="exportData">Export Data</button>
+                    </div>
+                    <div class="data-section">
+                        <h3>Import Data</h3>
+                        <p>Import projects and tasks from a JSON file. This will merge with existing data.</p>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" id="importData">Import Data</button>
+                    </div>
+                    <div class="data-section data-danger">
+                        <h3>Clear All Data</h3>
+                        <p>This will permanently delete all projects, tasks, categories, and key persons.</p>
+                        <button class="btn btn-danger" id="clearAllData">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="closeSettings">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail View Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailTitle">Details</h2>
+                <button class="btn-close" id="closeDetailModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-content" id="detailContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeDetail">Close</button>
+                <button class="btn btn-primary" id="editDetail">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm</h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmOk">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
