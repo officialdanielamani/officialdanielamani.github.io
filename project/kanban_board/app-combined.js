@@ -2185,8 +2185,8 @@ function renderColumnList() {
                     </div>
                 ` : '<div style="width: 20px;"></div>'}
                 <span class="column-name">${escapeHtml(col.name)}</span>
-                ${isFirst ? '<span class="column-badge">First (Start)</span>' : ''}
-                ${isLast ? '<span class="column-badge">Last (End)</span>' : ''}
+                ${isFirst ? '<span class="column-badge">First (Backlog)</span>' : ''}
+                ${isLast ? '<span class="column-badge">Last (Done)</span>' : ''}
                 ${usageCount > 0 ? `<small style="color: var(--text-muted); margin-left: 8px;">(${usageCount} project${usageCount > 1 ? 's' : ''})</small>` : ''}
             </div>
             <div class="column-actions">
@@ -2403,3 +2403,252 @@ function updateStatusDropdowns() {
         }
     });
 }
+
+// ============================================
+// Sync Module - GitHub Gist Backend
+// ============================================
+
+const SYNC_STORAGE_KEY = 'kanban_sync_config';
+
+function getSyncConfig() {
+    try { return JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY)) || {}; } 
+    catch(e) { return {}; }
+}
+
+function saveSyncConfig(config) {
+    localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(config));
+}
+
+function getAllKanbanData() {
+    return {
+        projects: getProjects(),
+        tasks: getTasks(),
+        categories: getCategories(),
+        keyPersons: getKeyPersons(),
+        settings: getSettings(),
+        columns: getColumns(),
+        syncTimestamp: new Date().toISOString()
+    };
+}
+
+function setAllKanbanData(data) {
+    if (data.projects) saveProjects(data.projects);
+    if (data.tasks) saveTasks(data.tasks);
+    if (data.categories) saveCategories(data.categories);
+    if (data.keyPersons) saveKeyPersons(data.keyPersons);
+    if (data.settings) saveSettings(data.settings);
+    if (data.columns) saveColumns(data.columns);
+}
+
+async function gistRequest(method, gistId, token, content = null) {
+    // Check if running from file:// protocol
+    if (window.location.protocol === 'file:') {
+        throw new Error('Sync requires HTTP server. Run: npx serve or python -m http.server');
+    }
+    
+    const url = `https://api.github.com/gists/${gistId}`;
+    const options = {
+        method: method,
+        headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+        }
+    };
+    
+    if (content !== null) {
+        options.body = JSON.stringify({
+            files: {
+                'kanban-sync.json': {
+                    content: JSON.stringify(content, null, 2)
+                }
+            }
+        });
+    }
+    
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `HTTP ${response.status}`);
+    }
+    return response.json();
+}
+
+async function testSyncConnection(gistId, token) {
+    try {
+        const gist = await gistRequest('GET', gistId, token);
+        if (!gist.files['kanban-sync.json']) {
+            throw new Error('Gist must contain a file named "kanban-sync.json"');
+        }
+        return { success: true, owner: gist.owner?.login || 'unknown' };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+async function pushToGist(gistId, token) {
+    const data = getAllKanbanData();
+    await gistRequest('PATCH', gistId, token, data);
+    const config = getSyncConfig();
+    config.lastSync = new Date().toISOString();
+    config.lastAction = 'push';
+    saveSyncConfig(config);
+    return data.syncTimestamp;
+}
+
+async function pullFromGist(gistId, token) {
+    const gist = await gistRequest('GET', gistId, token);
+    const file = gist.files['kanban-sync.json'];
+    if (!file || !file.content) {
+        throw new Error('No sync data found in Gist');
+    }
+    const data = JSON.parse(file.content);
+    if (!data.projects && !data.tasks) {
+        throw new Error('Invalid sync data format');
+    }
+    setAllKanbanData(data);
+    const config = getSyncConfig();
+    config.lastSync = new Date().toISOString();
+    config.lastAction = 'pull';
+    saveSyncConfig(config);
+    return data.syncTimestamp;
+}
+
+function initSyncUI() {
+    const config = getSyncConfig();
+    const gistIdInput = document.getElementById('syncGistId');
+    const tokenInput = document.getElementById('syncGistToken');
+    const actionsSection = document.getElementById('syncActionsSection');
+    const lastSyncEl = document.getElementById('lastSyncTime');
+    
+    if (gistIdInput && config.gistId) gistIdInput.value = config.gistId;
+    if (tokenInput && config.token) tokenInput.value = config.token;
+    
+    if (config.gistId && config.token) {
+        actionsSection.style.display = 'block';
+    }
+    
+    if (config.lastSync) {
+        lastSyncEl.textContent = `Last sync: ${new Date(config.lastSync).toLocaleString()} (${config.lastAction || 'unknown'})`;
+    }
+    
+    // Test Connection
+    document.getElementById('testSyncConnection')?.addEventListener('click', async () => {
+        const gistId = gistIdInput.value.trim();
+        const token = tokenInput.value.trim();
+        const statusEl = document.getElementById('syncStatus');
+        
+        if (!gistId || !token) {
+            statusEl.style.display = 'block';
+            statusEl.style.background = 'var(--danger)';
+            statusEl.style.color = 'white';
+            statusEl.textContent = '❌ Please enter both Gist ID and Token';
+            return;
+        }
+        
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'var(--bg-tertiary)';
+        statusEl.style.color = 'var(--text)';
+        statusEl.textContent = '⏳ Testing connection...';
+        
+        const result = await testSyncConnection(gistId, token);
+        
+        if (result.success) {
+            statusEl.style.background = 'var(--success)';
+            statusEl.style.color = 'white';
+            statusEl.textContent = `✅ Connected! Gist owner: ${result.owner}`;
+        } else {
+            statusEl.style.background = 'var(--danger)';
+            statusEl.style.color = 'white';
+            statusEl.textContent = `❌ Failed: ${result.error}`;
+        }
+    });
+    
+    // Save Settings
+    document.getElementById('saveSyncSettings')?.addEventListener('click', () => {
+        const gistId = gistIdInput.value.trim();
+        const token = tokenInput.value.trim();
+        
+        if (!gistId || !token) {
+            showToast('Please enter both Gist ID and Token', 'error');
+            return;
+        }
+        
+        saveSyncConfig({ ...config, gistId, token });
+        actionsSection.style.display = 'block';
+        showToast('Sync settings saved', 'success');
+    });
+    
+    // Push
+    document.getElementById('syncPush')?.addEventListener('click', async () => {
+        const cfg = getSyncConfig();
+        if (!cfg.gistId || !cfg.token) {
+            showToast('Please configure sync settings first', 'error');
+            return;
+        }
+        
+        try {
+            showToast('Pushing data...', 'info');
+            await pushToGist(cfg.gistId, cfg.token);
+            lastSyncEl.textContent = `Last sync: ${new Date().toLocaleString()} (push)`;
+            showToast('Data pushed successfully!', 'success');
+        } catch (error) {
+            showToast(`Push failed: ${error.message}`, 'error');
+        }
+    });
+    
+    // Pull
+    document.getElementById('syncPull')?.addEventListener('click', async () => {
+        const cfg = getSyncConfig();
+        if (!cfg.gistId || !cfg.token) {
+            showToast('Please configure sync settings first', 'error');
+            return;
+        }
+        
+        if (!confirm('This will overwrite your local data with cloud data. Continue?')) {
+            return;
+        }
+        
+        try {
+            showToast('Pulling data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token);
+            lastSyncEl.textContent = `Last sync: ${new Date().toLocaleString()} (pull)`;
+            showToast('Data pulled successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            showToast(`Pull failed: ${error.message}`, 'error');
+        }
+    });
+    
+    // Clear Sync Settings
+    document.getElementById('clearSyncSettings')?.addEventListener('click', () => {
+        if (confirm('Remove sync credentials from this device?')) {
+            localStorage.removeItem(SYNC_STORAGE_KEY);
+            gistIdInput.value = '';
+            tokenInput.value = '';
+            actionsSection.style.display = 'none';
+            lastSyncEl.textContent = 'Last sync: Never';
+            document.getElementById('syncStatus').style.display = 'none';
+            showToast('Sync settings cleared', 'success');
+        }
+    });
+}
+
+// Initialize sync UI when settings modal opens
+document.addEventListener('DOMContentLoaded', () => {
+    // Hook into settings button to init sync UI
+    const settingsBtn = document.getElementById('btnSettings');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            // Small delay to ensure modal is open
+            setTimeout(initSyncUI, 50);
+        });
+    }
+    
+    // Also init if settings tab is clicked directly
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('[data-tab="sync"]')) {
+            setTimeout(initSyncUI, 50);
+        }
+    });
+});

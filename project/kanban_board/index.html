@@ -14,7 +14,7 @@
         <header class="header">
             <div class="header-left">
                 <h1>Kanban Board</h1>
-                <span class="header-doc-info" id="headerDocInfo"></span>
+                <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.2 January 2026</span>
             </div>
             <div class="header-right">
                 <button class="btn btn-icon" id="btnAddProject" title="Add Project">
@@ -77,8 +77,8 @@
 
         <!-- Footer -->
         <footer class="app-footer">
-            <a href="https://danielamani.com" id="backToHome">Back to Home</a> | 
-            <span>Revision 0.1.3 January 2026</span> | 
+            <a href="#" id="backToHome">Back to Home</a> | 
+            <span>Revision 0.1.2 January 2026</span> | 
             <a href="#" id="showDocumentation">Documentation</a>
         </footer>
     </div>
@@ -250,6 +250,7 @@
                     <button class="settings-tab" data-tab="kanban">Kanban</button>
                     <button class="settings-tab" data-tab="categories">Categories</button>
                     <button class="settings-tab" data-tab="keypersons">Key Persons</button>
+                    <button class="settings-tab" data-tab="sync">Sync</button>
                     <button class="settings-tab" data-tab="data">Data</button>
                 </div>
                 
@@ -305,14 +306,14 @@
                             <input type="checkbox" id="autoMoveProject">
                             <span>Auto-move project when all tasks done</span>
                         </label>
-                        <small>When enabled: Project moves to "Done" when all tasks are completed. If a new task is added, project moves back to first column.</small>
+                        <small>When enabled: Project moves to "Done" when all tasks are completed (5/5). If a new task is added, project moves back to first column.</small>
                     </div>
                     
                     <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
                     
                     <div class="form-group">
                         <label>Kanban Columns (Min: 2, Max: 12)</label>
-                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Start", last column acts as "End".</small>
+                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Backlog", last column acts as "Done".</small>
                         <div class="manager-input">
                             <input type="text" id="newColumnName" placeholder="New column name" maxlength="32">
                             <button class="btn btn-primary btn-sm" id="addColumn">Add Column</button>
@@ -357,6 +358,67 @@
                             <button class="btn btn-primary btn-sm" id="addKeyPerson">Add</button>
                         </div>
                         <ul class="manager-list" id="keyPersonList"></ul>
+                    </div>
+                </div>
+                
+                <!-- Sync Tab -->
+                <div class="settings-panel" id="panel-sync">
+                    <div class="data-section">
+                        <h3>🔄 Cross-Device Sync via GitHub Gist</h3>
+                        <p style="margin-bottom:12px;color:var(--text-secondary);">Sync your Kanban data across devices using your own GitHub Gist. No server needed - your data stays in your GitHub account.</p>
+                        
+                        <div class="sync-setup-guide" style="background:var(--bg-secondary);padding:16px;border-radius:8px;margin-bottom:20px;">
+                            <strong style="display:block;margin-bottom:8px;">Setup Instructions:</strong>
+                            <ol style="margin:0;padding-left:20px;line-height:1.8;">
+                                <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent);">GitHub Token Settings</a></li>
+                                <li>Create token with <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">gist</code> scope only</li>
+                                <li>Go to <a href="https://gist.github.com" target="_blank" style="color:var(--accent);">gist.github.com</a> and create a <strong>Secret</strong> gist</li>
+                                <li>Name file <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">kanban-sync.json</code> with content <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">{}</code></li>
+                                <li>Copy the Gist ID from URL (e.g., <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">gist.github.com/you/<strong>abc123</strong></code>)</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="syncGistId">Gist ID</label>
+                            <input type="text" id="syncGistId" placeholder="e.g., abc123def456789...">
+                        </div>
+                        <div class="form-group">
+                            <label for="syncGistToken">GitHub Personal Access Token</label>
+                            <input type="password" id="syncGistToken" placeholder="ghp_xxxxxxxxxxxx">
+                            <small>Token is stored locally and never sent anywhere except GitHub API</small>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-secondary" id="testSyncConnection" style="margin-right:8px;">Test Connection</button>
+                            <button class="btn btn-primary" id="saveSyncSettings">Save Settings</button>
+                        </div>
+                        <div id="syncStatus" style="margin-top:12px;padding:10px;border-radius:6px;display:none;"></div>
+                    </div>
+                    
+                    <div class="data-section" id="syncActionsSection" style="display:none;">
+                        <h3>Sync Actions</h3>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                            <button class="btn btn-primary" id="syncPush">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
+                                    <path d="M12 19V5M5 12l7-7 7 7"/>
+                                </svg>
+                                Push to Cloud
+                            </button>
+                            <button class="btn btn-secondary" id="syncPull">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
+                                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                                </svg>
+                                Pull from Cloud
+                            </button>
+                        </div>
+                        <div id="syncInfo" style="color:var(--text-secondary);font-size:0.9em;">
+                            <p id="lastSyncTime">Last sync: Never</p>
+                        </div>
+                    </div>
+                    
+                    <div class="data-section data-danger">
+                        <h3>Clear Sync Settings</h3>
+                        <p>Remove stored Gist credentials from this device.</p>
+                        <button class="btn btn-danger" id="clearSyncSettings">Clear Sync Settings</button>
                     </div>
                 </div>
                 

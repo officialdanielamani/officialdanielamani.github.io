@@ -1923,3 +1923,40 @@ body {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+/* Sync Panel Styles */
+.sync-setup-guide ol li {
+    color: var(--text-secondary);
+}
+
+.sync-setup-guide a {
+    text-decoration: underline;
+}
+
+.sync-setup-guide code {
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+#syncStatus {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#syncActionsSection .btn svg {
+    display: inline-block;
+}
+
+#panel-sync .form-group input {
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+#panel-sync .data-section {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+#panel-sync .data-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
