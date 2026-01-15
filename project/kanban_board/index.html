@@ -17,6 +17,14 @@
                 <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.2 January 2026</span>
             </div>
             <div class="header-right">
+                <button class="btn btn-icon" id="btnManualSave" title="Save">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    <span>Save</span>
+                </button>
                 <button class="btn btn-icon" id="btnAddProject" title="Add Project">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -386,6 +394,17 @@
                             <label for="syncGistToken">GitHub Personal Access Token</label>
                             <input type="password" id="syncGistToken" placeholder="ghp_xxxxxxxxxxxx">
                             <small>Token is stored locally and never sent anywhere except GitHub API</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="autoSaveInterval">Auto Save Interval</label>
+                            <select id="autoSaveInterval">
+                                <option value="0">Disabled</option>
+                                <option value="1">1 minute</option>
+                                <option value="5">5 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                            </select>
+                            <small>Automatically sync to GitHub Gist at selected interval (0 = disabled)</small>
                         </div>
                         <div class="form-group">
                             <button class="btn btn-secondary" id="testSyncConnection" style="margin-right:8px;">Test Connection</button>

@@ -366,20 +366,13 @@ function validateDates(startDate, dueDate) {
 // ============================================
 
 // Default initial data
-const DEFAULT_DATA = {
-    categories: [
-        { name: 'Work', color: '#3b82f6' },
-        { name: 'Personal', color: '#ec4899' },
-        { name: 'Other', color: '#6b7280' }
-    ],
-    keyPersons: ['Boss'],
-    projects: [],
-    tasks: [],
-    columns: DEFAULT_COLUMNS
-};
+let selectedCategoryColor = DEFAULT_CATEGORY_COLOR;
+let confirmCallback = null;
+let currentDetailType = null;
+let currentDetailId = null;
 
 // Initialize default data if needed
-function initializeDefaultData() {
+async function initializeDefaultData() {
     // Check if this is first time or after clear
     const hasData = localStorage.getItem(STORAGE_KEYS.CATEGORIES) || 
                     localStorage.getItem(STORAGE_KEYS.KEY_PERSONS) ||
@@ -387,13 +380,43 @@ function initializeDefaultData() {
                     localStorage.getItem(STORAGE_KEYS.TASKS) ||
                     localStorage.getItem(STORAGE_KEYS.COLUMNS);
     
+    console.log('Initializing data, hasData:', !!hasData);
+    
     if (!hasData) {
-        saveCategories(DEFAULT_DATA.categories);
-        saveKeyPersons(DEFAULT_DATA.keyPersons);
-        saveProjects(DEFAULT_DATA.projects);
-        saveTasks(DEFAULT_DATA.tasks);
-        saveColumns(DEFAULT_DATA.columns);
+        console.log('No data found, loading base.json...');
+        try {
+            const response = await fetch('base.json');
+            console.log('base.json fetch response:', response.status, response.ok);
+            if (response.ok) {
+                const baseData = await response.json();
+                console.log('Loaded base.json:', baseData);
+                if (baseData.categories) saveCategories(baseData.categories);
+                if (baseData.keyPersons) saveKeyPersons(baseData.keyPersons);
+                if (baseData.projects) saveProjects(baseData.projects);
+                if (baseData.tasks) saveTasks(baseData.tasks);
+                if (baseData.columns) saveColumns(baseData.columns);
+                else saveColumns(DEFAULT_COLUMNS);
+                console.log('Successfully loaded default data from base.json');
+            } else {
+                // Fallback to minimal defaults if base.json not found
+                console.warn('base.json not found (status ' + response.status + '), using empty defaults');
+                saveCategories([]);
+                saveKeyPersons([]);
+                saveProjects([]);
+                saveTasks([]);
+                saveColumns(DEFAULT_COLUMNS);
+            }
+        } catch (error) {
+            // Fallback to minimal defaults on error
+            console.error('Failed to load base.json:', error);
+            saveCategories([]);
+            saveKeyPersons([]);
+            saveProjects([]);
+            saveTasks([]);
+            saveColumns(DEFAULT_COLUMNS);
+        }
     } else {
+        console.log('Existing data found, skipping base.json load');
         // Ensure data arrays exist even if empty
         if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
             saveCategories([]);
@@ -406,11 +429,6 @@ function initializeDefaultData() {
         }
     }
 }
-
-let selectedCategoryColor = DEFAULT_CATEGORY_COLOR;
-let confirmCallback = null;
-let currentDetailType = null;
-let currentDetailId = null;
 
 // Theme & Font
 function applyTheme(theme) {
@@ -2082,15 +2100,31 @@ function updateHeaderInfo() {
     const settings = getSettings();
     const headerInfo = document.getElementById('headerDocInfo');
     if (headerInfo) {
-        const lastSave = localStorage.getItem('kanban_lastSave');
-        const lastSaveText = lastSave ? new Date(lastSave).toLocaleString('en-GB', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        }) : 'Never';
-        headerInfo.textContent = `${settings.docName} | v${settings.docVersion} | Last Save: ${lastSaveText}`;
+        const syncCfg = getSyncConfig();
+        const isGitHubConfigured = syncCfg.gistId && syncCfg.token;
+        
+        if (isGitHubConfigured && syncCfg.lastSync) {
+            // Show Last Sync with GitHub sync timestamp
+            const lastSyncText = new Date(syncCfg.lastSync).toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            headerInfo.textContent = `${settings.docName} | v${settings.docVersion} | Last Sync: ${lastSyncText}`;
+        } else {
+            // Show Last Save with localStorage timestamp
+            const lastSave = localStorage.getItem('kanban_lastSave');
+            const lastSaveText = lastSave ? new Date(lastSave).toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }) : 'Never';
+            headerInfo.textContent = `${settings.docName} | v${settings.docVersion} | Last Save: ${lastSaveText}`;
+        }
     }
 }
 
@@ -2101,9 +2135,9 @@ function updateLastSave() {
 }
 
 // Initialize Application
-function init() {
+async function init() {
     // Initialize default data on first run
-    initializeDefaultData();
+    await initializeDefaultData();
     
     // Load settings
     const s = getSettings();
@@ -2140,7 +2174,12 @@ function init() {
 // Migrate single keyPerson to keyPersons array
 
 // Start application when DOM is ready
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init().catch(error => {
+        console.error('Initialization error:', error);
+        showToast('Failed to initialize app', 'error');
+    });
+});
 
 // Column Management
 let editingColumnIndex = null;
@@ -2409,6 +2448,7 @@ function updateStatusDropdowns() {
 // ============================================
 
 const SYNC_STORAGE_KEY = 'kanban_sync_config';
+let autoSaveIntervalId = null;
 
 function getSyncConfig() {
     try { return JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY)) || {}; } 
@@ -2496,6 +2536,89 @@ async function pushToGist(gistId, token) {
     return data.syncTimestamp;
 }
 
+async function autoSaveToGist() {
+    const cfg = getSyncConfig();
+    if (!cfg.gistId || !cfg.token || !cfg.autoSaveInterval || cfg.autoSaveInterval === 0) {
+        return;
+    }
+    
+    try {
+        await pushToGist(cfg.gistId, cfg.token);
+        console.log('Auto-save successful');
+    } catch (error) {
+        console.error('Auto-save failed:', error);
+        showWarningBanner(`Auto-save failed: ${error.message}`, 'warning');
+    }
+}
+
+function startAutoSave() {
+    stopAutoSave();
+    const cfg = getSyncConfig();
+    if (cfg.autoSaveInterval && cfg.autoSaveInterval > 0) {
+        const intervalMs = cfg.autoSaveInterval * 60 * 1000;
+        autoSaveIntervalId = setInterval(autoSaveToGist, intervalMs);
+        console.log(`Auto-save started: every ${cfg.autoSaveInterval} minutes`);
+    }
+}
+
+function stopAutoSave() {
+    if (autoSaveIntervalId) {
+        clearInterval(autoSaveIntervalId);
+        autoSaveIntervalId = null;
+        console.log('Auto-save stopped');
+    }
+}
+
+function showWarningBanner(message, type = 'warning') {
+    const banner = document.getElementById('warningBanner');
+    const text = document.getElementById('warningText');
+    if (banner && text) {
+        text.textContent = message;
+        banner.style.display = 'flex';
+        banner.className = type === 'error' ? 'overdue-banner' : 'warning-banner';
+    }
+}
+
+async function manualSave() {
+    const cfg = getSyncConfig();
+    
+    try {
+        // Save to localStorage
+        saveData(STORAGE_KEYS.PROJECTS, getProjects());
+        saveData(STORAGE_KEYS.TASKS, getTasks());
+        
+        // If GitHub configured, sync to cloud
+        if (cfg.gistId && cfg.token) {
+            showToast('Saving to cloud...', 'info');
+            await pushToGist(cfg.gistId, cfg.token);
+            showToast('Saved successfully!', 'success');
+            updateLastSyncDisplay();
+        } else {
+            showToast('Saved locally', 'success');
+        }
+    } catch (error) {
+        console.error('Save failed:', error);
+        if (error.message.includes('HTTP')) {
+            showWarningBanner('Connection Issue: Unable to sync to GitHub', 'error');
+            showToast('Saved locally, cloud sync failed', 'warning');
+        } else if (error.message.includes('Gist')) {
+            showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            showToast('Saved locally, cloud sync failed', 'warning');
+        } else {
+            showWarningBanner('Save error: ' + error.message, 'error');
+            showToast('Save failed', 'error');
+        }
+    }
+}
+
+function updateLastSyncDisplay() {
+    const cfg = getSyncConfig();
+    const lastSyncEl = document.getElementById('lastSyncTime');
+    if (lastSyncEl && cfg.lastSync) {
+        lastSyncEl.textContent = `Last sync: ${new Date(cfg.lastSync).toLocaleString()} (${cfg.lastAction || 'unknown'})`;
+    }
+}
+
 async function pullFromGist(gistId, token) {
     const gist = await gistRequest('GET', gistId, token);
     const file = gist.files['kanban-sync.json'];
@@ -2518,11 +2641,15 @@ function initSyncUI() {
     const config = getSyncConfig();
     const gistIdInput = document.getElementById('syncGistId');
     const tokenInput = document.getElementById('syncGistToken');
+    const autoSaveSelect = document.getElementById('autoSaveInterval');
     const actionsSection = document.getElementById('syncActionsSection');
     const lastSyncEl = document.getElementById('lastSyncTime');
     
     if (gistIdInput && config.gistId) gistIdInput.value = config.gistId;
     if (tokenInput && config.token) tokenInput.value = config.token;
+    if (autoSaveSelect && config.autoSaveInterval !== undefined) {
+        autoSaveSelect.value = config.autoSaveInterval || 0;
+    }
     
     if (config.gistId && config.token) {
         actionsSection.style.display = 'block';
@@ -2568,15 +2695,24 @@ function initSyncUI() {
     document.getElementById('saveSyncSettings')?.addEventListener('click', () => {
         const gistId = gistIdInput.value.trim();
         const token = tokenInput.value.trim();
+        const autoSaveInterval = parseInt(autoSaveSelect.value);
         
         if (!gistId || !token) {
             showToast('Please enter both Gist ID and Token', 'error');
             return;
         }
         
-        saveSyncConfig({ ...config, gistId, token });
+        saveSyncConfig({ ...config, gistId, token, autoSaveInterval });
         actionsSection.style.display = 'block';
-        showToast('Sync settings saved', 'success');
+        
+        // Restart auto-save with new interval
+        startAutoSave();
+        
+        if (autoSaveInterval > 0) {
+            showToast(`Sync settings saved. Auto-save every ${autoSaveInterval} min`, 'success');
+        } else {
+            showToast('Sync settings saved. Auto-save disabled', 'success');
+        }
     });
     
     // Push
@@ -2593,6 +2729,11 @@ function initSyncUI() {
             lastSyncEl.textContent = `Last sync: ${new Date().toLocaleString()} (push)`;
             showToast('Data pushed successfully!', 'success');
         } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync to GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
             showToast(`Push failed: ${error.message}`, 'error');
         }
     });
@@ -2616,6 +2757,11 @@ function initSyncUI() {
             showToast('Data pulled successfully! Refreshing...', 'success');
             setTimeout(() => location.reload(), 1000);
         } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
             showToast(`Pull failed: ${error.message}`, 'error');
         }
     });
@@ -2636,6 +2782,15 @@ function initSyncUI() {
 
 // Initialize sync UI when settings modal opens
 document.addEventListener('DOMContentLoaded', () => {
+    // Start auto-save if configured
+    startAutoSave();
+    
+    // Hook manual save button
+    const manualSaveBtn = document.getElementById('btnManualSave');
+    if (manualSaveBtn) {
+        manualSaveBtn.addEventListener('click', manualSave);
+    }
+    
     // Hook into settings button to init sync UI
     const settingsBtn = document.getElementById('btnSettings');
     if (settingsBtn) {
