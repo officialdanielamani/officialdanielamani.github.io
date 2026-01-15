@@ -2423,7 +2423,7 @@ function renderColumnList() {
                     ${col.icon ? `<i class="${col.icon}" style="font-size: 12px; color: white;"></i>` : ''}
                 </div>
                 <span class="column-name">${escapeHtml(col.name)}</span>
-                ${isFirst ? '<span class="column-badge">First (Start)</span>' : ''}
+                ${isFirst ? '<span class="column-badge">First (Backlog)</span>' : ''}
                 ${isLast ? '<span class="column-badge">Last (Done)</span>' : ''}
                 ${usageCount > 0 ? `<small style="color: var(--text-muted); margin-left: 8px;">(${usageCount} project${usageCount > 1 ? 's' : ''})</small>` : ''}
             </div>
@@ -3073,9 +3073,12 @@ function initSyncUI() {
             localStorage.removeItem(SYNC_STORAGE_KEY);
             gistIdInput.value = '';
             tokenInput.value = '';
+            if (fileNameInput) fileNameInput.value = 'kanban-sync.json';
             actionsSection.style.display = 'none';
-            lastSyncEl.textContent = 'Last sync: Never';
+            const lastSyncEl = document.getElementById('lastSyncTime');
+            if (lastSyncEl) lastSyncEl.textContent = 'Last sync: Never';
             document.getElementById('syncStatus').style.display = 'none';
+            updateHeaderInfo();
             showToast('Sync settings cleared', 'success');
         }
     });
