@@ -2575,8 +2575,9 @@ async function autoSaveToGist() {
         await pushToGist(cfg.gistId, cfg.token);
         console.log('Auto-save successful');
         
-        // Update header info after successful sync
+        // Update both header and settings displays
         updateHeaderInfo();
+        updateLastSyncDisplay();
     } catch (error) {
         console.error('Auto-save failed:', error);
         showWarningBanner(`Auto-save failed: ${error.message}`, 'warning');
@@ -2694,7 +2695,6 @@ function initSyncUI() {
     const tokenInput = document.getElementById('syncGistToken');
     const autoSaveSelect = document.getElementById('autoSaveInterval');
     const actionsSection = document.getElementById('syncActionsSection');
-    const lastSyncEl = document.getElementById('lastSyncTime');
     
     if (gistIdInput && config.gistId) gistIdInput.value = config.gistId;
     if (tokenInput && config.token) tokenInput.value = config.token;
@@ -2706,9 +2706,8 @@ function initSyncUI() {
         actionsSection.style.display = 'block';
     }
     
-    if (config.lastSync) {
-        lastSyncEl.textContent = `Last sync: ${new Date(config.lastSync).toLocaleString()} (${config.lastAction || 'unknown'})`;
-    }
+    // Update sync display
+    updateLastSyncDisplay();
     
     // Test Connection
     document.getElementById('testSyncConnection')?.addEventListener('click', async () => {
