@@ -1960,3 +1960,18 @@ body {
     border-bottom: none;
     margin-bottom: 0;
 }
+
+/* Auto-sync flash animation */
+@keyframes flashGreen {
+    0%, 100% {
+        background: transparent;
+    }
+    50% {
+        background: var(--success);
+        color: white;
+    }
+}
+
+.btn.flash-green {
+    animation: flashGreen 1s ease-in-out 5;
+}

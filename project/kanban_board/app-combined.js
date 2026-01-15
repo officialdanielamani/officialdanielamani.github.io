@@ -2449,6 +2449,19 @@ function updateStatusDropdowns() {
 
 const SYNC_STORAGE_KEY = 'kanban_sync_config';
 let autoSaveIntervalId = null;
+let lastSyncedDataHash = null;
+
+// Simple hash function for data comparison
+function hashData(data) {
+    const str = JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(36);
+}
 
 function getSyncConfig() {
     try { return JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY)) || {}; } 
@@ -2533,6 +2546,10 @@ async function pushToGist(gistId, token) {
     config.lastSync = new Date().toISOString();
     config.lastAction = 'push';
     saveSyncConfig(config);
+    
+    // Store hash of synced data
+    lastSyncedDataHash = hashData(data);
+    
     return data.syncTimestamp;
 }
 
@@ -2542,13 +2559,38 @@ async function autoSaveToGist() {
         return;
     }
     
+    // Check if data has changed
+    const currentData = getAllKanbanData();
+    const currentHash = hashData(currentData);
+    
+    if (lastSyncedDataHash === currentHash) {
+        console.log('Auto-save skipped: no changes detected');
+        return;
+    }
+    
     try {
+        // Flash save button green
+        flashSaveButton();
+        
         await pushToGist(cfg.gistId, cfg.token);
         console.log('Auto-save successful');
+        
+        // Update header info after successful sync
+        updateHeaderInfo();
     } catch (error) {
         console.error('Auto-save failed:', error);
         showWarningBanner(`Auto-save failed: ${error.message}`, 'warning');
     }
+}
+
+function flashSaveButton() {
+    const btn = document.getElementById('btnManualSave');
+    if (!btn) return;
+    
+    btn.classList.add('flash-green');
+    setTimeout(() => {
+        btn.classList.remove('flash-green');
+    }, 5000);
 }
 
 function startAutoSave() {
@@ -2615,7 +2657,16 @@ function updateLastSyncDisplay() {
     const cfg = getSyncConfig();
     const lastSyncEl = document.getElementById('lastSyncTime');
     if (lastSyncEl && cfg.lastSync) {
-        lastSyncEl.textContent = `Last sync: ${new Date(cfg.lastSync).toLocaleString()} (${cfg.lastAction || 'unknown'})`;
+        const syncDate = new Date(cfg.lastSync);
+        const formattedTime = syncDate.toLocaleString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        lastSyncEl.textContent = `Last sync: ${formattedTime} (${cfg.lastAction || 'unknown'})`;
     }
 }
 
@@ -2726,7 +2777,8 @@ function initSyncUI() {
         try {
             showToast('Pushing data...', 'info');
             await pushToGist(cfg.gistId, cfg.token);
-            lastSyncEl.textContent = `Last sync: ${new Date().toLocaleString()} (push)`;
+            updateLastSyncDisplay();
+            updateHeaderInfo();
             showToast('Data pushed successfully!', 'success');
         } catch (error) {
             if (error.message.includes('HTTP')) {
@@ -2753,7 +2805,7 @@ function initSyncUI() {
         try {
             showToast('Pulling data...', 'info');
             await pullFromGist(cfg.gistId, cfg.token);
-            lastSyncEl.textContent = `Last sync: ${new Date().toLocaleString()} (pull)`;
+            updateLastSyncDisplay();
             showToast('Data pulled successfully! Refreshing...', 'success');
             setTimeout(() => location.reload(), 1000);
         } catch (error) {
