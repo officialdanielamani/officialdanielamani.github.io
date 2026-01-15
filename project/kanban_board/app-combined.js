@@ -3,6 +3,123 @@
 // Data Management & Utilities
 // ============================================
 
+// Common Bootstrap Icons
+const COMMON_ICONS = [
+    { name: 'list', icon: 'bi-list' },
+    { name: 'list-check', icon: 'bi-list-check' },
+    { name: 'list-task', icon: 'bi-list-task' },
+    { name: 'check', icon: 'bi-check' },
+    { name: 'check-circle', icon: 'bi-check-circle' },
+    { name: 'check-square', icon: 'bi-check-square' },
+    { name: 'circle', icon: 'bi-circle' },
+    { name: 'circle-fill', icon: 'bi-circle-fill' },
+    { name: 'dot', icon: 'bi-dot' },
+    { name: 'record-circle', icon: 'bi-record-circle' },
+    { name: 'inbox', icon: 'bi-inbox' },
+    { name: 'box', icon: 'bi-box' },
+    { name: 'archive', icon: 'bi-archive' },
+    { name: 'folder', icon: 'bi-folder' },
+    { name: 'folder-open', icon: 'bi-folder2-open' },
+    { name: 'clipboard', icon: 'bi-clipboard' },
+    { name: 'clipboard-check', icon: 'bi-clipboard-check' },
+    { name: 'clipboard-data', icon: 'bi-clipboard-data' },
+    { name: 'kanban', icon: 'bi-kanban' },
+    { name: 'calendar', icon: 'bi-calendar' },
+    { name: 'calendar-check', icon: 'bi-calendar-check' },
+    { name: 'clock', icon: 'bi-clock' },
+    { name: 'hourglass', icon: 'bi-hourglass' },
+    { name: 'hourglass-split', icon: 'bi-hourglass-split' },
+    { name: 'alarm', icon: 'bi-alarm' },
+    { name: 'stopwatch', icon: 'bi-stopwatch' },
+    { name: 'play', icon: 'bi-play-circle' },
+    { name: 'pause', icon: 'bi-pause-circle' },
+    { name: 'stop', icon: 'bi-stop-circle' },
+    { name: 'skip-forward', icon: 'bi-skip-forward' },
+    { name: 'arrow-right', icon: 'bi-arrow-right-circle' },
+    { name: 'arrow-up', icon: 'bi-arrow-up-circle' },
+    { name: 'gear', icon: 'bi-gear' },
+    { name: 'tools', icon: 'bi-tools' },
+    { name: 'wrench', icon: 'bi-wrench' },
+    { name: 'hammer', icon: 'bi-hammer' },
+    { name: 'bug', icon: 'bi-bug' },
+    { name: 'code', icon: 'bi-code' },
+    { name: 'terminal', icon: 'bi-terminal' },
+    { name: 'laptop', icon: 'bi-laptop' },
+    { name: 'phone', icon: 'bi-phone' },
+    { name: 'star', icon: 'bi-star' },
+    { name: 'star-fill', icon: 'bi-star-fill' },
+    { name: 'heart', icon: 'bi-heart' },
+    { name: 'heart-fill', icon: 'bi-heart-fill' },
+    { name: 'flag', icon: 'bi-flag' },
+    { name: 'flag-fill', icon: 'bi-flag-fill' },
+    { name: 'bookmark', icon: 'bi-bookmark' },
+    { name: 'pin', icon: 'bi-pin' },
+    { name: 'trophy', icon: 'bi-trophy' },
+    { name: 'award', icon: 'bi-award' },
+    { name: 'rocket', icon: 'bi-rocket' },
+    { name: 'lightning', icon: 'bi-lightning' },
+    { name: 'fire', icon: 'bi-fire' },
+    { name: 'sun', icon: 'bi-sun' },
+    { name: 'moon', icon: 'bi-moon' },
+    { name: 'cloud', icon: 'bi-cloud' },
+    { name: 'umbrella', icon: 'bi-umbrella' },
+    { name: 'lightbulb', icon: 'bi-lightbulb' },
+    { name: 'flask', icon: 'bi-flask' },
+    { name: 'balloon', icon: 'bi-balloon' },
+    { name: 'gift', icon: 'bi-gift' },
+    { name: 'cart', icon: 'bi-cart' },
+    { name: 'bag', icon: 'bi-bag' },
+    { name: 'briefcase', icon: 'bi-briefcase' },
+    { name: 'building', icon: 'bi-building' },
+    { name: 'house', icon: 'bi-house' },
+    { name: 'people', icon: 'bi-people' },
+    { name: 'person', icon: 'bi-person' },
+    { name: 'person-check', icon: 'bi-person-check' },
+    { name: 'chat', icon: 'bi-chat' },
+    { name: 'envelope', icon: 'bi-envelope' },
+    { name: 'bell', icon: 'bi-bell' },
+    { name: 'megaphone', icon: 'bi-megaphone' },
+    { name: 'graph-up', icon: 'bi-graph-up' },
+    { name: 'graph-down', icon: 'bi-graph-down' },
+    { name: 'bar-chart', icon: 'bi-bar-chart' },
+    { name: 'pie-chart', icon: 'bi-pie-chart' },
+    { name: 'wallet', icon: 'bi-wallet' },
+    { name: 'cash', icon: 'bi-cash' },
+    { name: 'credit-card', icon: 'bi-credit-card' },
+    { name: 'tag', icon: 'bi-tag' },
+    { name: 'tags', icon: 'bi-tags' },
+    { name: 'filter', icon: 'bi-filter' },
+    { name: 'funnel', icon: 'bi-funnel' },
+    { name: 'search', icon: 'bi-search' },
+    { name: 'zoom-in', icon: 'bi-zoom-in' },
+    { name: 'eye', icon: 'bi-eye' },
+    { name: 'download', icon: 'bi-download' },
+    { name: 'upload', icon: 'bi-upload' },
+    { name: 'file', icon: 'bi-file-earmark' },
+    { name: 'file-text', icon: 'bi-file-earmark-text' },
+    { name: 'file-code', icon: 'bi-file-earmark-code' },
+    { name: 'image', icon: 'bi-image' },
+    { name: 'camera', icon: 'bi-camera' },
+    { name: 'link', icon: 'bi-link' },
+    { name: 'paperclip', icon: 'bi-paperclip' },
+    { name: 'pencil', icon: 'bi-pencil' },
+    { name: 'pen', icon: 'bi-pen' },
+    { name: 'eraser', icon: 'bi-eraser' },
+    { name: 'trash', icon: 'bi-trash' },
+    { name: 'x-circle', icon: 'bi-x-circle' },
+    { name: 'plus-circle', icon: 'bi-plus-circle' },
+    { name: 'dash-circle', icon: 'bi-dash-circle' },
+    { name: 'info-circle', icon: 'bi-info-circle' },
+    { name: 'question-circle', icon: 'bi-question-circle' },
+    { name: 'exclamation-circle', icon: 'bi-exclamation-circle' },
+    { name: 'exclamation-triangle', icon: 'bi-exclamation-triangle' },
+    { name: 'shield', icon: 'bi-shield' },
+    { name: 'shield-check', icon: 'bi-shield-check' },
+    { name: 'lock', icon: 'bi-lock' },
+    { name: 'unlock', icon: 'bi-unlock' },
+    { name: 'key', icon: 'bi-key' }
+];
+
 const STORAGE_KEYS = {
     PROJECTS: 'kanban_projects',
     TASKS: 'kanban_tasks',
@@ -28,11 +145,11 @@ const DEFAULT_SETTINGS = {
 };
 
 const DEFAULT_COLUMNS = [
-    { id: 'backlog', name: 'Backlog' },
-    { id: 'not-started', name: 'Not Started' },
-    { id: 'in-progress', name: 'In Progress' },
-    { id: 'testing', name: 'Testing' },
-    { id: 'done', name: 'Done' }
+    { id: 'backlog', name: 'Backlog', color: '#6b7280', icon: 'bi-inbox' },
+    { id: 'not-started', name: 'Not Started', color: '#64748b', icon: 'bi-circle' },
+    { id: 'in-progress', name: 'In Progress', color: '#3b82f6', icon: 'bi-hourglass-split' },
+    { id: 'testing', name: 'Testing', color: '#f59e0b', icon: 'bi-flask' },
+    { id: 'done', name: 'Done', color: '#10b981', icon: 'bi-check-circle' }
 ];
 
 const PRIORITY_LABELS = { 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Urgent' };
@@ -562,10 +679,15 @@ function renderKanbanBoard() {
         colDiv.dataset.status = column.id;
         
         const filtered = sorted.filter(p => p.status === column.id);
+        const columnColor = column.color || '#6b7280';
+        const columnIcon = column.icon || '';
         
         colDiv.innerHTML = `
-            <div class="column-header">
-                <h2>${escapeHtml(column.name)}</h2>
+            <div class="column-header" style="background-color: ${columnColor};">
+                <h2>
+                    ${columnIcon ? `<i class="${columnIcon}" style="margin-right: 8px;"></i>` : ''}
+                    ${escapeHtml(column.name)}
+                </h2>
                 <span class="column-count">${filtered.length}</span>
             </div>
             <div class="column-cards" id="cards-${column.id}"></div>
@@ -576,7 +698,7 @@ function renderKanbanBoard() {
         const container = colDiv.querySelector('.column-cards');
         
         if (filtered.length === 0) {
-            container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="15" y1="9" x2="15" y2="9.01"/><line x1="9" y1="15" x2="15" y2="15"/></svg><p>No projects</p></div>';
+            container.innerHTML = '<div class="empty-state"><i class="bi bi-inbox" style="font-size: 48px;"></i><p>No projects</p></div>';
         } else {
             filtered.forEach(p => container.appendChild(createProjectCard(p, tasks, categories)));
         }
@@ -662,14 +784,12 @@ function createProjectCard(project, tasks, categories) {
                     ${project.dueDate ? `<span class="card-due-date">${formatDateShort(project.dueDate)}</span>` : ''}
                     ${totalTasks > 0 ? `
                         <button class="btn-toggle-tasks-icon" onclick="event.stopPropagation(); toggleCardTasks(this)" title="Show/Hide tasks">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
+                            <i class="bi bi-chevron-down" style="font-size: 14px;"></i>
                         </button>
                     ` : ''}
                 </div>
             </div>
-            ${project.keyPersons && project.keyPersons.length > 0 ? `<div class="card-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${project.keyPersons.map(k => escapeHtml(k)).join(', ')}</div>` : ''}
+            ${project.keyPersons && project.keyPersons.length > 0 ? `<div class="card-person"><i class="bi bi-person" style="font-size: 14px; margin-right: 4px;"></i>${project.keyPersons.map(k => escapeHtml(k)).join(', ')}</div>` : ''}
             ${totalTasks > 0 ? `
                 <div class="card-tasks">
                     ${tasksHtml}
@@ -1238,17 +1358,11 @@ function renderCategoryList() {
                 ${usageCount > 0 ? `<small style="color: var(--text-muted); margin-left: 8px;">(${usageCount} project${usageCount > 1 ? 's' : ''})</small>` : ''}
             </div>
             <div style="display: flex; gap: 8px;">
-                <button class="btn-edit-category" data-index="${index}" title="Edit color">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                <button class="btn-edit-category" data-index="${index}" title="Edit">
+                    <i class="bi bi-pencil" style="font-size: 16px;"></i>
                 </button>
                 <button class="delete-item" data-index="${index}" ${!canDelete ? 'disabled title="Cannot delete - in use by projects"' : 'title="Delete category"'}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                    </svg>
+                    <i class="bi bi-trash" style="font-size: 16px;"></i>
                 </button>
             </div>
         `;
@@ -1259,7 +1373,7 @@ function renderCategoryList() {
     document.querySelectorAll('.btn-edit-category').forEach(btn => {
         btn.addEventListener('click', () => {
             const index = parseInt(btn.dataset.index);
-            editCategoryColor(index);
+            editCategory(index);
         });
     });
     
@@ -1273,82 +1387,72 @@ function renderCategoryList() {
     });
 }
 
-function editCategoryColor(index) {
+let editingCategoryIndex = null;
+
+function editCategory(index) {
     const cats = getCategories();
     if (index < 0 || index >= cats.length) return;
     
+    editingCategoryIndex = index;
     const cat = cats[index];
     
-    // Create a temporary color picker modal
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.innerHTML = `
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h2>Edit Category Color</h2>
-                <button class="btn-close" id="closeColorPicker">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 16px;">Select a color for <strong>${escapeHtml(cat.name)}</strong>:</p>
-                <div class="color-palette" id="editCategoryColorPalette">
-                    <button type="button" class="color-swatch ${cat.color === '#6b7280' ? 'active' : ''}" data-color="#6b7280" style="background:#6b7280" title="Gray"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#ef4444' ? 'active' : ''}" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#f97316' ? 'active' : ''}" data-color="#f97316" style="background:#f97316" title="Orange"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#eab308' ? 'active' : ''}" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#84cc16' ? 'active' : ''}" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#22c55e' ? 'active' : ''}" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#14b8a6' ? 'active' : ''}" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#06b6d4' ? 'active' : ''}" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#3b82f6' ? 'active' : ''}" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#6366f1' ? 'active' : ''}" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#8b5cf6' ? 'active' : ''}" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
-                    <button type="button" class="color-swatch ${cat.color === '#ec4899' ? 'active' : ''}" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelColorPicker">Cancel</button>
-                <button class="btn btn-primary" id="saveColorPicker">Save</button>
-            </div>
-        </div>
-    `;
+    document.getElementById('editCategoryName').value = cat.name;
     
-    document.body.appendChild(modal);
-    document.body.style.overflow = 'hidden';
+    // Set color palette
+    const colorPalette = document.getElementById('editCategoryColorPalette');
+    colorPalette.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    const colorSwatch = colorPalette.querySelector(`[data-color="${cat.color}"]`);
+    if (colorSwatch) colorSwatch.classList.add('active');
     
-    let selectedColor = cat.color;
-    
-    // Color swatch click handlers
-    modal.querySelectorAll('.color-swatch').forEach(swatch => {
-        swatch.addEventListener('click', () => {
-            modal.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-            swatch.classList.add('active');
-            selectedColor = swatch.dataset.color;
-        });
-    });
-    
-    // Close handlers
-    const closeColorPicker = () => {
-        document.body.removeChild(modal);
-        document.body.style.overflow = '';
-    };
-    
-    modal.querySelector('#closeColorPicker').addEventListener('click', closeColorPicker);
-    modal.querySelector('#cancelColorPicker').addEventListener('click', closeColorPicker);
-    modal.querySelector('.modal-overlay').addEventListener('click', closeColorPicker);
-    
-    // Save handler
-    modal.querySelector('#saveColorPicker').addEventListener('click', () => {
-        if (selectedColor !== cat.color) {
-            cats[index].color = selectedColor;
-            saveCategories(cats);
-            renderCategoryList();
-            renderKanbanBoard(); // Refresh to show new colors
-            showToast('Category color updated', 'success');
-        }
-        closeColorPicker();
-    });
+    setupColorPalette('editCategoryColorPalette');
+    openModal('editCategoryModal');
+    setTimeout(() => document.getElementById('editCategoryName').focus(), 100);
 }
+
+function saveEditCategory() {
+    const cats = getCategories();
+    if (editingCategoryIndex === null || editingCategoryIndex < 0 || editingCategoryIndex >= cats.length) return;
+    
+    const newName = document.getElementById('editCategoryName').value.trim();
+    const colorPalette = document.getElementById('editCategoryColorPalette');
+    const selectedColor = colorPalette.querySelector('.color-swatch.active');
+    const newColor = selectedColor ? selectedColor.dataset.color : '#6b7280';
+    
+    if (!newName) {
+        showToast('Please enter a category name', 'error');
+        return;
+    }
+    
+    const oldName = cats[editingCategoryIndex].name;
+    
+    // Check for duplicate (excluding current)
+    if (cats.some((c, i) => i !== editingCategoryIndex && c.name.toLowerCase() === newName.toLowerCase())) {
+        showToast('Category already exists', 'error');
+        return;
+    }
+    
+    // Update category
+    cats[editingCategoryIndex].name = newName;
+    cats[editingCategoryIndex].color = newColor;
+    
+    // Update all projects using this category
+    if (oldName !== newName) {
+        const projects = getProjects();
+        projects.forEach(p => {
+            if (p.category === oldName) p.category = newName;
+        });
+        saveProjects(projects);
+    }
+    
+    saveCategories(cats);
+    renderCategoryList();
+    updateCategoryDropdowns();
+    renderKanbanBoard();
+    closeModal('editCategoryModal');
+    editingCategoryIndex = null;
+    showToast('Category updated', 'success');
+}
+
 
 function deleteCategory(index) {
     const cats = getCategories();
@@ -1397,16 +1501,10 @@ function renderKeyPersonList() {
             </div>
             <div style="display: flex; gap: 8px;">
                 <button class="btn-edit-keyperson" data-index="${index}" title="Edit name">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                    <i class="bi bi-pencil" style="font-size: 16px;"></i>
                 </button>
                 <button class="delete-item" data-index="${index}" ${!canDelete ? 'disabled title="Cannot delete - in use"' : 'title="Delete key person"'}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                    </svg>
+                    <i class="bi bi-trash" style="font-size: 16px;"></i>
                 </button>
             </div>
         `;
@@ -1642,10 +1740,7 @@ function setupMarkdownPreview(textareaId, toggleBtnId, previewId) {
             textarea.style.display = 'none';
             preview.style.display = 'block';
             toggleBtn.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
+                <i class="bi bi-pencil" style="font-size: 16px; margin-right: 4px;"></i>
                 Edit
             `;
         } else {
@@ -1653,10 +1748,7 @@ function setupMarkdownPreview(textareaId, toggleBtnId, previewId) {
             textarea.style.display = 'block';
             preview.style.display = 'none';
             toggleBtn.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
+                <i class="bi bi-eye" style="font-size: 16px; margin-right: 4px;"></i>
                 Preview
             `;
         }
@@ -1762,9 +1854,6 @@ function setupEventListeners() {
     // Header buttons
     document.getElementById('btnAddProject').addEventListener('click', () => openProjectModal());
     document.getElementById('btnAddTask').addEventListener('click', () => openTaskModal());
-    document.getElementById('btnInfo').addEventListener('click', () => {
-        // Empty link - no action (placeholder for future info page)
-    });
     document.getElementById('btnSettings').addEventListener('click', () => { 
         renderCategoryList(); 
         renderKeyPersonList();
@@ -1779,16 +1868,6 @@ function setupEventListeners() {
     });
     document.getElementById('closeWarning').addEventListener('click', () => { 
         document.getElementById('warningBanner').style.display = 'none'; 
-    });
-    
-    // Footer links
-    document.getElementById('backToHome').addEventListener('click', (e) => {
-        e.preventDefault();
-        // Empty link - no action
-    });
-    document.getElementById('showDocumentation').addEventListener('click', (e) => {
-        e.preventDefault();
-        // Empty link - no action
     });
     
     // Project Modal
@@ -2005,6 +2084,27 @@ function setupEventListeners() {
         }
     });
     
+    // Edit Category Modal
+    document.getElementById('closeEditCategory').addEventListener('click', () => {
+        closeModal('editCategoryModal');
+        editingCategoryIndex = null;
+    });
+    document.getElementById('cancelEditCategory').addEventListener('click', () => {
+        closeModal('editCategoryModal');
+        editingCategoryIndex = null;
+    });
+    document.getElementById('saveEditCategory').addEventListener('click', saveEditCategory);
+    document.querySelector('#editCategoryModal .modal-overlay').addEventListener('click', () => {
+        closeModal('editCategoryModal');
+        editingCategoryIndex = null;
+    });
+    document.getElementById('editCategoryName').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveEditCategory();
+        }
+    });
+    
     // Clear Data Modal
     document.getElementById('cancelClearData').addEventListener('click', () => closeModal('clearDataModal'));
     document.querySelector('#clearDataModal .modal-overlay').addEventListener('click', () => closeModal('clearDataModal'));
@@ -2027,6 +2127,17 @@ function setupEventListeners() {
         }
     });
     
+    // Column color palette
+    setupColorPalette('columnColorPalette');
+    
+    // Column icon picker
+    setupIconPicker('columnIconSearch', 'columnIconPicker', 'newColumnIcon', 'columnIconPreview');
+    document.getElementById('clearColumnIcon').addEventListener('click', () => {
+        document.getElementById('newColumnIcon').value = '';
+        document.getElementById('columnIconPreview').innerHTML = '';
+        document.getElementById('columnIconPicker').style.display = 'none';
+    });
+    
     // Edit Column Modal
     document.getElementById('closeEditColumn').addEventListener('click', () => {
         closeModal('editColumnModal');
@@ -2037,6 +2148,17 @@ function setupEventListeners() {
         editingColumnIndex = null;
     });
     document.getElementById('saveEditColumn').addEventListener('click', saveEditColumn);
+    
+    // Edit column color palette
+    setupColorPalette('editColumnColorPalette');
+    
+    // Edit column icon picker
+    setupIconPicker('editColumnIconSearch', 'editColumnIconPicker', 'editColumnIcon', 'editColumnIconPreview');
+    document.getElementById('clearEditColumnIcon').addEventListener('click', () => {
+        document.getElementById('editColumnIcon').value = '';
+        document.getElementById('editColumnIconPreview').innerHTML = '';
+        document.getElementById('editColumnIconPicker').style.display = 'none';
+    });
     document.querySelector('#editColumnModal .modal-overlay').addEventListener('click', () => {
         closeModal('editColumnModal');
         editingColumnIndex = null;
@@ -2185,6 +2307,82 @@ document.addEventListener('DOMContentLoaded', () => {
 let editingColumnIndex = null;
 let columnDragSrcIndex = null;
 
+// Helper function for color palette
+function setupColorPalette(paletteId) {
+    const palette = document.getElementById(paletteId);
+    if (!palette) return;
+    
+    palette.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            palette.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+        });
+    });
+}
+
+// Helper function for icon picker
+function setupIconPicker(searchInputId, pickerDivId, hiddenInputId, previewDivId) {
+    const searchInput = document.getElementById(searchInputId);
+    const pickerDiv = document.getElementById(pickerDivId);
+    const hiddenInput = document.getElementById(hiddenInputId);
+    const previewDiv = document.getElementById(previewDivId);
+    
+    if (!searchInput || !pickerDiv || !hiddenInput || !previewDiv) return;
+    
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        
+        if (query.length === 0) {
+            pickerDiv.style.display = 'none';
+            return;
+        }
+        
+        const filtered = COMMON_ICONS.filter(icon => 
+            icon.name.includes(query) || icon.icon.includes(query)
+        );
+        
+        if (filtered.length === 0) {
+            pickerDiv.innerHTML = '<p style="color: var(--text-muted); padding: 8px;">No icons found</p>';
+            pickerDiv.style.display = 'block';
+            return;
+        }
+        
+        pickerDiv.innerHTML = filtered.map(icon => `
+            <button type="button" class="icon-option" data-icon="${icon.icon}" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 4px; border: 1px solid var(--border); background: var(--bg-primary); border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                <i class="${icon.icon}" style="font-size: 18px; color: var(--text-primary);"></i>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">${icon.name}</span>
+            </button>
+        `).join('');
+        
+        pickerDiv.style.display = 'block';
+        
+        pickerDiv.querySelectorAll('.icon-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedIcon = btn.dataset.icon;
+                hiddenInput.value = selectedIcon;
+                previewDiv.innerHTML = `
+                    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border);">
+                        <i class="${selectedIcon}" style="font-size: 18px; color: var(--text-primary);"></i>
+                        <span style="font-size: 0.9rem; color: var(--text-primary);">Selected: ${selectedIcon}</span>
+                    </div>
+                `;
+                pickerDiv.style.display = 'none';
+                searchInput.value = '';
+            });
+            
+            btn.addEventListener('mouseenter', () => {
+                btn.style.background = 'var(--accent-light)';
+                btn.style.borderColor = 'var(--accent)';
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.background = 'var(--bg-primary)';
+                btn.style.borderColor = 'var(--border)';
+            });
+        });
+    });
+}
+
 function generateColumnId(name) {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -2218,28 +2416,23 @@ function renderColumnList() {
             <div class="column-info">
                 ${canDrag ? `
                     <div class="column-drag-handle">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/>
-                        </svg>
+                        <i class="bi bi-grip-vertical" style="font-size: 20px;"></i>
                     </div>
                 ` : '<div style="width: 20px;"></div>'}
+                <div style="width: 24px; height: 24px; border-radius: 4px; background: ${col.color || '#6b7280'}; display: flex; align-items: center; justify-content: center;">
+                    ${col.icon ? `<i class="${col.icon}" style="font-size: 12px; color: white;"></i>` : ''}
+                </div>
                 <span class="column-name">${escapeHtml(col.name)}</span>
-                ${isFirst ? '<span class="column-badge">First (Backlog)</span>' : ''}
+                ${isFirst ? '<span class="column-badge">First (Start)</span>' : ''}
                 ${isLast ? '<span class="column-badge">Last (Done)</span>' : ''}
                 ${usageCount > 0 ? `<small style="color: var(--text-muted); margin-left: 8px;">(${usageCount} project${usageCount > 1 ? 's' : ''})</small>` : ''}
             </div>
             <div class="column-actions">
-                <button class="btn-edit-column" data-index="${index}" title="Edit name">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                <button class="btn-edit-column" data-index="${index}" title="Edit">
+                    <i class="bi bi-pencil" style="font-size: 16px;"></i>
                 </button>
                 <button class="btn-delete-column" data-index="${index}" ${!canDelete ? 'disabled' : ''} title="${!canDelete ? (isFirst || isLast ? 'Cannot delete first or last column' : columns.length <= 2 ? 'Need at least 2 columns' : 'Column in use') : 'Delete'}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                    </svg>
+                    <i class="bi bi-trash" style="font-size: 16px;"></i>
                 </button>
             </div>
         `;
@@ -2278,10 +2471,20 @@ function renderColumnList() {
                     const items = Array.from(list.querySelectorAll('li'));
                     const newOrder = [];
                     
+                    // First column always stays first
+                    newOrder.push(columns[0]);
+                    
+                    // Get middle columns based on current DOM order
                     items.forEach(item => {
                         const idx = parseInt(item.dataset.index);
-                        newOrder.push(columns[idx]);
+                        // Skip first and last columns
+                        if (idx > 0 && idx < columns.length - 1) {
+                            newOrder.push(columns[idx]);
+                        }
                     });
+                    
+                    // Last column always stays last
+                    newOrder.push(columns[columns.length - 1]);
                     
                     saveColumns(newOrder);
                     renderColumnList();
@@ -2307,7 +2510,12 @@ function renderColumnList() {
 
 function addColumn() {
     const input = document.getElementById('newColumnName');
+    const iconInput = document.getElementById('newColumnIcon');
+    const colorPalette = document.getElementById('columnColorPalette');
     const name = input.value.trim();
+    const icon = iconInput.value.trim() || '';
+    const selectedColor = colorPalette.querySelector('.color-swatch.active');
+    const color = selectedColor ? selectedColor.dataset.color : '#6b7280';
     
     if (!name) {
         showToast('Please enter a column name', 'error');
@@ -2327,12 +2535,21 @@ function addColumn() {
         return;
     }
     
-    columns.push({ id, name });
+    // Insert before last column instead of at the end
+    columns.splice(columns.length - 1, 0, { id, name, color, icon });
     saveColumns(columns);
     renderColumnList();
     updateStatusDropdowns();
     renderKanbanBoard();
+    
+    // Reset inputs
     input.value = '';
+    iconInput.value = '';
+    document.getElementById('columnIconPreview').innerHTML = '';
+    document.getElementById('columnIconPicker').style.display = 'none';
+    colorPalette.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    colorPalette.querySelector('.color-swatch[data-color="#6b7280"]').classList.add('active');
+    
     showToast('Column added', 'success');
 }
 
@@ -2341,7 +2558,30 @@ function editColumn(index) {
     if (index < 0 || index >= columns.length) return;
     
     editingColumnIndex = index;
-    document.getElementById('editColumnName').value = columns[index].name;
+    const col = columns[index];
+    
+    document.getElementById('editColumnName').value = col.name;
+    document.getElementById('editColumnIcon').value = col.icon || '';
+    
+    // Set color palette
+    const colorPalette = document.getElementById('editColumnColorPalette');
+    colorPalette.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    const colorSwatch = colorPalette.querySelector(`[data-color="${col.color || '#6b7280'}"]`);
+    if (colorSwatch) colorSwatch.classList.add('active');
+    
+    // Set icon preview
+    const iconPreview = document.getElementById('editColumnIconPreview');
+    if (col.icon) {
+        iconPreview.innerHTML = `
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border);">
+                <i class="${col.icon}" style="font-size: 18px; color: var(--text-primary);"></i>
+                <span style="font-size: 0.9rem; color: var(--text-primary);">Selected: ${col.icon}</span>
+            </div>
+        `;
+    } else {
+        iconPreview.innerHTML = '';
+    }
+    
     openModal('editColumnModal');
     setTimeout(() => document.getElementById('editColumnName').focus(), 100);
 }
@@ -2351,6 +2591,12 @@ function saveEditColumn() {
     if (editingColumnIndex === null || editingColumnIndex < 0 || editingColumnIndex >= columns.length) return;
     
     const newName = document.getElementById('editColumnName').value.trim();
+    const iconInput = document.getElementById('editColumnIcon');
+    const newIcon = iconInput.value.trim() || '';
+    const colorPalette = document.getElementById('editColumnColorPalette');
+    const selectedColor = colorPalette.querySelector('.color-swatch.active');
+    const newColor = selectedColor ? selectedColor.dataset.color : '#6b7280';
+    
     if (!newName) {
         showToast('Please enter a column name', 'error');
         return;
@@ -2367,6 +2613,8 @@ function saveEditColumn() {
     
     // Update column
     columns[editingColumnIndex].name = newName;
+    columns[editingColumnIndex].color = newColor;
+    columns[editingColumnIndex].icon = newIcon;
     const oldId = oldCol.id;
     columns[editingColumnIndex].id = newId;
     
@@ -2493,7 +2741,7 @@ function setAllKanbanData(data) {
     if (data.columns) saveColumns(data.columns);
 }
 
-async function gistRequest(method, gistId, token, content = null) {
+async function gistRequest(method, gistId, token, content = null, fileName = 'kanban-sync.json') {
     // Check if running from file:// protocol
     if (window.location.protocol === 'file:') {
         throw new Error('Sync requires HTTP server. Run: npx serve or python -m http.server');
@@ -2510,13 +2758,11 @@ async function gistRequest(method, gistId, token, content = null) {
     };
     
     if (content !== null) {
-        options.body = JSON.stringify({
-            files: {
-                'kanban-sync.json': {
-                    content: JSON.stringify(content, null, 2)
-                }
-            }
-        });
+        const files = {};
+        files[fileName] = {
+            content: JSON.stringify(content, null, 2)
+        };
+        options.body = JSON.stringify({ files });
     }
     
     const response = await fetch(url, options);
@@ -2527,11 +2773,11 @@ async function gistRequest(method, gistId, token, content = null) {
     return response.json();
 }
 
-async function testSyncConnection(gistId, token) {
+async function testSyncConnection(gistId, token, fileName = 'kanban-sync.json') {
     try {
         const gist = await gistRequest('GET', gistId, token);
-        if (!gist.files['kanban-sync.json']) {
-            throw new Error('Gist must contain a file named "kanban-sync.json"');
+        if (!gist.files[fileName]) {
+            throw new Error(`Gist must contain a file named "${fileName}"`);
         }
         return { success: true, owner: gist.owner?.login || 'unknown' };
     } catch (error) {
@@ -2539,9 +2785,9 @@ async function testSyncConnection(gistId, token) {
     }
 }
 
-async function pushToGist(gistId, token) {
+async function pushToGist(gistId, token, fileName = 'kanban-sync.json') {
     const data = getAllKanbanData();
-    await gistRequest('PATCH', gistId, token, data);
+    await gistRequest('PATCH', gistId, token, data, fileName);
     const config = getSyncConfig();
     config.lastSync = new Date().toISOString();
     config.lastAction = 'push';
@@ -2572,7 +2818,7 @@ async function autoSaveToGist() {
         // Flash save button green
         flashSaveButton();
         
-        await pushToGist(cfg.gistId, cfg.token);
+        await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
         console.log('Auto-save successful');
         
         // Update both header and settings displays
@@ -2671,11 +2917,11 @@ function updateLastSyncDisplay() {
     }
 }
 
-async function pullFromGist(gistId, token) {
+async function pullFromGist(gistId, token, fileName = 'kanban-sync.json') {
     const gist = await gistRequest('GET', gistId, token);
-    const file = gist.files['kanban-sync.json'];
+    const file = gist.files[fileName];
     if (!file || !file.content) {
-        throw new Error('No sync data found in Gist');
+        throw new Error(`No sync data found in Gist (file: ${fileName})`);
     }
     const data = JSON.parse(file.content);
     if (!data.projects && !data.tasks) {
@@ -2693,11 +2939,13 @@ function initSyncUI() {
     const config = getSyncConfig();
     const gistIdInput = document.getElementById('syncGistId');
     const tokenInput = document.getElementById('syncGistToken');
+    const fileNameInput = document.getElementById('syncFileName');
     const autoSaveSelect = document.getElementById('autoSaveInterval');
     const actionsSection = document.getElementById('syncActionsSection');
     
     if (gistIdInput && config.gistId) gistIdInput.value = config.gistId;
     if (tokenInput && config.token) tokenInput.value = config.token;
+    if (fileNameInput && config.fileName) fileNameInput.value = config.fileName;
     if (autoSaveSelect && config.autoSaveInterval !== undefined) {
         autoSaveSelect.value = config.autoSaveInterval || 0;
     }
@@ -2713,6 +2961,7 @@ function initSyncUI() {
     document.getElementById('testSyncConnection')?.addEventListener('click', async () => {
         const gistId = gistIdInput.value.trim();
         const token = tokenInput.value.trim();
+        const fileName = fileNameInput.value.trim() || 'kanban-sync.json';
         const statusEl = document.getElementById('syncStatus');
         
         if (!gistId || !token) {
@@ -2728,7 +2977,7 @@ function initSyncUI() {
         statusEl.style.color = 'var(--text)';
         statusEl.textContent = '⏳ Testing connection...';
         
-        const result = await testSyncConnection(gistId, token);
+        const result = await testSyncConnection(gistId, token, fileName);
         
         if (result.success) {
             statusEl.style.background = 'var(--success)';
@@ -2745,6 +2994,7 @@ function initSyncUI() {
     document.getElementById('saveSyncSettings')?.addEventListener('click', () => {
         const gistId = gistIdInput.value.trim();
         const token = tokenInput.value.trim();
+        const fileName = fileNameInput.value.trim() || 'kanban-sync.json';
         const autoSaveInterval = parseInt(autoSaveSelect.value);
         
         if (!gistId || !token) {
@@ -2752,7 +3002,7 @@ function initSyncUI() {
             return;
         }
         
-        saveSyncConfig({ ...config, gistId, token, autoSaveInterval });
+        saveSyncConfig({ ...config, gistId, token, fileName, autoSaveInterval });
         actionsSection.style.display = 'block';
         
         // Restart auto-save with new interval
@@ -2775,7 +3025,7 @@ function initSyncUI() {
         
         try {
             showToast('Pushing data...', 'info');
-            await pushToGist(cfg.gistId, cfg.token);
+            await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
             updateLastSyncDisplay();
             updateHeaderInfo();
             showToast('Data pushed successfully!', 'success');
@@ -2803,7 +3053,7 @@ function initSyncUI() {
         
         try {
             showToast('Pulling data...', 'info');
-            await pullFromGist(cfg.gistId, cfg.token);
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
             updateLastSyncDisplay();
             showToast('Data pulled successfully! Refreshing...', 'success');
             setTimeout(() => location.reload(), 1000);

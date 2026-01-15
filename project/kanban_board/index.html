@@ -6,6 +6,8 @@
     <title>Kanban Board</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,66 +16,36 @@
         <header class="header">
             <div class="header-left">
                 <h1>Kanban Board</h1>
-                <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.2 January 2026</span>
+                <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.4 January 2026</span>
             </div>
             <div class="header-right">
                 <button class="btn btn-icon" id="btnManualSave" title="Save">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
+                    <i class="bi bi-floppy" style="font-size: 20px;"></i>
                     <span>Save</span>
                 </button>
                 <button class="btn btn-icon" id="btnAddProject" title="Add Project">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <line x1="12" y1="8" x2="12" y2="16"/>
-                        <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
+                    <i class="bi bi-folder-plus" style="font-size: 20px;"></i>
                     <span>Project</span>
                 </button>
                 <button class="btn btn-icon" id="btnAddTask" title="Add Task">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3L22 4"/>
-                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                    </svg>
+                    <i class="bi bi-check-square" style="font-size: 20px;"></i>
                     <span>Task</span>
                 </button>
                 <button class="btn btn-icon" id="btnSettings" title="Settings">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-                    </svg>
+                    <i class="bi bi-gear" style="font-size: 20px;"></i>
                     <span>Settings</span>
-                </button>
-                <button class="btn btn-icon" id="btnInfo" title="Information">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="16" x2="12" y2="12"/>
-                        <line x1="12" y1="8" x2="12.01" y2="8"/>
-                    </svg>
-                    <span>Info</span>
                 </button>
             </div>
         </header>
 
         <!-- Warning Banners -->
         <div class="overdue-banner" id="overdueBanner" style="display: none;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
+            <i class="bi bi-exclamation-triangle" style="font-size: 20px;"></i>
             <span id="overdueText">Tasks are overdue!</span>
             <button class="btn-close-warning" id="closeOverdue">&times;</button>
         </div>
         <div class="warning-banner" id="warningBanner" style="display: none;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
+            <i class="bi bi-exclamation-triangle" style="font-size: 20px;"></i>
             <span id="warningText">Tasks approaching due date!</span>
             <button class="btn-close-warning" id="closeWarning">&times;</button>
         </div>
@@ -82,13 +54,6 @@
         <main class="kanban-board" id="kanbanBoard">
             <!-- Columns will be dynamically generated -->
         </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <a href="#" id="backToHome">Back to Home</a> | 
-            <span>Revision 0.1.2 January 2026</span> | 
-            <a href="#" id="showDocumentation">Documentation</a>
-        </footer>
     </div>
 
     <!-- Project Modal -->
@@ -260,6 +225,7 @@
                     <button class="settings-tab" data-tab="keypersons">Key Persons</button>
                     <button class="settings-tab" data-tab="sync">Sync</button>
                     <button class="settings-tab" data-tab="data">Data</button>
+                    <button class="settings-tab" data-tab="info">Info</button>
                 </div>
                 
                 <!-- General Tab -->
@@ -321,9 +287,36 @@
                     
                     <div class="form-group">
                         <label>Kanban Columns (Min: 2, Max: 12)</label>
-                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Backlog", last column acts as "Done".</small>
-                        <div class="manager-input">
-                            <input type="text" id="newColumnName" placeholder="New column name" maxlength="32">
+                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Start", last column acts as "Done".</small>
+                        <div style="display: grid; gap: 12px; margin-bottom: 12px;">
+                            <input type="text" id="newColumnName" placeholder="Column name" maxlength="32">
+                            <div>
+                                <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">Color:</label>
+                                <div class="color-palette" id="columnColorPalette">
+                                    <button type="button" class="color-swatch active" data-color="#6b7280" style="background:#6b7280" title="Gray"></button>
+                                    <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+                                    <button type="button" class="color-swatch" data-color="#f97316" style="background:#f97316" title="Orange"></button>
+                                    <button type="button" class="color-swatch" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
+                                    <button type="button" class="color-swatch" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
+                                    <button type="button" class="color-swatch" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+                                    <button type="button" class="color-swatch" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
+                                    <button type="button" class="color-swatch" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+                                    <button type="button" class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+                                    <button type="button" class="color-swatch" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
+                                    <button type="button" class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+                                    <button type="button" class="color-swatch" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">Icon (optional):</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="text" id="columnIconSearch" placeholder="Search icons (e.g., circle, check)" style="flex: 1;">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="clearColumnIcon">Clear</button>
+                                </div>
+                                <div id="columnIconPicker" style="display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg-secondary);"></div>
+                                <input type="hidden" id="newColumnIcon">
+                                <div id="columnIconPreview" style="margin-top: 8px; min-height: 32px;"></div>
+                            </div>
                             <button class="btn btn-primary btn-sm" id="addColumn">Add Column</button>
                         </div>
                         <ul class="column-list" id="columnList"></ul>
@@ -381,7 +374,7 @@
                                 <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent);">GitHub Token Settings</a></li>
                                 <li>Create token with <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">gist</code> scope only</li>
                                 <li>Go to <a href="https://gist.github.com" target="_blank" style="color:var(--accent);">gist.github.com</a> and create a <strong>Secret</strong> gist</li>
-                                <li>Name file <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">kanban-sync.json</code> with content <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">{}</code></li>
+                                <li>Name file like <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">kanban-sync.json</code> with content <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">{}</code> (you can use any .json name)</li>
                                 <li>Copy the Gist ID from URL (e.g., <code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">gist.github.com/you/<strong>abc123</strong></code>)</li>
                             </ol>
                         </div>
@@ -394,6 +387,11 @@
                             <label for="syncGistToken">GitHub Personal Access Token</label>
                             <input type="password" id="syncGistToken" placeholder="ghp_xxxxxxxxxxxx">
                             <small>Token is stored locally and never sent anywhere except GitHub API</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="syncFileName">Sync File Name</label>
+                            <input type="text" id="syncFileName" placeholder="kanban-sync.json" value="kanban-sync.json">
+                            <small>Name of the JSON file in your Gist (allows multiple kanban instances)</small>
                         </div>
                         <div class="form-group">
                             <label for="autoSaveInterval">Auto Save Interval</label>
@@ -417,15 +415,11 @@
                         <h3>Sync Actions</h3>
                         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
                             <button class="btn btn-primary" id="syncPush">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
-                                    <path d="M12 19V5M5 12l7-7 7 7"/>
-                                </svg>
+                                <i class="bi bi-cloud-upload" style="margin-right:6px;font-size:16px;"></i>
                                 Push to Cloud
                             </button>
                             <button class="btn btn-secondary" id="syncPull">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
-                                    <path d="M12 5v14M5 12l7 7 7-7"/>
-                                </svg>
+                                <i class="bi bi-cloud-download" style="margin-right:6px;font-size:16px;"></i>
                                 Pull from Cloud
                             </button>
                         </div>
@@ -467,6 +461,22 @@
                         <h3>Clear All Data</h3>
                         <p>This will permanently delete all projects, tasks, categories, and key persons.</p>
                         <button class="btn btn-danger" id="clearAllData">Clear All Data</button>
+                    </div>
+                </div>
+                
+                <!-- Info Tab -->
+                <div class="settings-panel" id="panel-info">
+                    <div class="data-section">
+                        <h3>About</h3>
+                        <p>Kanban Board is a simple and intuitive project management tool that helps you organize tasks and track progress. Manage your projects with customizable columns, categories, and key persons. All data is stored locally in your browser with optional cloud sync (Required GitHub account)</p>
+                    </div>
+                    <div class="data-section">
+                        <h3>Version</h3>
+                        <p>Version 0.1.4 (January 2026)</p>
+                    </div>
+                    <div class="data-section">
+                        <h3>Documentation</h3>
+                        <p><a href="#" target="_blank">View Documentation</a></p>
                     </div>
                 </div>
             </div>
@@ -516,6 +526,44 @@
         </div>
     </div>
 
+    <!-- Edit Category Modal -->
+    <div class="modal" id="editCategoryModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Edit Category</h2>
+                <button class="btn-close" id="closeEditCategory">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editCategoryName">Name</label>
+                    <input type="text" id="editCategoryName" placeholder="Enter category name" maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-palette" id="editCategoryColorPalette">
+                        <button type="button" class="color-swatch" data-color="#6b7280" style="background:#6b7280" title="Gray"></button>
+                        <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+                        <button type="button" class="color-swatch" data-color="#f97316" style="background:#f97316" title="Orange"></button>
+                        <button type="button" class="color-swatch" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
+                        <button type="button" class="color-swatch" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
+                        <button type="button" class="color-swatch" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+                        <button type="button" class="color-swatch" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
+                        <button type="button" class="color-swatch" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+                        <button type="button" class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+                        <button type="button" class="color-swatch" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
+                        <button type="button" class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+                        <button type="button" class="color-swatch" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditCategory">Cancel</button>
+                <button class="btn btn-primary" id="saveEditCategory">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Column Modal -->
     <div class="modal" id="editColumnModal">
         <div class="modal-overlay"></div>
@@ -528,6 +576,33 @@
                 <div class="form-group">
                     <label for="editColumnName">Name</label>
                     <input type="text" id="editColumnName" placeholder="Enter column name" maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-palette" id="editColumnColorPalette">
+                        <button type="button" class="color-swatch" data-color="#6b7280" style="background:#6b7280" title="Gray"></button>
+                        <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+                        <button type="button" class="color-swatch" data-color="#f97316" style="background:#f97316" title="Orange"></button>
+                        <button type="button" class="color-swatch" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
+                        <button type="button" class="color-swatch" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
+                        <button type="button" class="color-swatch" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+                        <button type="button" class="color-swatch" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
+                        <button type="button" class="color-swatch" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+                        <button type="button" class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+                        <button type="button" class="color-swatch" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
+                        <button type="button" class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+                        <button type="button" class="color-swatch" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Icon (optional)</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="editColumnIconSearch" placeholder="Search icons (e.g., circle, check)" style="flex: 1;">
+                        <button type="button" class="btn btn-secondary btn-sm" id="clearEditColumnIcon">Clear</button>
+                    </div>
+                    <div id="editColumnIconPicker" style="display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg-secondary);"></div>
+                    <input type="hidden" id="editColumnIcon">
+                    <div id="editColumnIconPreview" style="margin-top: 8px; min-height: 32px;"></div>
                 </div>
             </div>
             <div class="modal-footer">

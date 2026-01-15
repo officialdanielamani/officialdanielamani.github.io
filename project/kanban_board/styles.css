@@ -24,15 +24,6 @@
     --column-bg: #e9ecef;
 }
 
-/* Light theme - Dark column headers */
-:root .column-header {
-    background: #2d3436;
-}
-
-:root .column-header h2 {
-    color: #ffffff;
-}
-
 [data-theme="dark"] {
     --bg-primary: #1a1d21;
     --bg-secondary: #22262b;
@@ -58,15 +49,6 @@
     --column-bg: #252930;
 }
 
-/* Dark theme - Light column headers */
-[data-theme="dark"] .column-header {
-    background: #e9ecef;
-}
-
-[data-theme="dark"] .column-header h2 {
-    color: #2d3436;
-}
-
 [data-theme="keqing"] {
     --bg-primary: #2a1f3d;
     --bg-secondary: #3d2f5c;
@@ -90,15 +72,6 @@
     --priority-urgent: #f7768e;
     --card-bg: #3d2f5c;
     --column-bg: #332849;
-}
-
-/* Keqing theme - Gold column headers */
-[data-theme="keqing"] .column-header {
-    background: #c9a961;
-}
-
-[data-theme="keqing"] .column-header h2 {
-    color: #2a1f3d;
 }
 
 /* Font Families */
@@ -366,25 +339,29 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 18px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px 8px 0 0;
 }
 
 .column-header h2 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
 }
 
 .column-count {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    padding: 3px 10px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px var(--shadow);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .column-cards {
