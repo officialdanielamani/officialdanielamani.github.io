@@ -1965,13 +1965,15 @@ body {
 @keyframes flashGreen {
     0%, 100% {
         background: transparent;
+        color: inherit;
     }
     50% {
-        background: var(--success);
-        color: white;
+        background: var(--success) !important;
+        color: white !important;
+        border-color: var(--success) !important;
     }
 }
 
 .btn.flash-green {
-    animation: flashGreen 1s ease-in-out 5;
+    animation: flashGreen 1s ease-in-out 5 !important;
 }
