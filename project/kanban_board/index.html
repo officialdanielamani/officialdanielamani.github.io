@@ -14,7 +14,7 @@
         <header class="header">
             <div class="header-left">
                 <h1>Kanban Board</h1>
-                <span class="header-doc-info" id="headerDocInfo">MyTasks | Revision 0.1.2 January 2026</span>
+                <span class="header-doc-info" id="headerDocInfo"></span>
             </div>
             <div class="header-right">
                 <button class="btn btn-icon" id="btnAddProject" title="Add Project">
@@ -71,48 +71,14 @@
         </div>
 
         <!-- Kanban Board -->
-        <main class="kanban-board">
-            <div class="kanban-column" data-status="backlog">
-                <div class="column-header">
-                    <h2>Backlog</h2>
-                    <span class="column-count" id="count-backlog">0</span>
-                </div>
-                <div class="column-cards" id="cards-backlog"></div>
-            </div>
-            <div class="kanban-column" data-status="not-started">
-                <div class="column-header">
-                    <h2>Not Started</h2>
-                    <span class="column-count" id="count-not-started">0</span>
-                </div>
-                <div class="column-cards" id="cards-not-started"></div>
-            </div>
-            <div class="kanban-column" data-status="in-progress">
-                <div class="column-header">
-                    <h2>In Progress</h2>
-                    <span class="column-count" id="count-in-progress">0</span>
-                </div>
-                <div class="column-cards" id="cards-in-progress"></div>
-            </div>
-            <div class="kanban-column" data-status="testing">
-                <div class="column-header">
-                    <h2>Testing</h2>
-                    <span class="column-count" id="count-testing">0</span>
-                </div>
-                <div class="column-cards" id="cards-testing"></div>
-            </div>
-            <div class="kanban-column" data-status="done">
-                <div class="column-header">
-                    <h2>Done</h2>
-                    <span class="column-count" id="count-done">0</span>
-                </div>
-                <div class="column-cards" id="cards-done"></div>
-            </div>
+        <main class="kanban-board" id="kanbanBoard">
+            <!-- Columns will be dynamically generated -->
         </main>
 
         <!-- Footer -->
         <footer class="app-footer">
-            <a href="#" id="backToHome">Back to Home</a> | 
-            <span>Revision 0.1.2 January 2026</span> | 
+            <a href="https://danielamani.com" id="backToHome">Back to Home</a> | 
+            <span>Revision 0.1.3 January 2026</span> | 
             <a href="#" id="showDocumentation">Documentation</a>
         </footer>
     </div>
@@ -130,7 +96,7 @@
                     <input type="hidden" id="projectId">
                     <div class="form-group">
                         <label for="projectTitle">Title *</label>
-                        <input type="text" id="projectTitle" required placeholder="Enter project title">
+                        <input type="text" id="projectTitle" required placeholder="Enter project title" maxlength="32">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -161,10 +127,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="projectKeyPerson">Key Person</label>
-                            <select id="projectKeyPerson">
-                                <option value="">-- None --</option>
-                            </select>
+                            <label>Key Persons</label>
+                            <div id="projectKeyPersons" class="checkbox-list"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -177,6 +141,18 @@
                             <input type="date" id="projectDueDate">
                         </div>
                     </div>
+                    
+                    <!-- Task Management Section -->
+                    <div class="form-group project-tasks-section">
+                        <label>Tasks</label>
+                        <div class="project-tasks-input">
+                            <input type="text" id="projectTaskTitle" placeholder="Task name" maxlength="32">
+                            <input type="date" id="projectTaskDueDate">
+                            <button type="button" class="btn btn-sm btn-primary" id="addProjectTask">Add</button>
+                        </div>
+                        <div class="project-tasks-list" id="projectTasksList"></div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="projectDetails">Details (Markdown supported)</label>
                         <div class="markdown-toggle-container">
@@ -188,7 +164,7 @@
                                 Preview
                             </button>
                         </div>
-                        <textarea id="projectDetails" rows="5" placeholder="Enter project details..."></textarea>
+                        <textarea id="projectDetails" rows="5" placeholder="Enter project details..." maxlength="4096"></textarea>
                         <div id="projectMarkdownPreview" class="markdown-preview" style="display: none;"></div>
                     </div>
                 </form>
@@ -214,7 +190,7 @@
                     <input type="hidden" id="taskId">
                     <div class="form-group">
                         <label for="taskTitle">Title *</label>
-                        <input type="text" id="taskTitle" required placeholder="Enter task title">
+                        <input type="text" id="taskTitle" required placeholder="Enter task title" maxlength="32">
                     </div>
                     <div class="form-group">
                         <label for="taskProject">Project *</label>
@@ -223,10 +199,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="taskKeyPerson">Key Person</label>
-                        <select id="taskKeyPerson">
-                            <option value="">-- None --</option>
-                        </select>
+                        <label>Key Persons</label>
+                        <div id="taskKeyPersons" class="checkbox-list"></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -249,7 +223,7 @@
                                 Preview
                             </button>
                         </div>
-                        <textarea id="taskDetails" rows="5" placeholder="Enter task details..."></textarea>
+                        <textarea id="taskDetails" rows="5" placeholder="Enter task details..." maxlength="4096"></textarea>
                         <div id="taskMarkdownPreview" class="markdown-preview" style="display: none;"></div>
                     </div>
                 </form>
@@ -273,6 +247,7 @@
             <div class="modal-body">
                 <div class="settings-tabs">
                     <button class="settings-tab active" data-tab="general">General</button>
+                    <button class="settings-tab" data-tab="kanban">Kanban</button>
                     <button class="settings-tab" data-tab="categories">Categories</button>
                     <button class="settings-tab" data-tab="keypersons">Key Persons</button>
                     <button class="settings-tab" data-tab="data">Data</button>
@@ -282,35 +257,18 @@
                 <div class="settings-panel active" id="panel-general">
                     <div class="form-group">
                         <label for="docName">Document Name</label>
-                        <input type="text" id="docName" value="MyTasks" placeholder="MyTasks">
+                        <input type="text" id="docName" value="MyTasks" placeholder="MyTasks" maxlength="32">
                         <small>Name of this document</small>
                     </div>
                     <div class="form-group">
                         <label for="docAuthor">Author</label>
-                        <input type="text" id="docAuthor" value="Me" placeholder="Me">
+                        <input type="text" id="docAuthor" value="Me" placeholder="Me" maxlength="32">
                         <small>Author of this document</small>
                     </div>
                     <div class="form-group">
                         <label for="docVersion">Version</label>
-                        <input type="text" id="docVersion" value="1.0" placeholder="1.0">
+                        <input type="text" id="docVersion" value="1.0" placeholder="1.0" maxlength="32">
                         <small>Document version number</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="warningDays">Warning Days Before Due Date</label>
-                        <input type="number" id="warningDays" min="1" max="30" value="3">
-                        <small>Show warning for tasks due within this many days</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="autoDeleteDays">Auto-delete Completed Projects After (Days)</label>
-                        <input type="number" id="autoDeleteDays" min="0" max="365" value="0">
-                        <small>Set to 0 to disable. Projects with all tasks done will be deleted after this many days.</small>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="autoMoveProject">
-                            <span>Auto-move project when all tasks done</span>
-                        </label>
-                        <small>When enabled: Project moves to "Done" when all tasks are completed (5/5). If a new task is added, project moves back to "Backlog".</small>
                     </div>
                     <div class="form-group">
                         <label for="themeSelect">Theme</label>
@@ -330,11 +288,44 @@
                     </div>
                 </div>
                 
+                <!-- Kanban Tab -->
+                <div class="settings-panel" id="panel-kanban">
+                    <div class="form-group">
+                        <label for="warningDays">Warning Days Before Due Date</label>
+                        <input type="number" id="warningDays" min="1" max="30" value="3">
+                        <small>Show warning for tasks due within this many days</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="autoDeleteDays">Auto-delete Completed Projects After (Days)</label>
+                        <input type="number" id="autoDeleteDays" min="0" max="365" value="0">
+                        <small>Set to 0 to disable. Projects with all tasks done will be deleted after this many days.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoMoveProject">
+                            <span>Auto-move project when all tasks done</span>
+                        </label>
+                        <small>When enabled: Project moves to "Done" when all tasks are completed. If a new task is added, project moves back to first column.</small>
+                    </div>
+                    
+                    <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
+                    
+                    <div class="form-group">
+                        <label>Kanban Columns (Min: 2, Max: 12)</label>
+                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Start", last column acts as "End".</small>
+                        <div class="manager-input">
+                            <input type="text" id="newColumnName" placeholder="New column name" maxlength="32">
+                            <button class="btn btn-primary btn-sm" id="addColumn">Add Column</button>
+                        </div>
+                        <ul class="column-list" id="columnList"></ul>
+                    </div>
+                </div>
+                
                 <!-- Categories Tab -->
                 <div class="settings-panel" id="panel-categories">
                     <div class="manager-section">
                         <div class="manager-input-row">
-                            <input type="text" id="newCategory" placeholder="New category name">
+                            <input type="text" id="newCategory" placeholder="New category name" maxlength="32">
                         </div>
                         <div class="manager-input-row">
                             <label>Color:</label>
@@ -362,7 +353,7 @@
                 <div class="settings-panel" id="panel-keypersons">
                     <div class="manager-section">
                         <div class="manager-input">
-                            <input type="text" id="newKeyPerson" placeholder="New key person name">
+                            <input type="text" id="newKeyPerson" placeholder="New key person name" maxlength="32">
                             <button class="btn btn-primary btn-sm" id="addKeyPerson">Add</button>
                         </div>
                         <ul class="manager-list" id="keyPersonList"></ul>
@@ -419,6 +410,70 @@
                 <button class="btn btn-secondary" id="closeDetail">Close</button>
                 <button class="btn btn-accent" id="addTaskFromDetail" style="display: none;">Add Task</button>
                 <button class="btn btn-primary" id="editDetail">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Key Person Modal -->
+    <div class="modal" id="editKeyPersonModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Edit Key Person</h2>
+                <button class="btn-close" id="closeEditKeyPerson">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editKeyPersonName">Name</label>
+                    <input type="text" id="editKeyPersonName" placeholder="Enter key person name" maxlength="32">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditKeyPerson">Cancel</button>
+                <button class="btn btn-primary" id="saveEditKeyPerson">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Column Modal -->
+    <div class="modal" id="editColumnModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Edit Column</h2>
+                <button class="btn-close" id="closeEditColumn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editColumnName">Name</label>
+                    <input type="text" id="editColumnName" placeholder="Enter column name" maxlength="32">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditColumn">Cancel</button>
+                <button class="btn btn-primary" id="saveEditColumn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Data Confirmation Modal -->
+    <div class="modal" id="clearDataModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Clear All Data</h2>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 16px; color: var(--danger); font-weight: 500;">⚠️ This action cannot be undone!</p>
+                <p style="margin-bottom: 16px;">All projects, tasks, categories, and key persons will be permanently deleted.</p>
+                <p style="margin-bottom: 8px;">To confirm, please type your document name: <strong id="confirmDocName"></strong></p>
+                <div class="form-group">
+                    <input type="text" id="clearDataConfirmInput" placeholder="Type document name here" maxlength="32">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelClearData">Cancel</button>
+                <button class="btn btn-danger" id="confirmClearData" disabled>Clear All Data</button>
             </div>
         </div>
     </div>

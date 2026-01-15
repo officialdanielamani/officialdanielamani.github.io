@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "exportDate": "2026-01-15T02:41:09.344Z",
+  "documentInfo": {
+    "name": "MyTasks",
+    "author": "Me",
+    "version": "1.0"
+  },
+  "projects": [
+    {
+      "id": "id_1768444766822_0ezss813d",
+      "title": "Example Project 1",
+      "priority": 1,
+      "status": "not-started",
+      "category": "Work",
+      "keyPersons": [
+        "Boss"
+      ],
+      "startDate": "2026-01-01",
+      "dueDate": "2026-12-31",
+      "details": "Just example project\n-Task 1\n-Task 2\n-Task 3"
+    },
+    {
+      "id": "id_1768444856743_g75bfrf1g",
+      "title": "Example Project 2",
+      "priority": 3,
+      "status": "in-progress",
+      "category": "Personal",
+      "keyPersons": [],
+      "startDate": "2026-01-01",
+      "dueDate": "2026-01-31",
+      "details": ""
+    }
+  ],
+  "tasks": [
+    {
+      "id": "id_1768444766823_y9n49gdfk",
+      "title": "Task 1",
+      "projectId": "id_1768444766822_0ezss813d",
+      "dueDate": null,
+      "completed": true,
+      "keyPerson": "",
+      "startDate": "",
+      "details": "",
+      "completedAt": "2026-01-15T02:39:54.911Z"
+    },
+    {
+      "id": "id_1768444766823_1qjsff5kt",
+      "title": "Task 2",
+      "projectId": "id_1768444766822_0ezss813d",
+      "dueDate": null,
+      "completed": false,
+      "keyPerson": "",
+      "startDate": "",
+      "details": ""
+    },
+    {
+      "id": "id_1768444766823_bwzsen4if",
+      "title": "Task 3",
+      "projectId": "id_1768444766822_0ezss813d",
+      "dueDate": null,
+      "completed": false,
+      "keyPerson": "",
+      "startDate": "",
+      "details": ""
+    },
+    {
+      "id": "id_1768444856743_83tw77nbp",
+      "title": "Task 1",
+      "projectId": "id_1768444856743_g75bfrf1g",
+      "dueDate": null,
+      "completed": false,
+      "keyPerson": "",
+      "startDate": "",
+      "details": ""
+    },
+    {
+      "id": "id_1768444856743_282vb4cd3",
+      "title": "Task 2",
+      "projectId": "id_1768444856743_g75bfrf1g",
+      "dueDate": null,
+      "completed": false,
+      "keyPerson": "",
+      "startDate": "",
+      "details": ""
+    }
+  ],
+  "categories": [
+    {
+      "name": "Work",
+      "color": "#3b82f6"
+    },
+    {
+      "name": "Personal",
+      "color": "#ec4899"
+    },
+    {
+      "name": "Other",
+      "color": "#6b7280"
+    }
+  ],
+  "keyPersons": [
+    "Boss"
+  ],
+  "settings": {
+    "warningDays": 3,
+    "autoDeleteDays": 0,
+    "theme": "light",
+    "font": "default",
+    "docName": "MyTasks",
+    "docAuthor": "Me",
+    "docVersion": "1.0",
+    "autoMoveProject": false
+  }
+}

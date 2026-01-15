@@ -402,9 +402,10 @@ body {
     background: var(--card-bg);
     border-radius: 8px;
     border: 2px solid var(--border);
-    overflow: hidden;
     transition: all 0.2s ease;
     cursor: grab;
+    display: flex;
+    flex-direction: column;
 }
 
 .project-card:hover {
@@ -441,6 +442,8 @@ body {
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
     transition: background 0.2s ease;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
 }
 
 /* Category color header for cards with category */
@@ -476,6 +479,9 @@ body {
 
 .card-body {
     padding: 10px 12px;
+    border-radius: 0 0 6px 6px;
+    flex: 1;
+    min-height: 0;
 }
 
 .card-meta-row {
@@ -598,6 +604,28 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    max-height: 220px;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.card-tasks::-webkit-scrollbar {
+    width: 6px;
+}
+
+.card-tasks::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 3px;
+}
+
+.card-tasks::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 3px;
+}
+
+.card-tasks::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
 }
 
 .card-task {
@@ -1599,4 +1627,299 @@ body {
     border-radius: 8px;
     background: var(--accent-light);
     min-height: 80px;
+}
+
+/* Project Tasks Section in Modal */
+.project-tasks-section {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--card-bg);
+}
+
+.project-tasks-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.project-tasks-input input[type="text"] {
+    flex: 2;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.project-tasks-input input[type="date"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.project-tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.project-task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    gap: 12px;
+}
+
+.project-task-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.project-task-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.project-task-due {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.project-task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.project-task-actions button {
+    padding: 4px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.project-task-edit {
+    background: var(--accent);
+    color: white;
+}
+
+.project-task-edit:hover {
+    background: var(--accent-hover);
+}
+
+.project-task-delete {
+    background: var(--danger);
+    color: white;
+}
+
+.project-task-delete:hover {
+    background: var(--danger-hover);
+}
+
+.project-tasks-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.project-tasks-list::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 3px;
+}
+
+.project-tasks-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.project-tasks-list::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .project-tasks-input {
+        flex-direction: column;
+    }
+    
+    .project-tasks-input input[type="text"],
+    .project-tasks-input input[type="date"] {
+        width: 100%;
+    }
+    
+    .project-task-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .project-task-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Checkbox List for Multiple Selection */
+.checkbox-list {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-primary);
+}
+
+.checkbox-list:empty::before {
+    content: 'No key persons available. Add them in Settings.';
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 8px;
+}
+
+.checkbox-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+    margin-bottom: 4px;
+    font-weight: normal;
+}
+
+.checkbox-list label:hover {
+    background: var(--bg-tertiary);
+}
+
+.checkbox-list label:last-child {
+    margin-bottom: 0;
+}
+
+.checkbox-list input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+.checkbox-list span {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+/* Column List */
+.column-list {
+    list-style: none;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 12px;
+}
+
+.column-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.column-list li[draggable="true"] {
+    cursor: move;
+}
+
+.column-list li[draggable="true"]:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent);
+}
+
+.column-list li.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.column-list li:last-child {
+    margin-bottom: 0;
+}
+
+.column-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.column-drag-handle {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+}
+
+.column-list li:not([draggable="true"]) .column-drag-handle {
+    opacity: 0.3;
+}
+
+.column-name {
+    font-weight: 500;
+}
+
+.column-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--accent);
+    color: white;
+}
+
+.column-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit-column,
+.btn-delete-column {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-edit-column:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
+.btn-delete-column:hover:not(:disabled) {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.btn-delete-column:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }

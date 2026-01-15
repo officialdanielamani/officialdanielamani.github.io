@@ -8,8 +8,13 @@ const STORAGE_KEYS = {
     TASKS: 'kanban_tasks',
     CATEGORIES: 'kanban_categories',
     KEY_PERSONS: 'kanban_keypersons',
-    SETTINGS: 'kanban_settings'
+    SETTINGS: 'kanban_settings',
+    COLUMNS: 'kanban_columns'
 };
+
+// Temporary storage for tasks being added/edited in project modal
+let tempProjectTasks = [];
+let editingTaskIndex = null;
 
 const DEFAULT_SETTINGS = {
     warningDays: 3,
@@ -21,6 +26,14 @@ const DEFAULT_SETTINGS = {
     docVersion: '1.0',
     autoMoveProject: false
 };
+
+const DEFAULT_COLUMNS = [
+    { id: 'backlog', name: 'Backlog' },
+    { id: 'not-started', name: 'Not Started' },
+    { id: 'in-progress', name: 'In Progress' },
+    { id: 'testing', name: 'Testing' },
+    { id: 'done', name: 'Done' }
+];
 
 const PRIORITY_LABELS = { 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Urgent' };
 const STATUS_LABELS = {
@@ -50,11 +63,13 @@ function getTasks() { return loadData(STORAGE_KEYS.TASKS) || []; }
 function getCategories() { return loadData(STORAGE_KEYS.CATEGORIES) || []; }
 function getKeyPersons() { return loadData(STORAGE_KEYS.KEY_PERSONS) || []; }
 function getSettings() { return { ...DEFAULT_SETTINGS, ...(loadData(STORAGE_KEYS.SETTINGS) || {}) }; }
+function getColumns() { return loadData(STORAGE_KEYS.COLUMNS) || DEFAULT_COLUMNS; }
 function saveProjects(p) { saveData(STORAGE_KEYS.PROJECTS, p); }
 function saveTasks(t) { saveData(STORAGE_KEYS.TASKS, t); }
 function saveCategories(c) { saveData(STORAGE_KEYS.CATEGORIES, c); }
 function saveKeyPersons(k) { saveData(STORAGE_KEYS.KEY_PERSONS, k); }
 function saveSettings(s) { saveData(STORAGE_KEYS.SETTINGS, s); }
+function saveColumns(c) { saveData(STORAGE_KEYS.COLUMNS, c); }
 function generateId() { return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
 
 // Date Utilities
@@ -129,6 +144,10 @@ function autoMoveProject(projectId) {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
     
+    const columns = getColumns();
+    const firstColumn = columns[0].id;
+    const lastColumn = columns[columns.length - 1].id;
+    
     const projectTasks = getTasks().filter(t => t.projectId === projectId);
     
     // If no tasks, do nothing
@@ -139,15 +158,15 @@ function autoMoveProject(projectId) {
     
     let needsUpdate = false;
     
-    // If all tasks are done, move to Done
-    if (allCompleted && project.status !== 'done') {
-        project.status = 'done';
+    // If all tasks are done, move to last column (Done)
+    if (allCompleted && project.status !== lastColumn) {
+        project.status = lastColumn;
         project.completedAt = new Date().toISOString();
         needsUpdate = true;
     }
-    // If has incomplete tasks and currently in Done, move to Backlog
-    else if (hasIncomplete && project.status === 'done') {
-        project.status = 'backlog';
+    // If has incomplete tasks and currently in last column, move to first column (Backlog)
+    else if (hasIncomplete && project.status === lastColumn) {
+        project.status = firstColumn;
         delete project.completedAt;
         needsUpdate = true;
     }
@@ -341,16 +360,52 @@ function validateDates(startDate, dueDate) {
 }
 
 // Migration
-function migrateCategories() {
-    const cats = loadData(STORAGE_KEYS.CATEGORIES);
-    if (cats && cats.length > 0 && typeof cats[0] === 'string') {
-        saveCategories(cats.map(n => ({ name: n, color: DEFAULT_CATEGORY_COLOR })));
-    }
-}
 // ============================================
 // Kanban Board Application - UI Module
 // Rendering & Display Functions
 // ============================================
+
+// Default initial data
+const DEFAULT_DATA = {
+    categories: [
+        { name: 'Work', color: '#3b82f6' },
+        { name: 'Personal', color: '#ec4899' },
+        { name: 'Other', color: '#6b7280' }
+    ],
+    keyPersons: ['Boss'],
+    projects: [],
+    tasks: [],
+    columns: DEFAULT_COLUMNS
+};
+
+// Initialize default data if needed
+function initializeDefaultData() {
+    // Check if this is first time or after clear
+    const hasData = localStorage.getItem(STORAGE_KEYS.CATEGORIES) || 
+                    localStorage.getItem(STORAGE_KEYS.KEY_PERSONS) ||
+                    localStorage.getItem(STORAGE_KEYS.PROJECTS) ||
+                    localStorage.getItem(STORAGE_KEYS.TASKS) ||
+                    localStorage.getItem(STORAGE_KEYS.COLUMNS);
+    
+    if (!hasData) {
+        saveCategories(DEFAULT_DATA.categories);
+        saveKeyPersons(DEFAULT_DATA.keyPersons);
+        saveProjects(DEFAULT_DATA.projects);
+        saveTasks(DEFAULT_DATA.tasks);
+        saveColumns(DEFAULT_DATA.columns);
+    } else {
+        // Ensure data arrays exist even if empty
+        if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
+            saveCategories([]);
+        }
+        if (!localStorage.getItem(STORAGE_KEYS.KEY_PERSONS)) {
+            saveKeyPersons([]);
+        }
+        if (!localStorage.getItem(STORAGE_KEYS.COLUMNS)) {
+            saveColumns(DEFAULT_COLUMNS);
+        }
+    }
+}
 
 let selectedCategoryColor = DEFAULT_CATEGORY_COLOR;
 let confirmCallback = null;
@@ -380,7 +435,20 @@ function openModal(id) {
 }
 function closeModal(id) {
     const m = document.getElementById(id);
-    if (m) { m.classList.remove('active'); document.body.style.overflow = ''; }
+    if (m) { 
+        m.classList.remove('active'); 
+        document.body.style.overflow = ''; 
+        
+        // Reset project task inputs when closing project modal
+        if (id === 'projectModal') {
+            document.getElementById('projectTaskTitle').value = '';
+            document.getElementById('projectTaskDueDate').value = '';
+            const addBtn = document.getElementById('addProjectTask');
+            addBtn.textContent = 'Add';
+            addBtn.style.background = '';
+            editingTaskIndex = null;
+        }
+    }
 }
 
 // Toast
@@ -464,15 +532,30 @@ function renderKanbanBoard() {
     const projects = getProjects();
     const tasks = getTasks();
     const categories = getCategories();
+    const columns = getColumns();
     const sorted = sortProjects(projects, tasks);
     
-    ['backlog', 'not-started', 'in-progress', 'testing', 'done'].forEach(status => {
-        const container = document.getElementById(`cards-${status}`);
-        const count = document.getElementById(`count-${status}`);
-        const filtered = sorted.filter(p => p.status === status);
+    const board = document.getElementById('kanbanBoard');
+    board.innerHTML = '';
+    
+    columns.forEach(column => {
+        const colDiv = document.createElement('div');
+        colDiv.className = 'kanban-column';
+        colDiv.dataset.status = column.id;
         
-        count.textContent = filtered.length;
-        container.innerHTML = '';
+        const filtered = sorted.filter(p => p.status === column.id);
+        
+        colDiv.innerHTML = `
+            <div class="column-header">
+                <h2>${escapeHtml(column.name)}</h2>
+                <span class="column-count">${filtered.length}</span>
+            </div>
+            <div class="column-cards" id="cards-${column.id}"></div>
+        `;
+        
+        board.appendChild(colDiv);
+        
+        const container = colDiv.querySelector('.column-cards');
         
         if (filtered.length === 0) {
             container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="15" y1="9" x2="15" y2="9.01"/><line x1="9" y1="15" x2="15" y2="15"/></svg><p>No projects</p></div>';
@@ -480,6 +563,9 @@ function renderKanbanBoard() {
             filtered.forEach(p => container.appendChild(createProjectCard(p, tasks, categories)));
         }
     });
+    
+    // Re-attach drag and drop listeners
+    setupColumnDragDrop();
     
     checkWarnings();
 }
@@ -565,7 +651,7 @@ function createProjectCard(project, tasks, categories) {
                     ` : ''}
                 </div>
             </div>
-            ${project.keyPerson ? `<div class="card-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${escapeHtml(project.keyPerson)}</div>` : ''}
+            ${project.keyPersons && project.keyPersons.length > 0 ? `<div class="card-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${project.keyPersons.map(k => escapeHtml(k)).join(', ')}</div>` : ''}
             ${totalTasks > 0 ? `
                 <div class="card-tasks">
                     ${tasksHtml}
@@ -622,45 +708,52 @@ function handleDragStart(e) {
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
 }
-document.querySelectorAll('.kanban-column').forEach(col => {
-    col.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        const afterElement = getDragAfterElement(col, e.clientY);
-        const dragging = document.querySelector('.dragging');
-        if (afterElement == null) col.querySelector('.column-cards').appendChild(dragging);
-        else col.querySelector('.column-cards').insertBefore(dragging, afterElement);
-    });
-    col.addEventListener('drop', e => {
-        e.preventDefault();
-        const id = e.dataTransfer.getData('text/plain');
-        const newStatus = col.dataset.status;
-        const projects = getProjects();
-        const tasks = getTasks();
-        const p = projects.find(x => x.id === id);
-        
-        if (p) {
-            // Check if trying to move to Done with incomplete tasks
-            if (newStatus === 'done') {
-                const projectTasks = tasks.filter(t => t.projectId === id);
-                const hasIncompleteTasks = projectTasks.some(t => !t.completed);
-                
-                if (hasIncompleteTasks) {
-                    showToast('Cannot move to Done - project has incomplete tasks', 'error');
-                    renderKanbanBoard(); // Reset card position
-                    return;
-                }
-            }
+
+function setupColumnDragDrop() {
+    const columns = getColumns();
+    const lastColumnId = columns[columns.length - 1].id;
+    
+    document.querySelectorAll('.kanban-column').forEach(col => {
+        col.addEventListener('dragover', e => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const afterElement = getDragAfterElement(col, e.clientY);
+            const dragging = document.querySelector('.dragging');
+            if (afterElement == null) col.querySelector('.column-cards').appendChild(dragging);
+            else col.querySelector('.column-cards').insertBefore(dragging, afterElement);
+        });
+        col.addEventListener('drop', e => {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text/plain');
+            const newStatus = col.dataset.status;
+            const projects = getProjects();
+            const tasks = getTasks();
+            const p = projects.find(x => x.id === id);
             
-            p.status = newStatus;
-            if (newStatus === 'done' && !p.completedAt) p.completedAt = new Date().toISOString();
-            else if (newStatus !== 'done') delete p.completedAt;
-            saveProjects(projects);
-            renderKanbanBoard();
-            showToast('Project moved', 'success');
-        }
+            if (p) {
+                // Check if trying to move to last column (Done) with incomplete tasks
+                if (newStatus === lastColumnId) {
+                    const projectTasks = tasks.filter(t => t.projectId === id);
+                    const hasIncompleteTasks = projectTasks.some(t => !t.completed);
+                    
+                    if (hasIncompleteTasks) {
+                        showToast(`Cannot move to ${columns[columns.length - 1].name} - project has incomplete tasks`, 'error');
+                        renderKanbanBoard(); // Reset card position
+                        return;
+                    }
+                }
+                
+                p.status = newStatus;
+                if (newStatus === lastColumnId && !p.completedAt) p.completedAt = new Date().toISOString();
+                else if (newStatus !== lastColumnId) delete p.completedAt;
+                saveProjects(projects);
+                renderKanbanBoard();
+                showToast('Project moved', 'success');
+            }
+        });
     });
-});
+}
+
 function getDragAfterElement(container, y) {
     const els = [...container.querySelectorAll('.project-card:not(.dragging)')];
     return els.reduce((closest, child) => {
@@ -698,7 +791,9 @@ function showDetail(type, id) {
         html += `<div class="detail-row"><div class="detail-label">Priority:</div><div class="detail-value">${PRIORITY_LABELS[data.priority]}</div></div>`;
         html += `<div class="detail-row"><div class="detail-label">Status:</div><div class="detail-value">${STATUS_LABELS[data.status]}</div></div>`;
         if (data.category) html += `<div class="detail-row"><div class="detail-label">Category:</div><div class="detail-value">${escapeHtml(data.category)}</div></div>`;
-        if (data.keyPerson) html += `<div class="detail-row"><div class="detail-label">Key Person:</div><div class="detail-value">${escapeHtml(data.keyPerson)}</div></div>`;
+        if (data.keyPersons && data.keyPersons.length > 0) {
+            html += `<div class="detail-row"><div class="detail-label">Key Persons:</div><div class="detail-value">${data.keyPersons.map(k => escapeHtml(k)).join(', ')}</div></div>`;
+        }
         if (data.startDate) html += `<div class="detail-row"><div class="detail-label">Start Date:</div><div class="detail-value">${formatDate(data.startDate)}</div></div>`;
         if (data.dueDate) html += `<div class="detail-row"><div class="detail-label">Due Date:</div><div class="detail-value">${formatDate(data.dueDate)}</div></div>`;
         if (data.details) html += `<div class="detail-row"><div class="detail-label">Details:</div><div class="detail-value"><div class="detail-markdown">${parseMarkdown(data.details)}</div></div></div>`;
@@ -717,7 +812,9 @@ function showDetail(type, id) {
         const project = getProjects().find(p => p.id === data.projectId);
         html += `<div class="detail-row"><div class="detail-label">Project:</div><div class="detail-value">${project ? escapeHtml(project.title) : 'Unknown'}</div></div>`;
         html += `<div class="detail-row"><div class="detail-label">Status:</div><div class="detail-value">${data.completed ? 'Completed' : 'Not Completed'}</div></div>`;
-        if (data.keyPerson) html += `<div class="detail-row"><div class="detail-label">Key Person:</div><div class="detail-value">${escapeHtml(data.keyPerson)}</div></div>`;
+        if (data.keyPersons && data.keyPersons.length > 0) {
+            html += `<div class="detail-row"><div class="detail-label">Key Persons:</div><div class="detail-value">${data.keyPersons.map(k => escapeHtml(k)).join(', ')}</div></div>`;
+        }
         if (data.startDate) html += `<div class="detail-row"><div class="detail-label">Start Date:</div><div class="detail-value">${formatDate(data.startDate)}</div></div>`;
         if (data.dueDate) html += `<div class="detail-row"><div class="detail-label">Due Date:</div><div class="detail-value">${formatDate(data.dueDate)}</div></div>`;
         if (data.details) html += `<div class="detail-row"><div class="detail-label">Details:</div><div class="detail-value"><div class="detail-markdown">${parseMarkdown(data.details)}</div></div></div>`;
@@ -736,6 +833,14 @@ function openProjectModal(id = null) {
     form.reset();
     document.getElementById('projectId').value = '';
     
+    // Reset temporary tasks
+    tempProjectTasks = [];
+    editingTaskIndex = null;
+    
+    // Update dropdowns and checkboxes
+    updateStatusDropdowns();
+    updateKeyPersonCheckboxes();
+    
     if (id) {
         const p = getProjects().find(x => x.id === id);
         if (!p) return;
@@ -746,18 +851,135 @@ function openProjectModal(id = null) {
         document.getElementById('projectPriority').value = p.priority;
         document.getElementById('projectStatus').value = p.status;
         document.getElementById('projectCategory').value = p.category || '';
-        document.getElementById('projectKeyPerson').value = p.keyPerson || '';
+        
+        // Set multiple key persons
+        setKeyPersonCheckboxes('projectKeyPersons', p.keyPersons || []);
+        
         document.getElementById('projectStartDate').value = formatDateForInput(p.startDate);
         document.getElementById('projectDueDate').value = formatDateForInput(p.dueDate);
         document.getElementById('projectDetails').value = p.details || '';
         
+        // Load existing tasks for this project
+        const existingTasks = getTasks().filter(t => t.projectId === id);
+        tempProjectTasks = existingTasks.map(t => ({
+            id: t.id,
+            title: t.title,
+            dueDate: t.dueDate
+        }));
+        
         deleteBtn.style.display = 'inline-flex';
     } else {
         title.textContent = 'New Project';
+        setKeyPersonCheckboxes('projectKeyPersons', []);
         deleteBtn.style.display = 'none';
     }
     
+    renderProjectTasksList();
     openModal('projectModal');
+}
+
+// Render the temporary tasks list in project modal
+function renderProjectTasksList() {
+    const list = document.getElementById('projectTasksList');
+    if (!list) return;
+    
+    if (tempProjectTasks.length === 0) {
+        list.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px; text-align: center; padding: 12px;">No tasks added yet</p>';
+        return;
+    }
+    
+    list.innerHTML = tempProjectTasks.map((task, index) => `
+        <div class="project-task-item">
+            <div class="project-task-info">
+                <div class="project-task-title">${escapeHtml(task.title)}</div>
+                <div class="project-task-due">${task.dueDate ? 'Due: ' + formatDate(task.dueDate) : 'No due date'}</div>
+            </div>
+            <div class="project-task-actions">
+                <button type="button" class="project-task-edit" data-index="${index}">Edit</button>
+                <button type="button" class="project-task-delete" data-index="${index}">Delete</button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add event listeners
+    list.querySelectorAll('.project-task-edit').forEach(btn => {
+        btn.addEventListener('click', () => editProjectTask(parseInt(btn.dataset.index)));
+    });
+    list.querySelectorAll('.project-task-delete').forEach(btn => {
+        btn.addEventListener('click', () => deleteProjectTask(parseInt(btn.dataset.index)));
+    });
+}
+
+// Add or update a task in the temporary list
+function addOrUpdateProjectTask() {
+    const titleInput = document.getElementById('projectTaskTitle');
+    const dueDateInput = document.getElementById('projectTaskDueDate');
+    
+    const title = titleInput.value.trim();
+    const dueDate = dueDateInput.value;
+    
+    if (!title) {
+        showToast('Please enter a task name', 'error');
+        return;
+    }
+    
+    const taskData = {
+        title: title,
+        dueDate: dueDate || null
+    };
+    
+    if (editingTaskIndex !== null) {
+        // Update existing task
+        tempProjectTasks[editingTaskIndex] = {
+            ...tempProjectTasks[editingTaskIndex],
+            ...taskData
+        };
+        editingTaskIndex = null;
+        showToast('Task updated', 'success');
+    } else {
+        // Add new task
+        tempProjectTasks.push(taskData);
+        showToast('Task added', 'success');
+    }
+    
+    // Clear inputs
+    titleInput.value = '';
+    dueDateInput.value = '';
+    
+    renderProjectTasksList();
+}
+
+// Edit a temporary task
+function editProjectTask(index) {
+    const task = tempProjectTasks[index];
+    document.getElementById('projectTaskTitle').value = task.title;
+    document.getElementById('projectTaskDueDate').value = task.dueDate || '';
+    editingTaskIndex = index;
+    
+    // Update button text
+    const addBtn = document.getElementById('addProjectTask');
+    addBtn.textContent = 'Update';
+    addBtn.style.background = 'var(--warning)';
+}
+
+// Delete a temporary task
+function deleteProjectTask(index) {
+    tempProjectTasks.splice(index, 1);
+    
+    // Reset editing state if we were editing this task
+    if (editingTaskIndex === index) {
+        editingTaskIndex = null;
+        document.getElementById('projectTaskTitle').value = '';
+        document.getElementById('projectTaskDueDate').value = '';
+        const addBtn = document.getElementById('addProjectTask');
+        addBtn.textContent = 'Add';
+        addBtn.style.background = '';
+    } else if (editingTaskIndex !== null && editingTaskIndex > index) {
+        editingTaskIndex--;
+    }
+    
+    renderProjectTasksList();
+    showToast('Task removed', 'success');
 }
 
 function openTaskModal(id = null, projectId = null) {
@@ -769,6 +991,7 @@ function openTaskModal(id = null, projectId = null) {
     
     // Update dropdown first to populate options
     updateProjectDropdown();
+    updateKeyPersonCheckboxes();
     
     if (id) {
         const t = getTasks().find(x => x.id === id);
@@ -778,7 +1001,10 @@ function openTaskModal(id = null, projectId = null) {
         document.getElementById('taskId').value = t.id;
         document.getElementById('taskTitle').value = t.title;
         document.getElementById('taskProject').value = t.projectId;
-        document.getElementById('taskKeyPerson').value = t.keyPerson || '';
+        
+        // Set multiple key persons
+        setKeyPersonCheckboxes('taskKeyPersons', t.keyPersons || []);
+        
         document.getElementById('taskStartDate').value = formatDateForInput(t.startDate);
         document.getElementById('taskDueDate').value = formatDateForInput(t.dueDate);
         document.getElementById('taskDetails').value = t.details || '';
@@ -787,6 +1013,7 @@ function openTaskModal(id = null, projectId = null) {
     } else {
         title.textContent = 'New Task';
         form.reset();
+        setKeyPersonCheckboxes('taskKeyPersons', []);
         deleteBtn.style.display = 'none';
         
         // Set project after reset and dropdown update
@@ -805,8 +1032,29 @@ function createProject(data) {
         return;
     }
     const projects = getProjects();
-    projects.push({ id: generateId(), ...data, priority: parseInt(data.priority) });
+    const newProjectId = generateId();
+    projects.push({ id: newProjectId, ...data, priority: parseInt(data.priority) });
     saveProjects(projects);
+    
+    // Save temporary tasks if any
+    if (tempProjectTasks.length > 0) {
+        const tasks = getTasks();
+        tempProjectTasks.forEach(tempTask => {
+            const taskData = {
+                id: generateId(),
+                title: tempTask.title,
+                projectId: newProjectId,
+                dueDate: tempTask.dueDate,
+                completed: false,
+                keyPerson: '',
+                startDate: '',
+                details: ''
+            };
+            tasks.push(taskData);
+        });
+        saveTasks(tasks);
+    }
+    
     renderKanbanBoard();
 }
 
@@ -835,6 +1083,44 @@ function updateProject(id, data) {
         if (data.status === 'done' && !p.completedAt) p.completedAt = new Date().toISOString();
         else if (data.status !== 'done') delete p.completedAt;
         saveProjects(projects);
+        
+        // Sync tasks from tempProjectTasks
+        const allTasks = getTasks();
+        const existingTaskIds = tempProjectTasks.filter(t => t.id).map(t => t.id);
+        
+        // Remove tasks that were deleted in the modal
+        const updatedTasks = allTasks.filter(t => {
+            if (t.projectId === id) {
+                return existingTaskIds.includes(t.id);
+            }
+            return true;
+        });
+        
+        // Update or add tasks
+        tempProjectTasks.forEach(tempTask => {
+            if (tempTask.id) {
+                // Update existing task
+                const task = updatedTasks.find(t => t.id === tempTask.id);
+                if (task) {
+                    task.title = tempTask.title;
+                    task.dueDate = tempTask.dueDate;
+                }
+            } else {
+                // Add new task
+                updatedTasks.push({
+                    id: generateId(),
+                    title: tempTask.title,
+                    projectId: id,
+                    dueDate: tempTask.dueDate,
+                    completed: false,
+                    keyPerson: '',
+                    startDate: '',
+                    details: ''
+                });
+            }
+        });
+        
+        saveTasks(updatedTasks);
         renderKanbanBoard();
     }
 }
@@ -1082,7 +1368,8 @@ function renderKeyPersonList() {
     
     kps.forEach((k, index) => {
         const li = document.createElement('li');
-        const usageCount = projects.filter(p => p.keyPerson === k).length + tasks.filter(t => t.keyPerson === k).length;
+        const usageCount = projects.filter(p => p.keyPersons && p.keyPersons.includes(k)).length + 
+                          tasks.filter(t => t.keyPersons && t.keyPersons.includes(k)).length;
         const canDelete = usageCount === 0;
         
         li.innerHTML = `
@@ -1126,24 +1413,42 @@ function renderKeyPersonList() {
     });
 }
 
+let editingKeyPersonIndex = null;
+
 function editKeyPerson(index) {
     const kps = getKeyPersons();
     if (index < 0 || index >= kps.length) return;
     
+    editingKeyPersonIndex = index;
     const oldName = kps[index];
-    const newName = prompt(`Edit key person name:`, oldName);
+    
+    document.getElementById('editKeyPersonName').value = oldName;
+    openModal('editKeyPersonModal');
+    
+    // Focus on input
+    setTimeout(() => {
+        document.getElementById('editKeyPersonName').focus();
+    }, 100);
+}
+
+function saveEditKeyPerson() {
+    const kps = getKeyPersons();
+    if (editingKeyPersonIndex === null || editingKeyPersonIndex < 0 || editingKeyPersonIndex >= kps.length) return;
+    
+    const oldName = kps[editingKeyPersonIndex];
+    const newName = document.getElementById('editKeyPersonName').value;
     
     if (newName && newName.trim() && newName.trim() !== oldName) {
         const trimmedName = newName.trim();
         
         // Check for duplicates
-        if (kps.some((k, i) => i !== index && k === trimmedName)) {
+        if (kps.some((k, i) => i !== editingKeyPersonIndex && k === trimmedName)) {
             showToast('Key person already exists', 'error');
             return;
         }
         
         // Update the name
-        kps[index] = trimmedName;
+        kps[editingKeyPersonIndex] = trimmedName;
         
         // Update all projects and tasks using this key person
         const projects = getProjects();
@@ -1151,15 +1456,17 @@ function editKeyPerson(index) {
         let updated = false;
         
         projects.forEach(p => {
-            if (p.keyPerson === oldName) {
-                p.keyPerson = trimmedName;
+            if (p.keyPersons && p.keyPersons.includes(oldName)) {
+                const idx = p.keyPersons.indexOf(oldName);
+                p.keyPersons[idx] = trimmedName;
                 updated = true;
             }
         });
         
         tasks.forEach(t => {
-            if (t.keyPerson === oldName) {
-                t.keyPerson = trimmedName;
+            if (t.keyPersons && t.keyPersons.includes(oldName)) {
+                const idx = t.keyPersons.indexOf(oldName);
+                t.keyPersons[idx] = trimmedName;
                 updated = true;
             }
         });
@@ -1174,6 +1481,9 @@ function editKeyPerson(index) {
         updateKeyPersonDropdowns();
         renderKanbanBoard();
         showToast('Key person updated', 'success');
+        
+        closeModal('editKeyPersonModal');
+        editingKeyPersonIndex = null;
     }
 }
 
@@ -1184,7 +1494,8 @@ function deleteKeyPerson(index) {
     const name = kps[index];
     const projects = getProjects();
     const tasks = getTasks();
-    const usageCount = projects.filter(p => p.keyPerson === name).length + tasks.filter(t => t.keyPerson === name).length;
+    const usageCount = projects.filter(p => p.keyPersons && p.keyPersons.includes(name)).length + 
+                       tasks.filter(t => t.keyPersons && t.keyPersons.includes(name)).length;
     
     if (usageCount > 0) {
         showToast(`Cannot delete - used by ${usageCount} item${usageCount > 1 ? 's' : ''}`, 'error');
@@ -1211,15 +1522,67 @@ function updateCategoryDropdowns() {
     });
 }
 
-function updateKeyPersonDropdowns() {
+function updateKeyPersonCheckboxes() {
     const kps = getKeyPersons();
-    const selects = [document.getElementById('projectKeyPerson'), document.getElementById('taskKeyPerson')];
-    selects.forEach(s => {
-        const current = s.value;
-        s.innerHTML = '<option value="">-- None --</option>';
-        kps.forEach(k => s.innerHTML += `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`);
-        s.value = current;
+    const containers = [
+        document.getElementById('projectKeyPersons'),
+        document.getElementById('taskKeyPersons')
+    ];
+    
+    containers.forEach(container => {
+        if (!container) return;
+        
+        if (kps.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        // Store currently checked values
+        const checked = Array.from(container.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        
+        container.innerHTML = '';
+        kps.forEach(kp => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = kp;
+            checkbox.name = 'keyPersons';
+            if (checked.includes(kp)) {
+                checkbox.checked = true;
+            }
+            
+            const span = document.createElement('span');
+            span.textContent = kp;
+            
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            container.appendChild(label);
+        });
     });
+}
+
+function setKeyPersonCheckboxes(containerId, selectedPersons) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = selectedPersons.includes(cb.value);
+    });
+}
+
+function getSelectedKeyPersons(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    
+    return Array.from(container.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
+}
+
+function updateKeyPersonDropdowns() {
+    // Legacy function - no longer used but kept for compatibility
+    updateKeyPersonCheckboxes();
 }
 
 function updateProjectDropdown() {
@@ -1361,9 +1724,19 @@ function importData(file) {
 // Clear All Data
 function clearAllData() {
     Object.values(STORAGE_KEYS).forEach(k => { if (k !== STORAGE_KEYS.SETTINGS) localStorage.removeItem(k); });
-    renderKanbanBoard(); renderCategoryList(); renderKeyPersonList(); updateCategoryDropdowns(); updateKeyPersonDropdowns();
-    updateStorageInfo();
-    showToast('All data cleared', 'success');
+    showToast('All data cleared. Reloading...', 'success');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+// Open clear data modal
+function openClearDataModal() {
+    const settings = getSettings();
+    document.getElementById('confirmDocName').textContent = settings.docName;
+    document.getElementById('clearDataConfirmInput').value = '';
+    document.getElementById('confirmClearData').disabled = true;
+    openModal('clearDataModal');
 }
 
 // Event Listeners Setup
@@ -1376,7 +1749,8 @@ function setupEventListeners() {
     });
     document.getElementById('btnSettings').addEventListener('click', () => { 
         renderCategoryList(); 
-        renderKeyPersonList(); 
+        renderKeyPersonList();
+        renderColumnList();
         updateStorageInfo();
         openModal('settingsModal'); 
     });
@@ -1412,7 +1786,7 @@ function setupEventListeners() {
             priority: document.getElementById('projectPriority').value, 
             status: document.getElementById('projectStatus').value, 
             category: document.getElementById('projectCategory').value, 
-            keyPerson: document.getElementById('projectKeyPerson').value, 
+            keyPersons: getSelectedKeyPersons('projectKeyPersons'),
             startDate: document.getElementById('projectStartDate').value,
             dueDate: document.getElementById('projectDueDate').value, 
             details: document.getElementById('projectDetails').value 
@@ -1430,6 +1804,27 @@ function setupEventListeners() {
         });
     });
     
+    // Project Modal - Task Management
+    document.getElementById('addProjectTask').addEventListener('click', (e) => {
+        e.preventDefault();
+        addOrUpdateProjectTask();
+    });
+    
+    // Allow Enter key to add task in project modal
+    document.getElementById('projectTaskTitle').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addOrUpdateProjectTask();
+        }
+    });
+    
+    document.getElementById('projectTaskDueDate').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addOrUpdateProjectTask();
+        }
+    });
+    
     // Task Modal
     document.getElementById('closeTaskModal').addEventListener('click', () => closeModal('taskModal'));
     document.getElementById('cancelTask').addEventListener('click', () => closeModal('taskModal'));
@@ -1441,7 +1836,7 @@ function setupEventListeners() {
         const data = { 
             title: document.getElementById('taskTitle').value, 
             projectId: document.getElementById('taskProject').value, 
-            keyPerson: document.getElementById('taskKeyPerson').value, 
+            keyPersons: getSelectedKeyPersons('taskKeyPersons'),
             startDate: document.getElementById('taskStartDate').value,
             dueDate: document.getElementById('taskDueDate').value, 
             details: document.getElementById('taskDetails').value
@@ -1569,9 +1964,71 @@ function setupEventListeners() {
             e.target.value = ''; 
         } 
     });
-    document.getElementById('clearAllData').addEventListener('click', () => 
-        showConfirm('Are you sure you want to delete ALL data? This cannot be undone!', clearAllData)
-    );
+    document.getElementById('clearAllData').addEventListener('click', openClearDataModal);
+    
+    // Edit Key Person Modal
+    document.getElementById('closeEditKeyPerson').addEventListener('click', () => {
+        closeModal('editKeyPersonModal');
+        editingKeyPersonIndex = null;
+    });
+    document.getElementById('cancelEditKeyPerson').addEventListener('click', () => {
+        closeModal('editKeyPersonModal');
+        editingKeyPersonIndex = null;
+    });
+    document.getElementById('saveEditKeyPerson').addEventListener('click', saveEditKeyPerson);
+    document.querySelector('#editKeyPersonModal .modal-overlay').addEventListener('click', () => {
+        closeModal('editKeyPersonModal');
+        editingKeyPersonIndex = null;
+    });
+    document.getElementById('editKeyPersonName').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveEditKeyPerson();
+        }
+    });
+    
+    // Clear Data Modal
+    document.getElementById('cancelClearData').addEventListener('click', () => closeModal('clearDataModal'));
+    document.querySelector('#clearDataModal .modal-overlay').addEventListener('click', () => closeModal('clearDataModal'));
+    document.getElementById('clearDataConfirmInput').addEventListener('input', e => {
+        const settings = getSettings();
+        const btn = document.getElementById('confirmClearData');
+        btn.disabled = e.target.value !== settings.docName;
+    });
+    document.getElementById('confirmClearData').addEventListener('click', () => {
+        closeModal('clearDataModal');
+        clearAllData();
+    });
+    
+    // Column Management
+    document.getElementById('addColumn').addEventListener('click', addColumn);
+    document.getElementById('newColumnName').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addColumn();
+        }
+    });
+    
+    // Edit Column Modal
+    document.getElementById('closeEditColumn').addEventListener('click', () => {
+        closeModal('editColumnModal');
+        editingColumnIndex = null;
+    });
+    document.getElementById('cancelEditColumn').addEventListener('click', () => {
+        closeModal('editColumnModal');
+        editingColumnIndex = null;
+    });
+    document.getElementById('saveEditColumn').addEventListener('click', saveEditColumn);
+    document.querySelector('#editColumnModal .modal-overlay').addEventListener('click', () => {
+        closeModal('editColumnModal');
+        editingColumnIndex = null;
+    });
+    document.getElementById('editColumnName').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveEditColumn();
+        }
+    });
     
     // Detail Modal
     document.getElementById('closeDetailModal').addEventListener('click', () => closeModal('detailModal'));
@@ -1645,8 +2102,8 @@ function updateLastSave() {
 
 // Initialize Application
 function init() {
-    // Migrate old data formats
-    migrateCategories();
+    // Initialize default data on first run
+    initializeDefaultData();
     
     // Load settings
     const s = getSettings();
@@ -1680,5 +2137,269 @@ function init() {
     updateStorageInfo();
 }
 
+// Migrate single keyPerson to keyPersons array
+
 // Start application when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+// Column Management
+let editingColumnIndex = null;
+let columnDragSrcIndex = null;
+
+function generateColumnId(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function renderColumnList() {
+    const list = document.getElementById('columnList');
+    const columns = getColumns();
+    const projects = getProjects();
+    list.innerHTML = '';
+    
+    if (columns.length === 0) {
+        list.innerHTML = '<li style="border: none; background: transparent; color: var(--text-muted); text-align: center;">No columns configured</li>';
+        return;
+    }
+    
+    columns.forEach((col, index) => {
+        const li = document.createElement('li');
+        li.dataset.index = index;
+        
+        const usageCount = projects.filter(p => p.status === col.id).length;
+        const isFirst = index === 0;
+        const isLast = index === columns.length - 1;
+        const canDrag = !isFirst && !isLast;
+        const canDelete = canDrag && columns.length > 2 && usageCount === 0;
+        
+        if (canDrag) {
+            li.draggable = true;
+        }
+        
+        li.innerHTML = `
+            <div class="column-info">
+                ${canDrag ? `
+                    <div class="column-drag-handle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/>
+                        </svg>
+                    </div>
+                ` : '<div style="width: 20px;"></div>'}
+                <span class="column-name">${escapeHtml(col.name)}</span>
+                ${isFirst ? '<span class="column-badge">First (Start)</span>' : ''}
+                ${isLast ? '<span class="column-badge">Last (End)</span>' : ''}
+                ${usageCount > 0 ? `<small style="color: var(--text-muted); margin-left: 8px;">(${usageCount} project${usageCount > 1 ? 's' : ''})</small>` : ''}
+            </div>
+            <div class="column-actions">
+                <button class="btn-edit-column" data-index="${index}" title="Edit name">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+                <button class="btn-delete-column" data-index="${index}" ${!canDelete ? 'disabled' : ''} title="${!canDelete ? (isFirst || isLast ? 'Cannot delete first or last column' : columns.length <= 2 ? 'Need at least 2 columns' : 'Column in use') : 'Delete'}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        list.appendChild(li);
+        
+        // Drag and drop for reordering (only for middle columns)
+        if (canDrag) {
+            li.addEventListener('dragstart', e => {
+                columnDragSrcIndex = index;
+                li.classList.add('dragging');
+            });
+            
+            li.addEventListener('dragend', e => {
+                li.classList.remove('dragging');
+                columnDragSrcIndex = null;
+            });
+        }
+        
+        // Allow dropping on any column except first and last
+        if (!isFirst && !isLast) {
+            li.addEventListener('dragover', e => {
+                e.preventDefault();
+                const draggingItem = list.querySelector('.dragging');
+                if (draggingItem && draggingItem !== li) {
+                    const rect = li.getBoundingClientRect();
+                    const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                    list.insertBefore(draggingItem, next ? li.nextSibling : li);
+                }
+            });
+            
+            li.addEventListener('drop', e => {
+                e.preventDefault();
+                if (columnDragSrcIndex !== null) {
+                    // Get current order from DOM
+                    const items = Array.from(list.querySelectorAll('li'));
+                    const newOrder = [];
+                    
+                    items.forEach(item => {
+                        const idx = parseInt(item.dataset.index);
+                        newOrder.push(columns[idx]);
+                    });
+                    
+                    saveColumns(newOrder);
+                    renderColumnList();
+                    updateStatusDropdowns();
+                    renderKanbanBoard();
+                    showToast('Columns reordered', 'success');
+                }
+            });
+        }
+    });
+    
+    // Event listeners for edit/delete
+    list.querySelectorAll('.btn-edit-column').forEach(btn => {
+        btn.addEventListener('click', () => editColumn(parseInt(btn.dataset.index)));
+    });
+    
+    list.querySelectorAll('.btn-delete-column').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!btn.disabled) deleteColumn(parseInt(btn.dataset.index));
+        });
+    });
+}
+
+function addColumn() {
+    const input = document.getElementById('newColumnName');
+    const name = input.value.trim();
+    
+    if (!name) {
+        showToast('Please enter a column name', 'error');
+        return;
+    }
+    
+    const columns = getColumns();
+    
+    if (columns.length >= 12) {
+        showToast('Maximum 12 columns allowed', 'error');
+        return;
+    }
+    
+    const id = generateColumnId(name);
+    if (columns.find(c => c.id === id)) {
+        showToast('Column already exists', 'error');
+        return;
+    }
+    
+    columns.push({ id, name });
+    saveColumns(columns);
+    renderColumnList();
+    updateStatusDropdowns();
+    renderKanbanBoard();
+    input.value = '';
+    showToast('Column added', 'success');
+}
+
+function editColumn(index) {
+    const columns = getColumns();
+    if (index < 0 || index >= columns.length) return;
+    
+    editingColumnIndex = index;
+    document.getElementById('editColumnName').value = columns[index].name;
+    openModal('editColumnModal');
+    setTimeout(() => document.getElementById('editColumnName').focus(), 100);
+}
+
+function saveEditColumn() {
+    const columns = getColumns();
+    if (editingColumnIndex === null || editingColumnIndex < 0 || editingColumnIndex >= columns.length) return;
+    
+    const newName = document.getElementById('editColumnName').value.trim();
+    if (!newName) {
+        showToast('Please enter a column name', 'error');
+        return;
+    }
+    
+    const oldCol = columns[editingColumnIndex];
+    const newId = generateColumnId(newName);
+    
+    // Check for duplicate (excluding current)
+    if (columns.some((c, i) => i !== editingColumnIndex && c.id === newId)) {
+        showToast('Column name already exists', 'error');
+        return;
+    }
+    
+    // Update column
+    columns[editingColumnIndex].name = newName;
+    const oldId = oldCol.id;
+    columns[editingColumnIndex].id = newId;
+    
+    // Update all projects using this column
+    if (oldId !== newId) {
+        const projects = getProjects();
+        projects.forEach(p => {
+            if (p.status === oldId) p.status = newId;
+        });
+        saveProjects(projects);
+    }
+    
+    saveColumns(columns);
+    renderColumnList();
+    updateStatusDropdowns();
+    renderKanbanBoard();
+    closeModal('editColumnModal');
+    editingColumnIndex = null;
+    showToast('Column updated', 'success');
+}
+
+function deleteColumn(index) {
+    const columns = getColumns();
+    if (index < 0 || index >= columns.length) return;
+    
+    // Cannot delete first or last column
+    if (index === 0 || index === columns.length - 1) {
+        showToast('Cannot delete first or last column', 'error');
+        return;
+    }
+    
+    if (columns.length <= 2) {
+        showToast('Need at least 2 columns', 'error');
+        return;
+    }
+    
+    const col = columns[index];
+    const projects = getProjects();
+    const usageCount = projects.filter(p => p.status === col.id).length;
+    
+    if (usageCount > 0) {
+        showToast(`Cannot delete - used by ${usageCount} project${usageCount > 1 ? 's' : ''}`, 'error');
+        return;
+    }
+    
+    showConfirm(`Delete column "${col.name}"?`, () => {
+        columns.splice(index, 1);
+        saveColumns(columns);
+        renderColumnList();
+        updateStatusDropdowns();
+        renderKanbanBoard();
+        showToast('Column deleted', 'success');
+    });
+}
+
+function updateStatusDropdowns() {
+    const columns = getColumns();
+    const selects = [document.getElementById('projectStatus')];
+    
+    selects.forEach(select => {
+        if (!select) return;
+        const current = select.value;
+        select.innerHTML = '';
+        columns.forEach(col => {
+            const option = document.createElement('option');
+            option.value = col.id;
+            option.textContent = col.name;
+            select.appendChild(option);
+        });
+        // Restore selection if still valid
+        if (columns.find(c => c.id === current)) {
+            select.value = current;
+        }
+    });
+}
