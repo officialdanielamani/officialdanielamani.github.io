@@ -214,6 +214,32 @@
             margin-top: 20px;
             margin-bottom: 10px;
         }
+        
+        .section-card p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+        
+        .section-card ul {
+            margin-bottom: 15px;
+            margin-top: 10px;
+            padding-left: 25px;
+            list-style-type: disc;
+        }
+        
+        .section-card ol {
+            margin-bottom: 15px;
+            margin-top: 10px;
+            padding-left: 25px;
+            list-style-type: decimal;
+        }
+        
+        .section-card li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
@@ -274,7 +300,14 @@
             
             <section id="getting-started" class="section section-card">
                 <h2>How to Use</h2>
-                <p>Create a <strong>Project</strong> and <strong>Task</strong>. Tick the <strong>checkbox</strong> of the task. <strong>Drag</strong> the Project card to other columns depending on your situation. For example, if all your tasks are overdue you may move to <strong>Backlog</strong>. Or when all Tasks are done it moves to <strong>Done</strong>. You also can change the position by <strong>Edit Project &rarr; Status</strong>.</p>
+                <ol>
+                    <li>Create a <strong>Project</strong> using the Project button on the top right</li>
+                    <li>Add <strong>Tasks</strong> to your project (either when creating the project or using the Task button)</li>
+                    <li>Tick the <strong>checkbox</strong> when a task is completed</li>
+                    <li><strong>Drag</strong> the Project card to different columns as work progresses (Backlog → Not Started → In Progress → Testing → Done)</li>
+                    <li>Alternatively, change the position by <strong>Edit Project → Status</strong></li>
+                </ol>
+                <p><strong>Example:</strong> If all your tasks are overdue, you may move the project back to <strong>Backlog</strong>. When all tasks are done, move it to <strong>Done</strong>.</p>
             </section>
             
             <section id="project" class="section section-card">
@@ -291,7 +324,12 @@
                 
                 <h3 id="project-edit">Editing Projects</h3>
                 <p>To edit, <strong>click at the title/header</strong> of the project card. The Project Details will appear and you can click <strong>Edit</strong> to change information if needed.</p>
-                <p>You also can add <em>multiple tasks</em> when creating a New Project or when editing a project, but it only asks for <strong>Task Name</strong> and <strong>Due Date</strong>.</p>
+                <p>You also can add <em>multiple tasks</em> when creating a New Project or when editing a project. Task fields include:</p>
+                <ul>
+                    <li><strong>Task Name</strong> (required)</li>
+                    <li><strong>Start Date</strong> (optional)</li>
+                    <li><strong>Due Date</strong> (optional)</li>
+                </ul>
                 
                 <h3 id="project-dates">Dates & Alerts</h3>
                 <p>You also can add <strong>start</strong> and <strong>due dates</strong> to make alerts when the due date is near or the Project is overdue.</p>
@@ -315,7 +353,12 @@
                 <p>To Edit a task, navigate to the project of the task card, click <strong>Info</strong>. For example, you create <em>"Task 1"</em> on <em>"Example Project 1"</em>.</p>
                 
                 <h3 id="task-multiple">Adding Multiple Tasks</h3>
-                <p>To add multiple tasks in a project you may go to <strong>Edit Project</strong> then add Tasks there, but it only adds <strong>task title</strong> and its <strong>due date</strong>.</p>
+                <p>To add multiple tasks in a project you may go to <strong>Edit Project</strong> then add Tasks there. Each task requires:</p>
+                <ul>
+                    <li><strong>Task Name</strong> (required)</li>
+                    <li><strong>Start Date</strong> (optional)</li>
+                    <li><strong>Due Date</strong> (optional)</li>
+                </ul>
             </section>
             
             <section id="status" class="section section-card">
@@ -385,7 +428,7 @@
             <section id="dependency" class="section section-card">
                 <h2>Dependency</h2>
                 <ul>
-                    <li><code>https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css</code></li>
+                    <li><strong>Bootstrap Icons:</strong> <code>https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css</code></li>
                 </ul>
             </section>
             
@@ -400,7 +443,7 @@
         </main>
     </div>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Apply theme from localStorage
         const settings = JSON.parse(localStorage.getItem('kanban_settings') || '{"theme":"light","font":"system"}');
         document.documentElement.setAttribute('data-theme', settings.theme);
@@ -410,12 +453,4 @@
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                const target = docume
