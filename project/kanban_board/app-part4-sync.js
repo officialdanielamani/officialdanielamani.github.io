@@ -262,6 +262,9 @@ function startAutoSave() {
         autoSaveIntervalId = setInterval(autoSaveToGist, intervalMs);
         console.log(`Auto-save started: every ${cfg.autoSaveInterval} minutes`);
     }
+    if (typeof updateHeaderInfo === 'function') {
+        updateHeaderInfo();
+    }
 }
 
 function stopAutoSave() {
@@ -269,6 +272,9 @@ function stopAutoSave() {
         clearInterval(autoSaveIntervalId);
         autoSaveIntervalId = null;
         console.log('Auto-save stopped');
+    }
+    if (typeof updateHeaderInfo === 'function') {
+        updateHeaderInfo();
     }
 }
 
