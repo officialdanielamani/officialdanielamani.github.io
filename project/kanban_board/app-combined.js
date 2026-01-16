@@ -2807,18 +2807,6 @@ const SYNC_STORAGE_KEY = 'kanban_sync_config';
 let autoSaveIntervalId = null;
 let lastSyncedDataHash = null;
 
-// Simple hash function for data comparison
-function hashData(data) {
-    const str = JSON.stringify(data);
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash.toString(36);
-}
-
 function getSyncConfig() {
     try { return JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY)) || {}; } 
     catch(e) { return {}; }
