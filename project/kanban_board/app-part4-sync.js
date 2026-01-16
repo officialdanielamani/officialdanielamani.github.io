@@ -391,25 +391,25 @@ function initSyncUI() {
             statusEl.style.display = 'block';
             statusEl.style.background = 'var(--danger)';
             statusEl.style.color = 'white';
-            statusEl.textContent = '❌ Please enter both Gist ID and Token';
+            statusEl.textContent = 'Please enter both Gist ID and Token';
             return;
         }
         
         statusEl.style.display = 'block';
         statusEl.style.background = 'var(--bg-tertiary)';
         statusEl.style.color = 'var(--text)';
-        statusEl.textContent = '⏳ Testing connection...';
+        statusEl.textContent = 'Testing connection...';
         
         const result = await testSyncConnection(gistId, token, fileName);
         
         if (result.success) {
             statusEl.style.background = 'var(--success)';
             statusEl.style.color = 'white';
-            statusEl.textContent = `✅ Connected! Gist owner: ${result.owner}`;
+            statusEl.textContent = `Connected! Gist owner: ${result.owner}`;
         } else {
             statusEl.style.background = 'var(--danger)';
             statusEl.style.color = 'white';
-            statusEl.textContent = `❌ Failed: ${result.error}`;
+            statusEl.textContent = `Failed: ${result.error}`;
         }
     });
     

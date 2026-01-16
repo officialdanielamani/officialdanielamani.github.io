@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board - Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .docs-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+        
+        .docs-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .docs-main {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .toc {
+            position: sticky;
+            top: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .docs-container {
+                flex-direction: column;
+            }
+            
+            .docs-sidebar {
+                width: 100%;
+            }
+            
+            .toc {
+                position: static;
+                max-height: none;
+            }
+        }
+        
+        .docs-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 30px;
+        }
+        
+        .docs-header h1 {
+            color: var(--text-primary);
+            font-size: 2em;
+            margin: 0;
+        }
+        
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .btn-back:hover {
+            background: var(--accent-hover);
+        }
+        
+        .toc h2 {
+            color: var(--text-primary);
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .toc > ul > li {
+            margin-bottom: 10px;
+        }
+        
+        .toc ul ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .toc ul ul li {
+            margin-bottom: 6px;
+        }
+        
+        .toc a {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .toc a:hover {
+            background: var(--bg-tertiary);
+            color: var(--accent);
+        }
+        
+        .docs-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .docs-content h2 {
+            color: var(--text-primary);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .docs-content h3 {
+            color: var(--text-primary);
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 12px;
+        }
+        
+        .docs-content h4 {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .docs-content p {
+            margin-bottom: 12px;
+        }
+        
+        .docs-content ul {
+            margin-bottom: 15px;
+            padding-left: 25px;
+        }
+        
+        .docs-content li {
+            margin-bottom: 6px;
+        }
+        
+        .docs-content code {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .docs-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 30px 0;
+        }
+        
+        .section {
+            scroll-margin-top: 20px;
+        }
+        
+        .section-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .section-card h2 {
+            margin-top: 0;
+            color: var(--text-primary);
+            font-size: 1.8em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .section-card h3 {
+            color: var(--text-primary);
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        
+        .section-card h4 {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <aside class="docs-sidebar">
+            <div class="toc">
+                <h2><i class="bi bi-list-ul"></i> Contents</h2>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#getting-started">How to Use</a></li>
+                    <li>
+                        <a href="#project">Project</a>
+                        <ul>
+                            <li><a href="#project-create">Creating Projects</a></li>
+                            <li><a href="#project-edit">Editing Projects</a></li>
+                            <li><a href="#project-dates">Dates & Alerts</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#task">Task</a>
+                        <ul>
+                            <li><a href="#task-create">Creating Tasks</a></li>
+                            <li><a href="#task-edit">Editing Tasks</a></li>
+                            <li><a href="#task-multiple">Adding Multiple Tasks</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#status">Status Columns</a></li>
+                    <li>
+                        <a href="#settings">Settings</a>
+                        <ul>
+                            <li><a href="#settings-general">General</a></li>
+                            <li><a href="#settings-kanban">Kanban</a></li>
+                            <li><a href="#settings-categories">Categories</a></li>
+                            <li><a href="#settings-keypersons">Key Persons</a></li>
+                            <li><a href="#settings-sync">Sync</a></li>
+                            <li><a href="#settings-data">Data</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#roadmap">Roadmap</a></li>
+                    <li><a href="#dependency">Dependency</a></li>
+                    <li><a href="#disclaimer">Disclaimer</a></li>
+                </ul>
+            </div>
+        </aside>
+        
+        <main class="docs-main">
+            <div class="docs-header">
+                <a href="index.html" class="btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to App
+                </a>
+                <h1>Kanban Board Documentation</h1>
+            </div>
+            <section id="overview" class="section section-card">
+                <h2>Kanban Board</h2>
+                <p>A simple application to manage your Project and Task.</p>
+            </section>
+            
+            <section id="getting-started" class="section section-card">
+                <h2>How to Use</h2>
+                <p>Create a <strong>Project</strong> and <strong>Task</strong>. Tick the <strong>checkbox</strong> of the task. <strong>Drag</strong> the Project card to other columns depending on your situation. For example, if all your tasks are overdue you may move to <strong>Backlog</strong>. Or when all Tasks are done it moves to <strong>Done</strong>. You also can change the position by <strong>Edit Project &rarr; Status</strong>.</p>
+            </section>
+            
+            <section id="project" class="section section-card">
+                <h2>Project</h2>
+                
+                <h3 id="project-create">Creating Projects</h3>
+                <p>To create a Project, on the <strong>top right</strong> there is a button to <strong>create a Project</strong>. For projects, the required fields are:</p>
+                <ul>
+                    <li><strong>Project Title</strong></li>
+                    <li><strong>Priority Level</strong></li>
+                    <li><strong>Status</strong></li>
+                </ul>
+                <p>Then click <strong>Save</strong>. The Project card will appear on the Status column.</p>
+                
+                <h3 id="project-edit">Editing Projects</h3>
+                <p>To edit, <strong>click at the title/header</strong> of the project card. The Project Details will appear and you can click <strong>Edit</strong> to change information if needed.</p>
+                <p>You also can add <em>multiple tasks</em> when creating a New Project or when editing a project, but it only asks for <strong>Task Name</strong> and <strong>Due Date</strong>.</p>
+                
+                <h3 id="project-dates">Dates & Alerts</h3>
+                <p>You also can add <strong>start</strong> and <strong>due dates</strong> to make alerts when the due date is near or the Project is overdue.</p>
+                <p>The appearance of the project card can be customized at <strong>Settings &rarr; Categories</strong>. Here you also can manage the list of Categories.</p>
+                <p>If you want to add a <strong>key person</strong> or who manages the project if needed, this can be managed at <strong>Settings &rarr; Key Person</strong>.</p>
+                <p>If you want to add more information you can put it in the <strong>Details</strong> section.</p>
+            </section>
+            
+            <section id="task" class="section section-card">
+                <h2>Task</h2>
+                <p>The Task is <strong>linked</strong> to a project. So a project may have multiple tasks.</p>
+                
+                <h3 id="task-create">Creating Tasks</h3>
+                <p>You can create a task by clicking the <strong>Task button</strong> on the top right home screen. The task requires:</p>
+                <ul>
+                    <li><strong>Title</strong></li>
+                    <li><strong>Project</strong></li>
+                </ul>
+                
+                <h3 id="task-edit">Editing Tasks</h3>
+                <p>To Edit a task, navigate to the project of the task card, click <strong>Info</strong>. For example, you create <em>"Task 1"</em> on <em>"Example Project 1"</em>.</p>
+                
+                <h3 id="task-multiple">Adding Multiple Tasks</h3>
+                <p>To add multiple tasks in a project you may go to <strong>Edit Project</strong> then add Tasks there, but it only adds <strong>task title</strong> and its <strong>due date</strong>.</p>
+            </section>
+            
+            <section id="status" class="section section-card">
+                <h2>Status Columns</h2>
+                <p>By default there are: <strong>Backlog, Not Started, In Progress, Testing</strong> and <strong>Done</strong>. You can customize the arrangement, name and style at <strong>Settings &rarr; Kanban &rarr; Kanban Columns</strong>.</p>
+                <p>You can add or reduce status columns if needed depending on your usage.</p>
+            </section>
+            
+            <section id="settings" class="section section-card">
+                <h2>Settings</h2>
+                <p>Here are all settings for the Kanban Board app:</p>
+                
+                <h3 id="settings-general">General</h3>
+                <ul>
+                    <li><strong>Document Name</strong> &ndash; The document name</li>
+                    <li><strong>Author</strong> &ndash; Author of the document</li>
+                    <li><strong>Version</strong> &ndash; Revision of the document</li>
+                    <li><strong>Theme</strong> &ndash; Change the app appearance</li>
+                    <li><strong>Font</strong> &ndash; Change the app font</li>
+                </ul>
+                
+                <h3 id="settings-kanban">Kanban</h3>
+                <p>Change how many days before <strong>due date warning</strong>.</p>
+                <p>You also can enable <strong>Auto Delete</strong> tasks when all tasks in project are Done if needed.</p>
+                <p>Here you can add or remove <strong>Kanban columns</strong> as needed. Give it a name, color and optional icon for customization. The columns can be arranged except the first and last column that act as <strong>Start</strong> and <strong>Done</strong>.</p>
+                
+                <h3 id="settings-categories">Categories</h3>
+                <p>Create and Edit Category name. Give it a name and pick a color. Your Project card will show the category name and it follows the color of the category.</p>
+                <p>The category can only be <strong>deleted</strong> if there are no projects associated with the category.</p>
+                
+                <h3 id="settings-keypersons">Key Persons</h3>
+                <p>Manage the list of people who can be assigned to projects.</p>
+                
+                <h3 id="settings-sync">Sync</h3>
+                <p>You can sync the data if you have a <strong>GitHub Account</strong>. Follow the steps and provide the details needed. Click <strong>Test Connection</strong> to check if the information is correct. If all OK, click <strong>Save Settings</strong>.</p>
+                
+                <h4>Manual Sync</h4>
+                <p>You can manually save by clicking <strong>Push to Cloud</strong>, this will overwrite the file at GitHub Gist. You also can download your data to the app by clicking <strong>Pull</strong>.</p>
+                
+                <h4>Replace vs Merge</h4>
+                <ul>
+                    <li><strong>Replace</strong> &ndash; Will remove all current data and replace it with all data from GitHub Gist</li>
+                    <li><strong>Merge</strong> &ndash; Will only check if there is the same project, will update it and don't change any project that is not in GitHub Gist</li>
+                </ul>
+                
+                <h4>Auto Save</h4>
+                <p>There is also an option to <strong>Auto Save</strong>. The <strong>Save button</strong> on the main screen will blink <strong>green</strong> when autosave is running. But the autosave only sends when there are changes; if no change it will skip.</p>
+                
+                <h4>Clear Sync</h4>
+                <p>To remove the Sync, just click <strong>Clear Sync Settings</strong>.</p>
+                
+                <h3 id="settings-data">Data</h3>
+                <p>Here you can <strong>export</strong> or <strong>import</strong> your backup of the Kanban. For import there are two modes: <strong>Replace</strong> and <strong>Merge</strong>.</p>
+                <p>You also can see the <strong>local storage usage</strong>. In general, browsers allocate 100KB to 5MB depending on settings and browser.</p>
+                <p>To clear the Kanban to default you can click <strong>Clear All Data</strong>. This will clear all data including the sync information.</p>
+            </section>
+            
+            <section id="roadmap" class="section section-card">
+                <h2>Roadmap</h2>
+                <ul>
+                    <li>Add option to enable notification for near <strong>Start date</strong> for task</li>
+                    <li>Add filter (by date, by Priority, by Category)</li>
+                    <li>Other options to sync (If possible)</li>
+                </ul>
+            </section>
+            
+            <section id="dependency" class="section section-card">
+                <h2>Dependency</h2>
+                <ul>
+                    <li><code>https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css</code></li>
+                </ul>
+            </section>
+            
+            <section id="disclaimer" class="section section-card">
+                <h2>Disclaimer</h2>
+                <ul>
+                    <li>Made with help of AI</li>
+                    <li>My target is to make the app simple and easy to use</li>
+                    <li>No Advanced Features as to do that maybe other apps are much more suited with our application like ERP planning that is out of scope</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // Apply theme from localStorage
+        const settings = JSON.parse(localStorage.getItem('kanban_settings') || '{"theme":"light","font":"system"}');
+        document.documentElement.setAttribute('data-theme', settings.theme);
+        document.documentElement.setAttribute('data-font', settings.font);
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
