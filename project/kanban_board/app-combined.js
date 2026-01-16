@@ -2829,14 +2829,15 @@ function saveSyncConfig(config) {
 }
 
 function getAllKanbanData() {
+    const settings = getSettings();
     return {
         projects: getProjects(),
         tasks: getTasks(),
         categories: getCategories(),
         keyPersons: getKeyPersons(),
-        settings: getSettings(),
+        settings: settings,
         columns: getColumns(),
-        syncTimestamp: new Date().toISOString()
+        syncTimestamp: settings.syncTimestamp || new Date().toISOString()
     };
 }
 
@@ -2845,7 +2846,13 @@ function setAllKanbanData(data) {
     if (data.tasks) saveTasks(data.tasks);
     if (data.categories) saveCategories(data.categories);
     if (data.keyPersons) saveKeyPersons(data.keyPersons);
-    if (data.settings) saveSettings(data.settings);
+    if (data.settings) {
+        const updatedSettings = { ...data.settings, syncTimestamp: data.syncTimestamp };
+        saveSettings(updatedSettings);
+    } else if (data.syncTimestamp) {
+        const currentSettings = getSettings();
+        saveSettings({ ...currentSettings, syncTimestamp: data.syncTimestamp });
+    }
     if (data.columns) saveColumns(data.columns);
 }
 
@@ -2872,7 +2879,13 @@ function mergeKanbanData(data) {
     }
     if (data.categories) saveCategories(data.categories);
     if (data.keyPersons) saveKeyPersons(data.keyPersons);
-    if (data.settings) saveSettings(data.settings);
+    if (data.settings) {
+        const updatedSettings = { ...data.settings, syncTimestamp: data.syncTimestamp };
+        saveSettings(updatedSettings);
+    } else if (data.syncTimestamp) {
+        const currentSettings = getSettings();
+        saveSettings({ ...currentSettings, syncTimestamp: data.syncTimestamp });
+    }
     if (data.columns) saveColumns(data.columns);
 }
 
@@ -2922,6 +2935,10 @@ async function testSyncConnection(gistId, token, fileName = 'kanban-sync.json') 
 
 async function pushToGist(gistId, token, fileName = 'kanban-sync.json') {
     const data = getAllKanbanData();
+    const currentSettings = getSettings();
+    currentSettings.syncTimestamp = data.syncTimestamp;
+    saveSettings(currentSettings);
+    
     await gistRequest('PATCH', gistId, token, data, fileName);
     const config = getSyncConfig();
     config.lastSync = new Date().toISOString();
@@ -3096,8 +3113,10 @@ function initSyncUI() {
         actionsSection.style.display = 'block';
     }
     
-    // Update sync display
     updateLastSyncDisplay();
+    
+    if (window._syncUIInitialized) return;
+    window._syncUIInitialized = true;
     
     // Test Connection
     document.getElementById('testSyncConnection')?.addEventListener('click', async () => {
@@ -3158,84 +3177,33 @@ function initSyncUI() {
     });
     
     // Push
-    document.getElementById('syncPush')?.addEventListener('click', async () => {
+    document.getElementById('syncPush')?.addEventListener('click', () => {
         const cfg = getSyncConfig();
         if (!cfg.gistId || !cfg.token) {
             showToast('Please configure sync settings first', 'error');
             return;
         }
-        
-        try {
-            showToast('Pushing data...', 'info');
-            await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
-            updateLastSyncDisplay();
-            updateHeaderInfo();
-            showToast('Data pushed successfully!', 'success');
-        } catch (error) {
-            if (error.message.includes('HTTP')) {
-                showWarningBanner('Connection Issue: Unable to sync to GitHub', 'error');
-            } else if (error.message.includes('Gist')) {
-                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
-            }
-            showToast(`Push failed: ${error.message}`, 'error');
-        }
+        openModal('pushConfirmModal');
     });
     
-    // Pull
     // Pull Replace
-    document.getElementById('syncPullReplace')?.addEventListener('click', async () => {
+    document.getElementById('syncPullReplace')?.addEventListener('click', () => {
         const cfg = getSyncConfig();
         if (!cfg.gistId || !cfg.token) {
             showToast('Please configure sync settings first', 'error');
             return;
         }
-        
-        if (!confirm('This will overwrite your local data with cloud data. Continue?')) {
-            return;
-        }
-        
-        try {
-            showToast('Pulling data...', 'info');
-            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', false);
-            updateLastSyncDisplay();
-            showToast('Data pulled successfully! Refreshing...', 'success');
-            setTimeout(() => location.reload(), 1000);
-        } catch (error) {
-            if (error.message.includes('HTTP')) {
-                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
-            } else if (error.message.includes('Gist')) {
-                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
-            }
-            showToast(`Pull failed: ${error.message}`, 'error');
-        }
+        openModal('pullReplaceConfirmModal');
     });
     
     // Pull Merge
-    document.getElementById('syncPullMerge')?.addEventListener('click', async () => {
+    document.getElementById('syncPullMerge')?.addEventListener('click', () => {
         const cfg = getSyncConfig();
         if (!cfg.gistId || !cfg.token) {
             showToast('Please configure sync settings first', 'error');
             return;
         }
-        
-        if (!confirm('This will merge cloud data with your local data. Conflicts will be resolved using cloud data. Continue?')) {
-            return;
-        }
-        
-        try {
-            showToast('Merging data...', 'info');
-            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', true);
-            updateLastSyncDisplay();
-            showToast('Data merged successfully! Refreshing...', 'success');
-            setTimeout(() => location.reload(), 1000);
-        } catch (error) {
-            if (error.message.includes('HTTP')) {
-                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
-            } else if (error.message.includes('Gist')) {
-                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
-            }
-            showToast(`Merge failed: ${error.message}`, 'error');
-        }
+        openModal('pullMergeConfirmModal');
     });
     
     // Clear Sync Settings - open modal
@@ -3300,6 +3268,78 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Data merged successfully! Refreshing...', 'success');
             setTimeout(() => location.reload(), 1000);
         } catch (error) {
+            showToast(`Merge failed: ${error.message}`, 'error');
+        }
+    });
+    
+    // Push Confirm Modal
+    document.getElementById('closePushConfirmModal')?.addEventListener('click', () => closeModal('pushConfirmModal'));
+    document.querySelector('#pushConfirmModal .modal-overlay')?.addEventListener('click', () => closeModal('pushConfirmModal'));
+    document.getElementById('cancelPush')?.addEventListener('click', () => closeModal('pushConfirmModal'));
+    
+    document.getElementById('confirmPush')?.addEventListener('click', async () => {
+        closeModal('pushConfirmModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Pushing data...', 'info');
+            await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
+            updateLastSyncDisplay();
+            updateHeaderInfo();
+            showToast('Data pushed successfully!', 'success');
+        } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync to GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
+            showToast(`Push failed: ${error.message}`, 'error');
+        }
+    });
+    
+    // Pull Replace Confirm Modal
+    document.getElementById('closePullReplaceConfirmModal')?.addEventListener('click', () => closeModal('pullReplaceConfirmModal'));
+    document.querySelector('#pullReplaceConfirmModal .modal-overlay')?.addEventListener('click', () => closeModal('pullReplaceConfirmModal'));
+    document.getElementById('cancelPullReplace')?.addEventListener('click', () => closeModal('pullReplaceConfirmModal'));
+    
+    document.getElementById('confirmPullReplace')?.addEventListener('click', async () => {
+        closeModal('pullReplaceConfirmModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Pulling data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', false);
+            updateLastSyncDisplay();
+            showToast('Data pulled successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
+            showToast(`Pull failed: ${error.message}`, 'error');
+        }
+    });
+    
+    // Pull Merge Confirm Modal
+    document.getElementById('closePullMergeConfirmModal')?.addEventListener('click', () => closeModal('pullMergeConfirmModal'));
+    document.querySelector('#pullMergeConfirmModal .modal-overlay')?.addEventListener('click', () => closeModal('pullMergeConfirmModal'));
+    document.getElementById('cancelPullMerge')?.addEventListener('click', () => closeModal('pullMergeConfirmModal'));
+    
+    document.getElementById('confirmPullMerge')?.addEventListener('click', async () => {
+        closeModal('pullMergeConfirmModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Merging data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', true);
+            updateLastSyncDisplay();
+            showToast('Data merged successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
             showToast(`Merge failed: ${error.message}`, 'error');
         }
     });

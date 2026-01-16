@@ -698,6 +698,60 @@
         </div>
     </div>
 
+    <!-- Push Confirm Modal -->
+    <div class="modal" id="pushConfirmModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Push to Cloud</h2>
+                <button class="btn-close" id="closePushConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Upload your local data to GitHub Gist?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPush">Cancel</button>
+                <button class="btn btn-primary" id="confirmPush">Push</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pull Replace Confirm Modal -->
+    <div class="modal" id="pullReplaceConfirmModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Pull (Replace)</h2>
+                <button class="btn-close" id="closePullReplaceConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>This will overwrite your local data with cloud data. Continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPullReplace">Cancel</button>
+                <button class="btn btn-danger" id="confirmPullReplace">Replace</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pull Merge Confirm Modal -->
+    <div class="modal" id="pullMergeConfirmModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Pull (Merge)</h2>
+                <button class="btn-close" id="closePullMergeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>This will merge cloud data with your local data. Conflicts will be resolved using cloud data. Continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPullMerge">Cancel</button>
+                <button class="btn btn-primary" id="confirmPullMerge">Merge</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
