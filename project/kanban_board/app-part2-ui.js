@@ -154,24 +154,32 @@ function checkWarnings() {
     let overdueTasks = 0;
     let dueSoonProjects = 0;
     let dueSoonTasks = 0;
+    let startingSoonProjects = 0;
+    let startingSoonTasks = 0;
     
     // Check projects
     projects.forEach(p => {
         if (p.status !== 'done' && isOverdue(p.dueDate)) overdueProjects++;
         else if (p.status !== 'done' && isDueSoon(p.dueDate, settings.warningDays)) dueSoonProjects++;
+        
+        if (p.status !== 'done' && isStartingSoon(p.startDate, settings.warningDaysBeforeStart)) startingSoonProjects++;
     });
     
     // Check tasks
     tasks.forEach(t => {
         if (!t.completed && isOverdue(t.dueDate)) overdueTasks++;
         else if (!t.completed && isDueSoon(t.dueDate, settings.warningDays)) dueSoonTasks++;
+        
+        if (!t.completed && isStartingSoon(t.startDate, settings.warningDaysBeforeStart)) startingSoonTasks++;
     });
     
     const overdueBanner = document.getElementById('overdueBanner');
     const warningBanner = document.getElementById('warningBanner');
+    const startingBanner = document.getElementById('startingBanner');
     
     const totalOverdue = overdueProjects + overdueTasks;
     const totalDueSoon = dueSoonProjects + dueSoonTasks;
+    const totalStartingSoon = startingSoonProjects + startingSoonTasks;
     
     if (totalOverdue > 0) {
         let overdueText = '';
@@ -188,19 +196,56 @@ function checkWarnings() {
         overdueBanner.style.display = 'none';
     }
     
-    if (totalDueSoon > 0) {
+    if (totalDueSoon > 0 && settings.warningDays !== -1) {
         let dueSoonText = '';
-        if (dueSoonProjects > 0 && dueSoonTasks > 0) {
-            dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's' : ''} and ${dueSoonTasks} task${dueSoonTasks > 1 ? 's' : ''} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
-        } else if (dueSoonProjects > 0) {
-            dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's are' : ' is'} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
+        if (settings.warningDays === 0) {
+            // Same day message
+            if (dueSoonProjects > 0 && dueSoonTasks > 0) {
+                dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's' : ''} and ${dueSoonTasks} task${dueSoonTasks > 1 ? 's' : ''} due today!`;
+            } else if (dueSoonProjects > 0) {
+                dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's are' : ' is'} due today!`;
+            } else {
+                dueSoonText = `${dueSoonTasks} task${dueSoonTasks > 1 ? 's are' : ' is'} due today!`;
+            }
         } else {
-            dueSoonText = `${dueSoonTasks} task${dueSoonTasks > 1 ? 's are' : ' is'} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
+            if (dueSoonProjects > 0 && dueSoonTasks > 0) {
+                dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's' : ''} and ${dueSoonTasks} task${dueSoonTasks > 1 ? 's' : ''} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
+            } else if (dueSoonProjects > 0) {
+                dueSoonText = `${dueSoonProjects} project${dueSoonProjects > 1 ? 's are' : ' is'} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
+            } else {
+                dueSoonText = `${dueSoonTasks} task${dueSoonTasks > 1 ? 's are' : ' is'} due within ${settings.warningDays} day${settings.warningDays > 1 ? 's' : ''}!`;
+            }
         }
         document.getElementById('warningText').textContent = dueSoonText;
         warningBanner.style.display = 'flex';
     } else {
         warningBanner.style.display = 'none';
+    }
+    
+    if (totalStartingSoon > 0 && settings.warningDaysBeforeStart !== -1) {
+        let startingSoonText = '';
+        if (settings.warningDaysBeforeStart === 0) {
+            // Same day message
+            if (startingSoonProjects > 0 && startingSoonTasks > 0) {
+                startingSoonText = `${startingSoonProjects} project${startingSoonProjects > 1 ? 's' : ''} and ${startingSoonTasks} task${startingSoonTasks > 1 ? 's' : ''} start today!`;
+            } else if (startingSoonProjects > 0) {
+                startingSoonText = `${startingSoonProjects} project${startingSoonProjects > 1 ? 's' : ''} start${startingSoonProjects === 1 ? 's' : ''} today!`;
+            } else {
+                startingSoonText = `${startingSoonTasks} task${startingSoonTasks > 1 ? 's' : ''} start${startingSoonTasks === 1 ? 's' : ''} today!`;
+            }
+        } else {
+            if (startingSoonProjects > 0 && startingSoonTasks > 0) {
+                startingSoonText = `${startingSoonProjects} project${startingSoonProjects > 1 ? 's' : ''} and ${startingSoonTasks} task${startingSoonTasks > 1 ? 's' : ''} will start in ${settings.warningDaysBeforeStart} day${settings.warningDaysBeforeStart > 1 ? 's' : ''}`;
+            } else if (startingSoonProjects > 0) {
+                startingSoonText = `${startingSoonProjects} project${startingSoonProjects > 1 ? 's' : ''} will start in ${settings.warningDaysBeforeStart} day${settings.warningDaysBeforeStart > 1 ? 's' : ''}`;
+            } else {
+                startingSoonText = `${startingSoonTasks} task${startingSoonTasks > 1 ? 's' : ''} will start in ${settings.warningDaysBeforeStart} day${settings.warningDaysBeforeStart > 1 ? 's' : ''}`;
+            }
+        }
+        document.getElementById('startingText').textContent = startingSoonText;
+        startingBanner.style.display = 'flex';
+    } else {
+        startingBanner.style.display = 'none';
     }
 }
 

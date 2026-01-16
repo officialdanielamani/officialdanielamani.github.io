@@ -498,6 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusEl = document.getElementById('syncStatus');
         if (statusEl) statusEl.style.display = 'none';
         
+        stopAutoSave(); // This will also update the indicator
         updateHeaderInfo();
         showToast('Sync settings cleared', 'success');
         closeModal('clearSyncModal');

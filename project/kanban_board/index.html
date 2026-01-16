@@ -47,6 +47,11 @@
             <span id="warningText">Tasks approaching due date!</span>
             <button class="btn-close-warning" id="closeWarning">&times;</button>
         </div>
+        <div class="starting-banner" id="startingBanner" style="display: none;">
+            <i class="bi bi-info-circle" style="font-size: 20px;"></i>
+            <span id="startingText">Tasks starting soon!</span>
+            <button class="btn-close-warning" id="closeStarting">&times;</button>
+        </div>
 
         <!-- Kanban Board -->
         <main class="kanban-board" id="kanbanBoard">
@@ -172,15 +177,22 @@
                         <label for="taskTitle">Title *</label>
                         <input type="text" id="taskTitle" required placeholder="Enter task title" maxlength="32">
                     </div>
-                    <div class="form-group">
-                        <label for="taskProject">Project *</label>
-                        <select id="taskProject" required>
-                            <option value="">-- Select Project --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Key Persons</label>
-                        <div id="taskKeyPersons" class="checkbox-list"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskProject">Project *</label>
+                            <select id="taskProject" required>
+                                <option value="">-- Select Project --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priority *</label>
+                            <select id="taskPriority" required>
+                                <option value="1">Low</option>
+                                <option value="2">Medium</option>
+                                <option value="3">High</option>
+                                <option value="4">Urgent</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -273,9 +285,14 @@
                 <!-- Kanban Tab -->
                 <div class="settings-panel" id="panel-kanban">
                     <div class="form-group">
+                        <label for="warningDaysBeforeStart">Warning Days Before Start Date</label>
+                        <input type="number" id="warningDaysBeforeStart" min="-1" max="30" value="3">
+                        <small>Show notification for tasks/projects starting soon. Set to -1 to disable, 0 for same day only, or X days before start date.</small>
+                    </div>
+                    <div class="form-group">
                         <label for="warningDays">Warning Days Before Due Date</label>
-                        <input type="number" id="warningDays" min="1" max="30" value="3">
-                        <small>Show warning for tasks due within this many days</small>
+                        <input type="number" id="warningDays" min="-1" max="30" value="3">
+                        <small>Show warning for tasks/projects due soon. Set to -1 to disable, 0 for same day only, or X days before due date.</small>
                     </div>
                     <div class="form-group">
                         <label for="autoDeleteDays">Auto-delete Completed Projects After (Days)</label>
@@ -583,15 +600,16 @@
     <!-- Edit Column Modal -->
     <div class="modal" id="editColumnModal">
         <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h2>Edit Column</h2>
                 <button class="btn-close" id="closeEditColumn">&times;</button>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="editColumnId">
                 <div class="form-group">
-                    <label for="editColumnName">Name</label>
-                    <input type="text" id="editColumnName" placeholder="Enter column name" maxlength="32">
+                    <label for="editColumnName">Column Name</label>
+                    <input type="text" id="editColumnName" placeholder="Column name" maxlength="32">
                 </div>
                 <div class="form-group">
                     <label>Color</label>

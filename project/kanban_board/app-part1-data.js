@@ -135,6 +135,7 @@ let tempProjectTasks = [];
 let editingTaskIndex = null;
 
 const DEFAULT_SETTINGS = {
+    warningDaysBeforeStart: 3,
     warningDays: 3,
     autoDeleteDays: 0,
     theme: 'dark',
@@ -209,10 +210,29 @@ function isOverdue(dateStr) {
     return new Date() > d;
 }
 function isDueSoon(dateStr, days) {
-    if (!dateStr) return false;
+    if (!dateStr || days === -1) return false; // -1 = disabled
     const d = new Date(dateStr); d.setHours(23,59,59,999);
+    if (days === 0) {
+        // Check if due date is today
+        const t = new Date(); t.setHours(0,0,0,0);
+        const dCopy = new Date(dateStr); dCopy.setHours(0,0,0,0);
+        return dCopy.getTime() === t.getTime();
+    }
     const w = new Date(); w.setDate(w.getDate() + days);
     return new Date() <= d && d <= w;
+}
+function isStartingSoon(dateStr, days) {
+    if (!dateStr || days === -1) return false; // -1 = disabled
+    const d = new Date(dateStr); d.setHours(0,0,0,0);
+    const t = new Date(); t.setHours(0,0,0,0);
+    if (days === 0) {
+        // Check if start date is today
+        return d.getTime() === t.getTime();
+    }
+    // Check if start date is within the next X days
+    const w = new Date(); w.setDate(w.getDate() + days);
+    w.setHours(23,59,59,999);
+    return t <= d && d <= w;
 }
 function getDaysUntilDue(dateStr) {
     if (!dateStr) return null;

@@ -285,6 +285,20 @@ body {
     flex-shrink: 0;
 }
 
+.starting-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #22c55e !important;
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.starting-banner svg {
+    flex-shrink: 0;
+}
+
 .info-banner {
     display: flex;
     align-items: center;
@@ -951,6 +965,20 @@ body {
     font-size: 0.95rem;
     font-family: inherit;
     transition: border-color 0.2s ease;
+}
+
+/* Fix date input calendar icon visibility in dark themes */
+.form-group input[type="date"] {
+    color-scheme: light;
+}
+
+[data-theme="light"] .form-group input[type="date"] {
+    color-scheme: light;
+}
+
+[data-theme="dark"] .form-group input[type="date"],
+[data-theme="keqing"] .form-group input[type="date"] {
+    color-scheme: dark;
 }
 
 .form-group input:focus,

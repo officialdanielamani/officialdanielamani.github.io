@@ -159,6 +159,25 @@ function openClearDataModal() {
 }
 
 // Event Listeners Setup
+// Helper function to safely add event listeners
+function safeAddEventListener(elementId, event, handler) {
+    const element = typeof elementId === 'string' ? document.getElementById(elementId) : elementId;
+    if (element) {
+        element.addEventListener(event, handler);
+    } else if (typeof elementId === 'string') {
+        console.warn(`Element not found: ${elementId}`);
+    }
+}
+
+function safeQuerySelector(selector, event, handler) {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.addEventListener(event, handler);
+    } else {
+        console.warn(`Element not found with selector: ${selector}`);
+    }
+}
+
 function setupEventListeners() {
     // Header buttons
     document.getElementById('btnAddProject').addEventListener('click', () => openProjectModal());
@@ -177,6 +196,9 @@ function setupEventListeners() {
     });
     document.getElementById('closeWarning').addEventListener('click', () => { 
         document.getElementById('warningBanner').style.display = 'none'; 
+    });
+    document.getElementById('closeStarting').addEventListener('click', () => { 
+        document.getElementById('startingBanner').style.display = 'none'; 
     });
     
     // Project Modal
@@ -306,9 +328,17 @@ function setupEventListeners() {
     });
     
     // Settings - General
+    document.getElementById('warningDaysBeforeStart').addEventListener('change', e => { 
+        const s = getSettings(); 
+        s.warningDaysBeforeStart = parseInt(e.target.value); 
+        if (s.warningDaysBeforeStart < -1) s.warningDaysBeforeStart = -1;
+        saveSettings(s); 
+        checkWarnings(); 
+    });
     document.getElementById('warningDays').addEventListener('change', e => { 
         const s = getSettings(); 
-        s.warningDays = parseInt(e.target.value) || 3; 
+        s.warningDays = parseInt(e.target.value); 
+        if (s.warningDays < -1) s.warningDays = -1;
         saveSettings(s); 
         checkWarnings(); 
     });
@@ -385,20 +415,20 @@ function setupEventListeners() {
     document.getElementById('clearAllData').addEventListener('click', openClearDataModal);
     
     // Edit Key Person Modal
-    document.getElementById('closeEditKeyPerson').addEventListener('click', () => {
+    document.getElementById('closeEditKeyPerson')?.addEventListener('click', () => {
         closeModal('editKeyPersonModal');
         editingKeyPersonIndex = null;
     });
-    document.getElementById('cancelEditKeyPerson').addEventListener('click', () => {
+    document.getElementById('cancelEditKeyPerson')?.addEventListener('click', () => {
         closeModal('editKeyPersonModal');
         editingKeyPersonIndex = null;
     });
-    document.getElementById('saveEditKeyPerson').addEventListener('click', saveEditKeyPerson);
-    document.querySelector('#editKeyPersonModal .modal-overlay').addEventListener('click', () => {
+    document.getElementById('saveEditKeyPerson')?.addEventListener('click', saveEditKeyPerson);
+    document.querySelector('#editKeyPersonModal .modal-overlay')?.addEventListener('click', () => {
         closeModal('editKeyPersonModal');
         editingKeyPersonIndex = null;
     });
-    document.getElementById('editKeyPersonName').addEventListener('keypress', e => {
+    document.getElementById('editKeyPersonName')?.addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
             saveEditKeyPerson();
@@ -406,20 +436,20 @@ function setupEventListeners() {
     });
     
     // Edit Category Modal
-    document.getElementById('closeEditCategory').addEventListener('click', () => {
+    document.getElementById('closeEditCategory')?.addEventListener('click', () => {
         closeModal('editCategoryModal');
         editingCategoryIndex = null;
     });
-    document.getElementById('cancelEditCategory').addEventListener('click', () => {
+    document.getElementById('cancelEditCategory')?.addEventListener('click', () => {
         closeModal('editCategoryModal');
         editingCategoryIndex = null;
     });
-    document.getElementById('saveEditCategory').addEventListener('click', saveEditCategory);
-    document.querySelector('#editCategoryModal .modal-overlay').addEventListener('click', () => {
+    document.getElementById('saveEditCategory')?.addEventListener('click', saveEditCategory);
+    document.querySelector('#editCategoryModal .modal-overlay')?.addEventListener('click', () => {
         closeModal('editCategoryModal');
         editingCategoryIndex = null;
     });
-    document.getElementById('editCategoryName').addEventListener('keypress', e => {
+    document.getElementById('editCategoryName')?.addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
             saveEditCategory();
@@ -460,31 +490,31 @@ function setupEventListeners() {
     });
     
     // Edit Column Modal
-    document.getElementById('closeEditColumn').addEventListener('click', () => {
+    document.getElementById('closeEditColumn')?.addEventListener('click', () => {
         closeModal('editColumnModal');
         editingColumnIndex = null;
     });
-    document.getElementById('cancelEditColumn').addEventListener('click', () => {
+    document.getElementById('cancelEditColumn')?.addEventListener('click', () => {
         closeModal('editColumnModal');
         editingColumnIndex = null;
     });
-    document.getElementById('saveEditColumn').addEventListener('click', saveEditColumn);
+    document.getElementById('saveEditColumn')?.addEventListener('click', saveEditColumn);
     
     // Edit column color palette
     setupColorPalette('editColumnColorPalette');
     
     // Edit column icon picker
     setupIconPicker('editColumnIconSearch', 'editColumnIconPicker', 'editColumnIcon', 'editColumnIconPreview');
-    document.getElementById('clearEditColumnIcon').addEventListener('click', () => {
+    document.getElementById('clearEditColumnIcon')?.addEventListener('click', () => {
         document.getElementById('editColumnIcon').value = '';
         document.getElementById('editColumnIconPreview').innerHTML = '';
         document.getElementById('editColumnIconPicker').style.display = 'none';
     });
-    document.querySelector('#editColumnModal .modal-overlay').addEventListener('click', () => {
+    document.querySelector('#editColumnModal .modal-overlay')?.addEventListener('click', () => {
         closeModal('editColumnModal');
         editingColumnIndex = null;
     });
-    document.getElementById('editColumnName').addEventListener('keypress', e => {
+    document.getElementById('editColumnName')?.addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
             saveEditColumn();
@@ -492,14 +522,14 @@ function setupEventListeners() {
     });
     
     // Detail Modal
-    document.getElementById('closeDetailModal').addEventListener('click', () => closeModal('detailModal'));
-    document.getElementById('closeDetail').addEventListener('click', () => closeModal('detailModal'));
-    document.querySelector('#detailModal .modal-overlay').addEventListener('click', () => closeModal('detailModal'));
-    document.getElementById('addTaskFromDetail').addEventListener('click', () => {
+    document.getElementById('closeDetailModal')?.addEventListener('click', () => closeModal('detailModal'));
+    document.getElementById('closeDetail')?.addEventListener('click', () => closeModal('detailModal'));
+    document.querySelector('#detailModal .modal-overlay')?.addEventListener('click', () => closeModal('detailModal'));
+    document.getElementById('addTaskFromDetail')?.addEventListener('click', () => {
         closeModal('detailModal');
         openTaskModal(null, currentDetailId); // currentDetailId is the project ID
     });
-    document.getElementById('editDetail').addEventListener('click', () => {
+    document.getElementById('editDetail')?.addEventListener('click', () => {
         closeModal('detailModal');
         if (currentDetailType === 'project') {
             openProjectModal(currentDetailId);
@@ -509,18 +539,18 @@ function setupEventListeners() {
     });
     
     // Confirm Modal
-    document.getElementById('confirmCancel').addEventListener('click', () => { 
+    document.getElementById('confirmCancel')?.addEventListener('click', () => { 
         confirmCallback = null; 
         closeModal('confirmModal'); 
     });
-    document.getElementById('confirmOk').addEventListener('click', () => { 
+    document.getElementById('confirmOk')?.addEventListener('click', () => { 
         if (confirmCallback) { 
             confirmCallback(); 
             confirmCallback = null; 
         } 
         closeModal('confirmModal'); 
     });
-    document.querySelector('#confirmModal .modal-overlay').addEventListener('click', () => { 
+    document.querySelector('#confirmModal .modal-overlay')?.addEventListener('click', () => { 
         confirmCallback = null; 
         closeModal('confirmModal'); 
     });
@@ -550,10 +580,10 @@ function updateHeaderInfo() {
         let icon = '';
         if (isGitHubConfigured) {
             icon = autoSyncEnabled 
-                ? '<i class="bi bi-cloud-check" style="color: var(--success); margin-left: 8px;" title="Auto-sync enabled"></i>'
-                : '<i class="bi bi-cloud" style="color: var(--text-secondary); margin-left: 8px;" title="Sync configured (manual)"></i>';
+                ? '<i class="bi bi-cloud-check" style="color: #22c55e; margin-left: 8px;" title="Auto Sync ON"></i>'
+                : '<i class="bi bi-cloud-slash" style="color: #fbbf24; margin-left: 8px;" title="Auto Sync OFF"></i>';
         } else {
-            icon = '<i class="bi bi-laptop" style="color: var(--text-secondary); margin-left: 8px;" title="Local storage only"></i>';
+            icon = '<i class="bi bi-device-hdd" style="color: var(--text-secondary); margin-left: 8px;" title="Offline Mode"></i>';
         }
         
         if (isGitHubConfigured && syncCfg.lastSync) {
@@ -603,6 +633,7 @@ async function init() {
     document.getElementById('docName').value = s.docName;
     document.getElementById('docAuthor').value = s.docAuthor;
     document.getElementById('docVersion').value = s.docVersion;
+    document.getElementById('warningDaysBeforeStart').value = s.warningDaysBeforeStart !== undefined ? s.warningDaysBeforeStart : 3;
     document.getElementById('warningDays').value = s.warningDays;
     document.getElementById('autoDeleteDays').value = s.autoDeleteDays || 0;
     document.getElementById('autoMoveProject').checked = s.autoMoveProject || false;
