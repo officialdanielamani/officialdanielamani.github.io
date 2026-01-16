@@ -418,10 +418,16 @@
                                 <i class="bi bi-cloud-upload" style="margin-right:6px;font-size:16px;"></i>
                                 Push to Cloud
                             </button>
-                            <button class="btn btn-secondary" id="syncPull">
-                                <i class="bi bi-cloud-download" style="margin-right:6px;font-size:16px;"></i>
-                                Pull from Cloud
-                            </button>
+                            <div style="display:flex;gap:5px;flex-direction:column;">
+                                <button class="btn btn-secondary" id="syncPullReplace">
+                                    <i class="bi bi-cloud-download" style="margin-right:6px;font-size:16px;"></i>
+                                    Pull (Replace)
+                                </button>
+                                <button class="btn btn-secondary" id="syncPullMerge">
+                                    <i class="bi bi-cloud-download" style="margin-right:6px;font-size:16px;"></i>
+                                    Pull (Merge)
+                                </button>
+                            </div>
                         </div>
                         <div id="syncInfo" style="color:var(--text-secondary);font-size:0.9em;">
                             <p id="lastSyncTime">Last sync: Never</p>
@@ -453,9 +459,12 @@
                     </div>
                     <div class="data-section">
                         <h3>Import Data</h3>
-                        <p>Import projects and tasks from a JSON file. This will merge with existing data.</p>
+                        <p>Import projects and tasks from a JSON file.</p>
                         <input type="file" id="importFile" accept=".json" style="display: none;">
-                        <button class="btn btn-secondary" id="importData">Import Data</button>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                            <button class="btn btn-secondary" id="importDataReplace">Import (Replace)</button>
+                            <button class="btn btn-secondary" id="importDataMerge">Import (Merge)</button>
+                        </div>
                     </div>
                     <div class="data-section data-danger">
                         <h3>Clear All Data</h3>
@@ -647,6 +656,44 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
                 <button class="btn btn-danger" id="confirmOk">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Sync Confirmation Modal -->
+    <div class="modal" id="clearSyncModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Clear Sync Settings</h2>
+                <button class="btn-close" id="closeClearSyncModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Remove sync credentials from this device?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelClearSync">Cancel</button>
+                <button class="btn btn-danger" id="confirmClearSync">Clear Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Check Modal -->
+    <div class="modal" id="syncCheckModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Sync Available</h2>
+                <button class="btn-close" id="closeSyncCheckModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="syncCheckMessage">Checking sync status...</p>
+                <div id="syncCheckDetails" style="margin-top:15px;font-size:0.9em;color:var(--text-secondary);"></div>
+            </div>
+            <div class="modal-footer" id="syncCheckActions" style="display:none;">
+                <button class="btn btn-secondary" id="syncCheckNo">No</button>
+                <button class="btn btn-primary" id="syncCheckPullMerge">Pull (Merge)</button>
+                <button class="btn btn-primary" id="syncCheckPullReplace">Pull (Replace)</button>
             </div>
         </div>
     </div>

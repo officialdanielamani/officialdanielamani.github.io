@@ -126,7 +126,8 @@ const STORAGE_KEYS = {
     CATEGORIES: 'kanban_categories',
     KEY_PERSONS: 'kanban_keypersons',
     SETTINGS: 'kanban_settings',
-    COLUMNS: 'kanban_columns'
+    COLUMNS: 'kanban_columns',
+    SYNC_CONFIG: 'kanban_sync_config'
 };
 
 // Temporary storage for tasks being added/edited in project modal
@@ -1806,13 +1807,39 @@ function exportData() {
 }
 
 // Import Data
-function importData(file) {
+function importData(file, merge = true) {
     const reader = new FileReader();
     reader.onload = e => {
         try {
             const data = JSON.parse(e.target.result);
-            if (data.projects) { const ex = getProjects(); saveProjects([...ex, ...data.projects.filter(p => !ex.find(x => x.id === p.id))]); }
-            if (data.tasks) { const ex = getTasks(); saveTasks([...ex, ...data.tasks.filter(t => !ex.find(x => x.id === t.id))]); }
+            
+            if (merge) {
+                if (data.projects) {
+                    const existing = getProjects();
+                    const merged = [...existing];
+                    data.projects.forEach(newProj => {
+                        const idx = merged.findIndex(p => p.id === newProj.id);
+                        if (idx >= 0) merged[idx] = newProj;
+                        else merged.push(newProj);
+                    });
+                    saveProjects(merged);
+                }
+                if (data.tasks) {
+                    const existing = getTasks();
+                    const merged = [...existing];
+                    data.tasks.forEach(newTask => {
+                        const idx = merged.findIndex(t => t.id === newTask.id);
+                        if (idx >= 0) merged[idx] = newTask;
+                        else merged.push(newTask);
+                    });
+                    saveTasks(merged);
+                }
+            } else {
+                Object.values(STORAGE_KEYS).forEach(k => { if (k !== STORAGE_KEYS.SETTINGS && k !== STORAGE_KEYS.SYNC_CONFIG) localStorage.removeItem(k); });
+                if (data.projects) saveProjects(data.projects);
+                if (data.tasks) saveTasks(data.tasks);
+            }
+            
             if (data.categories) {
                 const ex = getCategories();
                 const all = [...ex, ...data.categories.filter(c => !ex.find(x => (typeof x === 'string' ? x : x.name) === (typeof c === 'string' ? c : c.name)))].map(c => typeof c === 'string' ? { name: c, color: DEFAULT_CATEGORY_COLOR } : c);
@@ -1823,9 +1850,10 @@ function importData(file) {
                 const currentSettings = getSettings();
                 saveSettings({ ...currentSettings, ...data.settings });
             }
+            
             renderKanbanBoard(); renderCategoryList(); renderKeyPersonList(); updateCategoryDropdowns(); updateKeyPersonDropdowns();
             updateStorageInfo();
-            showToast('Data imported successfully', 'success');
+            showToast(`Data imported successfully (${merge ? 'merged' : 'replaced'})`, 'success');
         } catch (err) { showToast('Error importing data', 'error'); console.error(err); }
     };
     reader.readAsText(file);
@@ -2054,10 +2082,12 @@ function setupEventListeners() {
     
     // Data Management
     document.getElementById('exportData').addEventListener('click', exportData);
-    document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
+    let importMode = 'merge';
+    document.getElementById('importDataReplace')?.addEventListener('click', () => { importMode = 'replace'; document.getElementById('importFile').click(); });
+    document.getElementById('importDataMerge')?.addEventListener('click', () => { importMode = 'merge'; document.getElementById('importFile').click(); });
     document.getElementById('importFile').addEventListener('change', e => { 
         if (e.target.files.length > 0) { 
-            importData(e.target.files[0]); 
+            importData(e.target.files[0], importMode === 'merge'); 
             e.target.value = ''; 
         } 
     });
@@ -2291,6 +2321,9 @@ async function init() {
     
     // Update storage info
     updateStorageInfo();
+    
+    // Check for sync
+    setTimeout(() => checkAutoSync(), 1000);
 }
 
 // Migrate single keyPerson to keyPersons array
@@ -2695,6 +2728,53 @@ function updateStatusDropdowns() {
 // Sync Module - GitHub Gist Backend
 // ============================================
 
+// Auto Sync Check on Load
+async function checkAutoSync() {
+    const cfg = getSyncConfig();
+    if (!cfg.gistId || !cfg.token) return;
+    
+    let attempts = 0;
+    let gistData = null;
+    
+    while (attempts < 3) {
+        try {
+            const gist = await gistRequest('GET', cfg.gistId, cfg.token);
+            const file = gist.files[cfg.fileName || 'kanban-sync.json'];
+            if (file && file.content) {
+                gistData = JSON.parse(file.content);
+                break;
+            }
+        } catch (error) {
+            attempts++;
+            console.log(`Sync check attempt ${attempts} failed:`, error);
+            if (attempts < 3) await new Promise(r => setTimeout(r, 1000));
+        }
+    }
+    
+    if (!gistData) {
+        console.warn('Failed to connect to sync after 3 attempts');
+        showToast('Sync unavailable - connection failed', 'warning');
+        return;
+    }
+    
+    const localData = getAllKanbanData();
+    const cloudTime = gistData.syncTimestamp ? new Date(gistData.syncTimestamp) : new Date(0);
+    const localTime = localData.syncTimestamp ? new Date(localData.syncTimestamp) : new Date(0);
+    
+    const msgEl = document.getElementById('syncCheckMessage');
+    const detailsEl = document.getElementById('syncCheckDetails');
+    const actionsEl = document.getElementById('syncCheckActions');
+    
+    msgEl.textContent = `Do you want to sync with "${cfg.fileName || 'kanban-sync.json'}"?`;
+    detailsEl.innerHTML = `
+        <div><strong>Cloud last update:</strong> ${cloudTime.toLocaleString()}</div>
+        <div><strong>Local last update:</strong> ${localTime.toLocaleString()}</div>
+    `;
+    actionsEl.style.display = 'flex';
+    
+    openModal('syncCheckModal');
+}
+
 const SYNC_STORAGE_KEY = 'kanban_sync_config';
 let autoSaveIntervalId = null;
 let lastSyncedDataHash = null;
@@ -2735,6 +2815,33 @@ function getAllKanbanData() {
 function setAllKanbanData(data) {
     if (data.projects) saveProjects(data.projects);
     if (data.tasks) saveTasks(data.tasks);
+    if (data.categories) saveCategories(data.categories);
+    if (data.keyPersons) saveKeyPersons(data.keyPersons);
+    if (data.settings) saveSettings(data.settings);
+    if (data.columns) saveColumns(data.columns);
+}
+
+function mergeKanbanData(data) {
+    if (data.projects) {
+        const existing = getProjects();
+        const merged = [...existing];
+        data.projects.forEach(newProj => {
+            const idx = merged.findIndex(p => p.id === newProj.id);
+            if (idx >= 0) merged[idx] = newProj;
+            else merged.push(newProj);
+        });
+        saveProjects(merged);
+    }
+    if (data.tasks) {
+        const existing = getTasks();
+        const merged = [...existing];
+        data.tasks.forEach(newTask => {
+            const idx = merged.findIndex(t => t.id === newTask.id);
+            if (idx >= 0) merged[idx] = newTask;
+            else merged.push(newTask);
+        });
+        saveTasks(merged);
+    }
     if (data.categories) saveCategories(data.categories);
     if (data.keyPersons) saveKeyPersons(data.keyPersons);
     if (data.settings) saveSettings(data.settings);
@@ -2917,7 +3024,7 @@ function updateLastSyncDisplay() {
     }
 }
 
-async function pullFromGist(gistId, token, fileName = 'kanban-sync.json') {
+async function pullFromGist(gistId, token, fileName = 'kanban-sync.json', merge = false) {
     const gist = await gistRequest('GET', gistId, token);
     const file = gist.files[fileName];
     if (!file || !file.content) {
@@ -2927,10 +3034,17 @@ async function pullFromGist(gistId, token, fileName = 'kanban-sync.json') {
     if (!data.projects && !data.tasks) {
         throw new Error('Invalid sync data format');
     }
-    setAllKanbanData(data);
+    
+    if (merge) {
+        mergeKanbanData(data);
+    } else {
+        Object.values(STORAGE_KEYS).forEach(k => { if (k !== STORAGE_KEYS.SYNC_CONFIG) localStorage.removeItem(k); });
+        setAllKanbanData(data);
+    }
+    
     const config = getSyncConfig();
     config.lastSync = new Date().toISOString();
-    config.lastAction = 'pull';
+    config.lastAction = merge ? 'pull-merge' : 'pull-replace';
     saveSyncConfig(config);
     return data.syncTimestamp;
 }
@@ -3040,7 +3154,8 @@ function initSyncUI() {
     });
     
     // Pull
-    document.getElementById('syncPull')?.addEventListener('click', async () => {
+    // Pull Replace
+    document.getElementById('syncPullReplace')?.addEventListener('click', async () => {
         const cfg = getSyncConfig();
         if (!cfg.gistId || !cfg.token) {
             showToast('Please configure sync settings first', 'error');
@@ -3053,7 +3168,7 @@ function initSyncUI() {
         
         try {
             showToast('Pulling data...', 'info');
-            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', false);
             updateLastSyncDisplay();
             showToast('Data pulled successfully! Refreshing...', 'success');
             setTimeout(() => location.reload(), 1000);
@@ -3067,22 +3182,100 @@ function initSyncUI() {
         }
     });
     
-    // Clear Sync Settings
-    document.getElementById('clearSyncSettings')?.addEventListener('click', () => {
-        if (confirm('Remove sync credentials from this device?')) {
-            localStorage.removeItem(SYNC_STORAGE_KEY);
-            gistIdInput.value = '';
-            tokenInput.value = '';
-            if (fileNameInput) fileNameInput.value = 'kanban-sync.json';
-            actionsSection.style.display = 'none';
-            const lastSyncEl = document.getElementById('lastSyncTime');
-            if (lastSyncEl) lastSyncEl.textContent = 'Last sync: Never';
-            document.getElementById('syncStatus').style.display = 'none';
-            updateHeaderInfo();
-            showToast('Sync settings cleared', 'success');
+    // Pull Merge
+    document.getElementById('syncPullMerge')?.addEventListener('click', async () => {
+        const cfg = getSyncConfig();
+        if (!cfg.gistId || !cfg.token) {
+            showToast('Please configure sync settings first', 'error');
+            return;
+        }
+        
+        if (!confirm('This will merge cloud data with your local data. Conflicts will be resolved using cloud data. Continue?')) {
+            return;
+        }
+        
+        try {
+            showToast('Merging data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', true);
+            updateLastSyncDisplay();
+            showToast('Data merged successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            if (error.message.includes('HTTP')) {
+                showWarningBanner('Connection Issue: Unable to sync from GitHub', 'error');
+            } else if (error.message.includes('Gist')) {
+                showWarningBanner('GitHub Gist error: ' + error.message, 'error');
+            }
+            showToast(`Merge failed: ${error.message}`, 'error');
         }
     });
+    
+    // Clear Sync Settings - open modal
+    document.getElementById('clearSyncSettings')?.addEventListener('click', () => {
+        openModal('clearSyncModal');
+    });
 }
+
+// Clear Sync Modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('closeClearSyncModal')?.addEventListener('click', () => closeModal('clearSyncModal'));
+    document.getElementById('cancelClearSync')?.addEventListener('click', () => closeModal('clearSyncModal'));
+    document.querySelector('#clearSyncModal .modal-overlay')?.addEventListener('click', () => closeModal('clearSyncModal'));
+    
+    document.getElementById('confirmClearSync')?.addEventListener('click', () => {
+        const gistIdInput = document.getElementById('syncGistId');
+        const tokenInput = document.getElementById('syncGistToken');
+        const fileNameInput = document.getElementById('syncFileName');
+        const actionsSection = document.getElementById('syncActionsSection');
+        
+        localStorage.removeItem(SYNC_STORAGE_KEY);
+        if (gistIdInput) gistIdInput.value = '';
+        if (tokenInput) tokenInput.value = '';
+        if (fileNameInput) fileNameInput.value = 'kanban-sync.json';
+        if (actionsSection) actionsSection.style.display = 'none';
+        
+        const lastSyncEl = document.getElementById('lastSyncTime');
+        if (lastSyncEl) lastSyncEl.textContent = 'Last sync: Never';
+        
+        const statusEl = document.getElementById('syncStatus');
+        if (statusEl) statusEl.style.display = 'none';
+        
+        updateHeaderInfo();
+        showToast('Sync settings cleared', 'success');
+        closeModal('clearSyncModal');
+    });
+    
+    // Sync Check Modal
+    document.getElementById('closeSyncCheckModal')?.addEventListener('click', () => closeModal('syncCheckModal'));
+    document.querySelector('#syncCheckModal .modal-overlay')?.addEventListener('click', () => closeModal('syncCheckModal'));
+    document.getElementById('syncCheckNo')?.addEventListener('click', () => closeModal('syncCheckModal'));
+    
+    document.getElementById('syncCheckPullReplace')?.addEventListener('click', async () => {
+        closeModal('syncCheckModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Pulling data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', false);
+            showToast('Data pulled successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            showToast(`Pull failed: ${error.message}`, 'error');
+        }
+    });
+    
+    document.getElementById('syncCheckPullMerge')?.addEventListener('click', async () => {
+        closeModal('syncCheckModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Merging data...', 'info');
+            await pullFromGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json', true);
+            showToast('Data merged successfully! Refreshing...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (error) {
+            showToast(`Merge failed: ${error.message}`, 'error');
+        }
+    });
+});
 
 // Initialize sync UI when settings modal opens
 document.addEventListener('DOMContentLoaded', () => {
