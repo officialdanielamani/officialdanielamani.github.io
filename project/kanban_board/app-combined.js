@@ -2254,6 +2254,16 @@ function updateHeaderInfo() {
     if (headerInfo) {
         const syncCfg = getSyncConfig();
         const isGitHubConfigured = syncCfg.gistId && syncCfg.token;
+        const autoSyncEnabled = isGitHubConfigured && syncCfg.autoSaveInterval > 0;
+        
+        let icon = '';
+        if (isGitHubConfigured) {
+            icon = autoSyncEnabled 
+                ? '<i class="bi bi-cloud-check" style="color: var(--success); margin-left: 8px;" title="Auto-sync enabled"></i>'
+                : '<i class="bi bi-cloud" style="color: var(--text-secondary); margin-left: 8px;" title="Sync configured (manual)"></i>';
+        } else {
+            icon = '<i class="bi bi-laptop" style="color: var(--text-secondary); margin-left: 8px;" title="Local storage only"></i>';
+        }
         
         if (isGitHubConfigured && syncCfg.lastSync) {
             // Show Last Sync with GitHub sync timestamp
@@ -2264,7 +2274,7 @@ function updateHeaderInfo() {
                 hour: '2-digit', 
                 minute: '2-digit' 
             });
-            headerInfo.textContent = `${settings.docName} | v${settings.docVersion} | Last Sync: ${lastSyncText}`;
+            headerInfo.innerHTML = `${settings.docName} | v${settings.docVersion} | Last Sync: ${lastSyncText}${icon}`;
         } else {
             // Show Last Save with localStorage timestamp
             const lastSave = localStorage.getItem('kanban_lastSave');
@@ -2275,7 +2285,7 @@ function updateHeaderInfo() {
                 hour: '2-digit', 
                 minute: '2-digit' 
             }) : 'Never';
-            headerInfo.textContent = `${settings.docName} | v${settings.docVersion} | Last Save: ${lastSaveText}`;
+            headerInfo.innerHTML = `${settings.docName} | v${settings.docVersion} | Last Save: ${lastSaveText}${icon}`;
         }
     }
 }
