@@ -117,8 +117,17 @@
                     <div class="form-group project-tasks-section">
                         <label>Tasks</label>
                         <div class="project-tasks-input">
-                            <input type="text" id="projectTaskTitle" placeholder="Task name" maxlength="32">
-                            <input type="date" id="projectTaskDueDate">
+                            <input type="text" id="projectTaskTitle" placeholder="Task name *" maxlength="32">
+                            <div class="task-date-inputs">
+                                <div class="task-date-group">
+                                    <label for="projectTaskStartDate">Start Date</label>
+                                    <input type="date" id="projectTaskStartDate">
+                                </div>
+                                <div class="task-date-group">
+                                    <label for="projectTaskDueDate">Due Date</label>
+                                    <input type="date" id="projectTaskDueDate">
+                                </div>
+                            </div>
                             <button type="button" class="btn btn-sm btn-primary" id="addProjectTask">Add</button>
                         </div>
                         <div class="project-tasks-list" id="projectTasksList"></div>
@@ -753,6 +762,9 @@
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
-    <script src="app-combined.js"></script>
+    <script src="app-part1-data.js"></script>
+    <script src="app-part2-ui.js"></script>
+    <script src="app-part3-events.js"></script>
+    <script src="app-part4-sync.js"></script>
 </body>
 </html>

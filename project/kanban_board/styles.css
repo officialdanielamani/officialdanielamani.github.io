@@ -262,8 +262,8 @@ body {
     align-items: center;
     gap: 10px;
     padding: 10px 20px;
-    background: var(--danger);
-    color: white;
+    background: #dc3545 !important;
+    color: #ffffff !important;
     font-weight: 500;
 }
 
@@ -276,12 +276,40 @@ body {
     align-items: center;
     gap: 10px;
     padding: 10px 20px;
-    background: var(--warning);
-    color: #2d3436;
+    background: #ffc107 !important;
+    color: #000000 !important;
     font-weight: 500;
 }
 
 .warning-banner svg {
+    flex-shrink: 0;
+}
+
+.info-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #17a2b8 !important;
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.info-banner svg {
+    flex-shrink: 0;
+}
+
+.success-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #28a745 !important;
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.success-banner svg {
     flex-shrink: 0;
 }
 
@@ -396,17 +424,17 @@ body {
 }
 
 .project-card.late {
-    border-color: var(--danger) !important;
-    background: var(--danger-light);
+    border-color: #dc3545 !important;
+    background: rgba(220, 53, 69, 0.1) !important;
 }
 
 .project-card.late .card-header {
-    background: var(--danger);
+    background: #dc3545 !important;
 }
 
 .project-card.late .card-header-title,
 .project-card.late .card-header-date {
-    color: white;
+    color: #ffffff !important;
 }
 
 /* Category Color Border */
@@ -630,8 +658,8 @@ body {
 }
 
 .card-task.overdue {
-    border-color: var(--danger);
-    background: var(--danger-light);
+    border-color: #dc3545 !important;
+    background: rgba(220, 53, 69, 0.1) !important;
 }
 
 .task-checkbox {
@@ -675,10 +703,10 @@ body {
 
 .task-date-overdue {
     font-size: 0.75rem;
-    color: white;
+    color: #ffffff !important;
     white-space: nowrap;
     padding: 2px 6px;
-    background: var(--danger);
+    background: #dc3545 !important;
     border-radius: 3px;
     font-weight: 600;
 }
@@ -763,7 +791,7 @@ body {
 }
 
 .task-title.late {
-    color: var(--danger);
+    color: #dc3545 !important;
 }
 
 .task-due-date {
@@ -774,7 +802,7 @@ body {
 }
 
 .task-due-date.late {
-    color: var(--danger);
+    color: #dc3545 !important;
     font-weight: 600;
 }
 
@@ -1618,17 +1646,52 @@ body {
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
-    align-items: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
 }
 
 .project-tasks-input input[type="text"] {
-    flex: 2;
+    flex: 1;
+    min-width: 200px;
     padding: 8px 12px;
     border: 1px solid var(--border);
     border-radius: 4px;
     background: var(--bg-secondary);
     color: var(--text-primary);
     font-size: 14px;
+}
+
+.task-date-inputs {
+    display: flex;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.task-date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.task-date-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.task-date-group input[type="date"] {
+    padding: 8px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 13px;
+    width: 100%;
+    min-width: 0;
 }
 
 .project-tasks-input input[type="date"] {
@@ -1639,6 +1702,17 @@ body {
     background: var(--bg-secondary);
     color: var(--text-primary);
     font-size: 14px;
+}
+
+.project-tasks-input .btn {
+    flex-shrink: 0;
+    flex-grow: 0;
+    flex-basis: auto;
+    align-self: flex-end;
+    width: auto;
+    min-width: 80px;
+    padding: 8px 20px;
+    white-space: nowrap;
 }
 
 .project-tasks-list {
@@ -1673,7 +1747,7 @@ body {
     color: var(--text-primary);
 }
 
-.project-task-due {
+.project-task-dates {
     font-size: 12px;
     color: var(--text-secondary);
 }
@@ -1692,6 +1766,18 @@ body {
     transition: all 0.2s;
 }
 
+.project-task-info {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.project-task-info:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
 .project-task-edit {
     background: var(--accent);
     color: white;
@@ -1707,7 +1793,7 @@ body {
 }
 
 .project-task-delete:hover {
-    background: var(--danger-hover);
+    opacity: 0.8;
 }
 
 .project-tasks-list::-webkit-scrollbar {
@@ -1731,11 +1817,17 @@ body {
 @media (max-width: 768px) {
     .project-tasks-input {
         flex-direction: column;
+        align-items: stretch;
     }
     
-    .project-tasks-input input[type="text"],
-    .project-tasks-input input[type="date"] {
+    .project-tasks-input input[type="text"] {
         width: 100%;
+        min-width: 0;
+    }
+    
+    .task-date-inputs {
+        width: 100%;
+        min-width: 0;
     }
     
     .project-task-item {
