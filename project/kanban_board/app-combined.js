@@ -2758,6 +2758,16 @@ async function checkAutoSync() {
     }
     
     const localData = getAllKanbanData();
+    
+    // Compare hash
+    const cloudHash = hashData(gistData);
+    const localHash = hashData(localData);
+    
+    if (cloudHash === localHash) {
+        showToast('Your data is up to date with sync data on GitHub', 'success');
+        return;
+    }
+    
     const cloudTime = gistData.syncTimestamp ? new Date(gistData.syncTimestamp) : new Date(0);
     const localTime = localData.syncTimestamp ? new Date(localData.syncTimestamp) : new Date(0);
     
@@ -2773,6 +2783,24 @@ async function checkAutoSync() {
     actionsEl.style.display = 'flex';
     
     openModal('syncCheckModal');
+}
+
+function hashData(data) {
+    const str = JSON.stringify({
+        projects: data.projects || [],
+        tasks: data.tasks || [],
+        categories: data.categories || [],
+        keyPersons: data.keyPersons || [],
+        columns: data.columns || []
+    });
+    
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(36);
 }
 
 const SYNC_STORAGE_KEY = 'kanban_sync_config';
