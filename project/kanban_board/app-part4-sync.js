@@ -55,14 +55,14 @@ async function checkAutoSync() {
     
     console.log('Sync check - Cloud time:', cloudTime, 'Local time:', localTime);
     
-    // Check if timestamps are identical (within 2 second tolerance)
-    const timeDiff = Math.abs(cloudTime.getTime() - localTime.getTime());
-    if (timeDiff < 2000) {
-        // Timestamps are essentially the same, but hashes differ
-        // This can happen due to auto-save timing or minor data differences
-        console.log('Timestamps match (diff:', timeDiff, 'ms) but hashes differ - skipping sync prompt');
-        showToast('Data synchronized', 'success');
-        return;
+    // Determine which is newer
+    let recommendation = '';
+    if (cloudTime > localTime) {
+        recommendation = 'Cloud data is newer. Consider pulling.';
+    } else if (localTime > cloudTime) {
+        recommendation = 'Local data is newer. Consider pushing.';
+    } else {
+        recommendation = 'Timestamps match but data differs. Review changes carefully.';
     }
     
     const msgEl = document.getElementById('syncCheckMessage');
@@ -73,7 +73,12 @@ async function checkAutoSync() {
     detailsEl.innerHTML = `
         <div><strong>Cloud last update:</strong> ${cloudTime.toLocaleString()}</div>
         <div><strong>Local last update:</strong> ${localTime.toLocaleString()}</div>
-        <div style="margin-top:8px;font-size:0.85em;"><strong>Hash comparison:</strong> Cloud: ${cloudHash}, Local: ${localHash}</div>
+        <div style="margin-top:8px;padding:8px;background:var(--bg-tertiary);border-radius:6px;">
+            <strong>Analysis:</strong> ${recommendation}
+        </div>
+        <div style="margin-top:8px;font-size:0.85em;color:var(--text-muted);">
+            Data fingerprints - Cloud: ${cloudHash.substring(0,8)}... | Local: ${localHash.substring(0,8)}...
+        </div>
     `;
     actionsEl.style.display = 'flex';
     
