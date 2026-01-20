@@ -32,15 +32,20 @@ async function checkAutoSync() {
     }
     
     const localData = getAllKanbanData();
+    // Use the cloud's timestamp for comparison
+    localData.syncTimestamp = getSettings().syncTimestamp || new Date(0).toISOString();
     
-    // Compare hash
+    // Compare hash - this includes projects, tasks, categories, etc.
     const cloudHash = hashData(gistData);
     const localHash = hashData(localData);
+    
+    console.log('Sync check - Cloud hash:', cloudHash, 'Local hash:', localHash);
     
     // Store cloud hash for future comparison
     lastSyncedDataHash = cloudHash;
     
     if (cloudHash === localHash) {
+        console.log('Hashes match - data is synchronized');
         showToast('Your data is up to date', 'success');
         return;
     }
@@ -48,12 +53,14 @@ async function checkAutoSync() {
     const cloudTime = gistData.syncTimestamp ? new Date(gistData.syncTimestamp) : new Date(0);
     const localTime = localData.syncTimestamp ? new Date(localData.syncTimestamp) : new Date(0);
     
-    // Check if timestamps are identical (within 1 second tolerance for rounding)
+    console.log('Sync check - Cloud time:', cloudTime, 'Local time:', localTime);
+    
+    // Check if timestamps are identical (within 2 second tolerance)
     const timeDiff = Math.abs(cloudTime.getTime() - localTime.getTime());
-    if (timeDiff < 1000) {
+    if (timeDiff < 2000) {
         // Timestamps are essentially the same, but hashes differ
         // This can happen due to auto-save timing or minor data differences
-        console.log('Timestamps match but hashes differ - skipping sync prompt');
+        console.log('Timestamps match (diff:', timeDiff, 'ms) but hashes differ - skipping sync prompt');
         showToast('Data synchronized', 'success');
         return;
     }
@@ -66,6 +73,7 @@ async function checkAutoSync() {
     detailsEl.innerHTML = `
         <div><strong>Cloud last update:</strong> ${cloudTime.toLocaleString()}</div>
         <div><strong>Local last update:</strong> ${localTime.toLocaleString()}</div>
+        <div style="margin-top:8px;font-size:0.85em;"><strong>Hash comparison:</strong> Cloud: ${cloudHash}, Local: ${localHash}</div>
     `;
     actionsEl.style.display = 'flex';
     
@@ -105,14 +113,14 @@ function saveSyncConfig(config) {
 
 function getAllKanbanData() {
     const settings = getSettings();
+    // Don't include old syncTimestamp - let the caller set it fresh
     return {
         projects: getProjects(),
         tasks: getTasks(),
         categories: getCategories(),
         keyPersons: getKeyPersons(),
         settings: settings,
-        columns: getColumns(),
-        syncTimestamp: settings.syncTimestamp || new Date().toISOString()
+        columns: getColumns()
     };
 }
 
@@ -209,21 +217,25 @@ async function testSyncConnection(gistId, token, fileName = 'kanban-sync.json') 
 }
 
 async function pushToGist(gistId, token, fileName = 'kanban-sync.json') {
+    // Generate fresh timestamp for this push
+    const pushTimestamp = new Date().toISOString();
     const data = getAllKanbanData();
+    data.syncTimestamp = pushTimestamp;
+    
     const currentSettings = getSettings();
-    currentSettings.syncTimestamp = data.syncTimestamp;
+    currentSettings.syncTimestamp = pushTimestamp;
     saveSettings(currentSettings);
     
     await gistRequest('PATCH', gistId, token, data, fileName);
     const config = getSyncConfig();
-    config.lastSync = new Date().toISOString();
+    config.lastSync = pushTimestamp;
     config.lastAction = 'push';
     saveSyncConfig(config);
     
     // Store hash of synced data
     lastSyncedDataHash = hashData(data);
     
-    return data.syncTimestamp;
+    return pushTimestamp;
 }
 
 async function autoSaveToGist() {
