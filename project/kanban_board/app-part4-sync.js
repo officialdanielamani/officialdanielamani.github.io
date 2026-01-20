@@ -548,6 +548,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#syncCheckModal .modal-overlay')?.addEventListener('click', () => closeModal('syncCheckModal'));
     document.getElementById('syncCheckNo')?.addEventListener('click', () => closeModal('syncCheckModal'));
     
+    document.getElementById('syncCheckPush')?.addEventListener('click', async () => {
+        closeModal('syncCheckModal');
+        const cfg = getSyncConfig();
+        try {
+            showToast('Pushing data...', 'info');
+            await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
+            updateLastSyncDisplay();
+            updateHeaderInfo();
+            showToast('Data pushed successfully!', 'success');
+        } catch (error) {
+            showToast(`Push failed: ${error.message}`, 'error');
+        }
+    });
+    
     document.getElementById('syncCheckPullReplace')?.addEventListener('click', async () => {
         closeModal('syncCheckModal');
         const cfg = getSyncConfig();
