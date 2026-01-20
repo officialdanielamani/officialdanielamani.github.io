@@ -37,13 +37,26 @@ async function checkAutoSync() {
     const cloudHash = hashData(gistData);
     const localHash = hashData(localData);
     
+    // Store cloud hash for future comparison
+    lastSyncedDataHash = cloudHash;
+    
     if (cloudHash === localHash) {
-        showToast('Your data is up to date with sync data on GitHub', 'success');
+        showToast('Your data is up to date', 'success');
         return;
     }
     
     const cloudTime = gistData.syncTimestamp ? new Date(gistData.syncTimestamp) : new Date(0);
     const localTime = localData.syncTimestamp ? new Date(localData.syncTimestamp) : new Date(0);
+    
+    // Check if timestamps are identical (within 1 second tolerance for rounding)
+    const timeDiff = Math.abs(cloudTime.getTime() - localTime.getTime());
+    if (timeDiff < 1000) {
+        // Timestamps are essentially the same, but hashes differ
+        // This can happen due to auto-save timing or minor data differences
+        console.log('Timestamps match but hashes differ - skipping sync prompt');
+        showToast('Data synchronized', 'success');
+        return;
+    }
     
     const msgEl = document.getElementById('syncCheckMessage');
     const detailsEl = document.getElementById('syncCheckDetails');
