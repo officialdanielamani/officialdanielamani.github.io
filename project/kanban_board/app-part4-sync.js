@@ -32,8 +32,6 @@ async function checkAutoSync() {
     }
     
     const localData = getAllKanbanData();
-    // Use the cloud's timestamp for comparison
-    localData.syncTimestamp = getSettings().syncTimestamp || new Date(0).toISOString();
     
     // Compare hash - this includes projects, tasks, categories, etc.
     const cloudHash = hashData(gistData);
@@ -50,8 +48,10 @@ async function checkAutoSync() {
         return;
     }
     
+    // Use lastModified for local time (when data was last changed)
+    // Use syncTimestamp for cloud time (when it was last synced to cloud)
     const cloudTime = gistData.syncTimestamp ? new Date(gistData.syncTimestamp) : new Date(0);
-    const localTime = localData.syncTimestamp ? new Date(localData.syncTimestamp) : new Date(0);
+    const localTime = localData.lastModified ? new Date(localData.lastModified) : new Date(0);
     
     console.log('Sync check - Cloud time:', cloudTime, 'Local time:', localTime);
     
@@ -118,14 +118,15 @@ function saveSyncConfig(config) {
 
 function getAllKanbanData() {
     const settings = getSettings();
-    // Don't include old syncTimestamp - let the caller set it fresh
+    // Include lastModified but not syncTimestamp (caller sets syncTimestamp)
     return {
         projects: getProjects(),
         tasks: getTasks(),
         categories: getCategories(),
         keyPersons: getKeyPersons(),
         settings: settings,
-        columns: getColumns()
+        columns: getColumns(),
+        lastModified: settings.lastModified || new Date().toISOString()
     };
 }
 
@@ -226,9 +227,11 @@ async function pushToGist(gistId, token, fileName = 'kanban-sync.json') {
     const pushTimestamp = new Date().toISOString();
     const data = getAllKanbanData();
     data.syncTimestamp = pushTimestamp;
+    // lastModified is already in data from getAllKanbanData()
     
     const currentSettings = getSettings();
     currentSettings.syncTimestamp = pushTimestamp;
+    // Don't update lastModified here - it should only change when actual data changes
     saveSettings(currentSettings);
     
     await gistRequest('PATCH', gistId, token, data, fileName);
