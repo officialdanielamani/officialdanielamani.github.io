@@ -168,15 +168,24 @@ const DEFAULT_CATEGORY_COLOR = '#6b7280';
 function loadData(key) {
     try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; }
 }
+
+// FIXED: Only update timestamp when data actually changes
 function saveData(key, data) { 
     try {
-        localStorage.setItem(key, JSON.stringify(data));
-        updateLastSave();
+        const newDataStr = JSON.stringify(data);
+        const existingDataStr = localStorage.getItem(key);
+        
+        // Only update localStorage if data actually changed
+        if (newDataStr !== existingDataStr) {
+            localStorage.setItem(key, newDataStr);
+            updateLastSave();
+        }
     } catch (error) {
         handleStorageError(error);
         throw error; // Re-throw so calling code knows it failed
     }
 }
+
 function getProjects() { return loadData(STORAGE_KEYS.PROJECTS) || []; }
 function getTasks() { return loadData(STORAGE_KEYS.TASKS) || []; }
 function getCategories() { return loadData(STORAGE_KEYS.CATEGORIES) || []; }
@@ -194,119 +203,120 @@ function generateId() { return 'id_' + Date.now() + '_' + Math.random().toString
 // Date Utilities
 function formatDate(dateStr) {
     if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-GB');
 }
-function formatDateShort(dateStr) {
+function formatDateLong(dateStr) {
     if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: '2-digit' });
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
-function formatDateForInput(dateStr) {
+function formatDateTime(dateStr) {
     if (!dateStr) return '';
-    return new Date(dateStr).toISOString().split('T')[0];
+    const d = new Date(dateStr);
+    return d.toLocaleString('en-GB', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
 }
-function isOverdue(dateStr) {
-    if (!dateStr) return false;
-    const d = new Date(dateStr); d.setHours(23,59,59,999);
-    return new Date() > d;
-}
-function isDueSoon(dateStr, days) {
-    if (!dateStr || days === -1) return false; // -1 = disabled
-    const d = new Date(dateStr); d.setHours(23,59,59,999);
-    if (days === 0) {
-        // Check if due date is today
-        const t = new Date(); t.setHours(0,0,0,0);
-        const dCopy = new Date(dateStr); dCopy.setHours(0,0,0,0);
-        return dCopy.getTime() === t.getTime();
-    }
-    const w = new Date(); w.setDate(w.getDate() + days);
-    return new Date() <= d && d <= w;
-}
-function isStartingSoon(dateStr, days) {
-    if (!dateStr || days === -1) return false; // -1 = disabled
-    const d = new Date(dateStr); d.setHours(0,0,0,0);
-    const t = new Date(); t.setHours(0,0,0,0);
-    if (days === 0) {
-        // Check if start date is today
-        return d.getTime() === t.getTime();
-    }
-    // Check if start date is within the next X days
-    const w = new Date(); w.setDate(w.getDate() + days);
-    w.setHours(23,59,59,999);
-    return t <= d && d <= w;
-}
-function getDaysUntilDue(dateStr) {
+function getDaysUntil(dateStr) {
     if (!dateStr) return null;
-    const d = new Date(dateStr); d.setHours(0,0,0,0);
-    const t = new Date(); t.setHours(0,0,0,0);
-    return Math.ceil((d - t) / 86400000);
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const target = new Date(dateStr);
+    target.setHours(0,0,0,0);
+    return Math.ceil((target - now)/(1000*60*60*24));
 }
 function getDaysSinceCompletion(completedAt) {
     if (!completedAt) return 0;
-    return Math.floor((new Date() - new Date(completedAt)) / 86400000);
+    return Math.floor((Date.now() - new Date(completedAt).getTime())/(1000*60*60*24));
+}
+function getPriorityBadgeClass(pri) {
+    switch(pri) {
+        case 4: return 'priority-urgent';
+        case 3: return 'priority-high';
+        case 2: return 'priority-medium';
+        case 1: default: return 'priority-low';
+    }
+}
+function shouldShowStartWarning(project) {
+    if (!project.startDate) return false;
+    const s = getSettings();
+    const days = getDaysUntil(project.startDate);
+    return days <= s.warningDaysBeforeStart && days >= 0;
+}
+function shouldShowDueWarning(project) {
+    if (!project.dueDate) return false;
+    const s = getSettings();
+    const days = getDaysUntil(project.dueDate);
+    return days <= s.warningDays && days >= 0;
+}
+function shouldShowOverdue(project) {
+    if (!project.dueDate) return false;
+    const days = getDaysUntil(project.dueDate);
+    return days < 0;
 }
 
-// Priority Calculation
-function calculateProjectPriority(project, tasks) {
-    const pt = tasks.filter(t => t.projectId === project.id);
-    let score = project.priority * 1000;
-    if (project.dueDate) {
-        const days = getDaysUntilDue(project.dueDate);
-        if (days !== null) {
-            if (days < 0) score += 5000;
-            else if (days <= 3) score += 3000;
-            else if (days <= 7) score += 2000;
-            else if (days <= 14) score += 1000;
-        }
-    }
-    score += pt.length * 10 + (pt.length - pt.filter(t => t.completed).length) * 5;
-    return score;
-}
-function sortProjects(projects, tasks) {
-    return [...projects].sort((a, b) => calculateProjectPriority(b, tasks) - calculateProjectPriority(a, tasks));
-}
-function sortTasksByDueDate(tasks) {
-    return [...tasks].sort((a, b) => {
-        if (!a.dueDate && !b.dueDate) return 0;
-        if (!a.dueDate) return 1;
-        if (!b.dueDate) return -1;
-        return new Date(a.dueDate) - new Date(b.dueDate);
+// Project Filtering
+function filterProjects(projects) {
+    const cat = document.getElementById('filterCategory')?.value;
+    const status = document.getElementById('filterStatus')?.value;
+    const pri = document.getElementById('filterPriority')?.value;
+    const key = document.getElementById('filterKeyPerson')?.value;
+    const search = document.getElementById('filterSearch')?.value.toLowerCase().trim();
+    
+    return projects.filter(p => {
+        if (cat && cat !== 'all' && p.category !== cat) return false;
+        if (status && status !== 'all' && p.status !== status) return false;
+        if (pri && pri !== 'all' && p.priority !== parseInt(pri)) return false;
+        if (key && key !== 'all' && (!p.keyPersons || !p.keyPersons.includes(key))) return false;
+        if (search && !p.title.toLowerCase().includes(search)) return false;
+        return true;
     });
 }
 
-// Auto-move project based on task completion
-function autoMoveProject(projectId) {
+// Project/Task Counts
+function getProjectTaskCounts(projectId) {
+    const tasks = getTasks().filter(t => t.projectId === projectId);
+    const completed = tasks.filter(t => t.completed).length;
+    return { total: tasks.length, completed };
+}
+function getAllTaskCounts() {
+    const tasks = getTasks();
+    const completed = tasks.filter(t => t.completed).length;
+    return { total: tasks.length, completed };
+}
+
+// Auto-move project on completion
+function checkProjectAutoMove() {
     const settings = getSettings();
     if (!settings.autoMoveProject) return;
     
     const projects = getProjects();
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return;
-    
+    const tasks = getTasks();
     const columns = getColumns();
     const firstColumn = columns[0].id;
     const lastColumn = columns[columns.length - 1].id;
     
-    const projectTasks = getTasks().filter(t => t.projectId === projectId);
-    
-    // If no tasks, do nothing
-    if (projectTasks.length === 0) return;
-    
-    const allCompleted = projectTasks.every(t => t.completed);
-    const hasIncomplete = projectTasks.some(t => !t.completed);
-    
     let needsUpdate = false;
-    
-    // If all tasks are done, move to last column (Done)
-    if (allCompleted && project.status !== lastColumn) {
-        project.status = lastColumn;
-        project.completedAt = new Date().toISOString();
-        needsUpdate = true;
-    }
-    // If has incomplete tasks and currently in last column, move to first column (Backlog)
-    else if (hasIncomplete && project.status === lastColumn) {
-        project.status = firstColumn;
-        delete project.completedAt;
-        needsUpdate = true;
+    for (const project of projects) {
+        const projectTasks = tasks.filter(t => t.projectId === project.id);
+        const hasIncomplete = projectTasks.some(t => !t.completed);
+        const allComplete = projectTasks.length > 0 && projectTasks.every(t => t.completed);
+        
+        if (allComplete && project.status !== lastColumn) {
+            project.status = lastColumn;
+            project.completedAt = new Date().toISOString();
+            needsUpdate = true;
+        }
+        else if (hasIncomplete && project.status === lastColumn) {
+            project.status = firstColumn;
+            delete project.completedAt;
+            needsUpdate = true;
+        }
     }
     
     if (needsUpdate) {
@@ -496,5 +506,3 @@ function validateDates(startDate, dueDate) {
     const due = new Date(dueDate);
     return start <= due;
 }
-
-// Migration
