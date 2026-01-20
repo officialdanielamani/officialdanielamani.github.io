@@ -69,6 +69,16 @@ async function checkAutoSync() {
     const detailsEl = document.getElementById('syncCheckDetails');
     const actionsEl = document.getElementById('syncCheckActions');
     
+    // Show/hide buttons based on recommendation
+    const pushBtn = document.getElementById('syncCheckPush');
+    const pullMergeBtn = document.getElementById('syncCheckPullMerge');
+    const pullReplaceBtn = document.getElementById('syncCheckPullReplace');
+    
+    // Always show all buttons, but highlight recommended action
+    if (pushBtn) pushBtn.style.display = 'inline-flex';
+    if (pullMergeBtn) pullMergeBtn.style.display = 'inline-flex';
+    if (pullReplaceBtn) pullReplaceBtn.style.display = 'inline-flex';
+    
     msgEl.textContent = `Do you want to sync with "${cfg.fileName || 'kanban-sync.json'}"?`;
     detailsEl.innerHTML = `
         <div><strong>Cloud last update:</strong> ${cloudTime.toLocaleString()}</div>
@@ -252,14 +262,34 @@ async function autoSaveToGist() {
         return;
     }
     
-    // Check if data has changed
+    // Get current local data
     const currentData = getAllKanbanData();
     const currentHash = hashData(currentData);
+    
+    console.log('Auto-save check - Current hash:', currentHash, 'Last synced hash:', lastSyncedDataHash);
+    
+    // If we don't have a baseline hash yet, fetch from cloud to establish one
+    if (lastSyncedDataHash === null) {
+        try {
+            const gist = await gistRequest('GET', cfg.gistId, cfg.token);
+            const file = gist.files[cfg.fileName || 'kanban-sync.json'];
+            if (file && file.content) {
+                const cloudData = JSON.parse(file.content);
+                lastSyncedDataHash = hashData(cloudData);
+                console.log('Established baseline hash from cloud:', lastSyncedDataHash);
+            }
+        } catch (error) {
+            console.error('Failed to get baseline hash:', error);
+            // Continue anyway - we'll sync this time
+        }
+    }
     
     if (lastSyncedDataHash === currentHash) {
         console.log('Auto-save skipped: no changes detected');
         return;
     }
+    
+    console.log('Auto-save: changes detected, pushing to cloud...');
     
     try {
         // Flash save button green
@@ -325,14 +355,26 @@ async function manualSave() {
     const cfg = getSyncConfig();
     
     try {
-        // Save to localStorage
-        saveData(STORAGE_KEYS.PROJECTS, getProjects());
-        saveData(STORAGE_KEYS.TASKS, getTasks());
+        // Always save to localStorage first
+        const projects = getProjects();
+        const tasks = getTasks();
+        saveData(STORAGE_KEYS.PROJECTS, projects);
+        saveData(STORAGE_KEYS.TASKS, tasks);
+        
+        console.log('Manual save - Data saved to localStorage');
         
         // If GitHub configured, sync to cloud
         if (cfg.gistId && cfg.token) {
             showToast('Saving to cloud...', 'info');
-            await pushToGist(cfg.gistId, cfg.token);
+            
+            const currentData = getAllKanbanData();
+            const currentHash = hashData(currentData);
+            
+            console.log('Manual save - Current hash:', currentHash, 'Last synced hash:', lastSyncedDataHash);
+            
+            await pushToGist(cfg.gistId, cfg.token, cfg.fileName || 'kanban-sync.json');
+            console.log('Manual save - Pushed to cloud successfully');
+            
             showToast('Saved successfully!', 'success');
             updateLastSyncDisplay();
         } else {
