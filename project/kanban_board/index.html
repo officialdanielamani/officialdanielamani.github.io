@@ -706,7 +706,7 @@
     <!-- Sync Check Modal -->
     <div class="modal" id="syncCheckModal">
         <div class="modal-overlay"></div>
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h2>Sync Available</h2>
                 <button class="btn-close" id="closeSyncCheckModal">&times;</button>
@@ -716,9 +716,22 @@
                 <div id="syncCheckDetails" style="margin-top:15px;font-size:0.9em;color:var(--text-secondary);"></div>
             </div>
             <div class="modal-footer" id="syncCheckActions" style="display:none;">
-                <button class="btn btn-secondary" id="syncCheckNo">No</button>
-                <button class="btn btn-primary" id="syncCheckPullMerge">Pull (Merge)</button>
-                <button class="btn btn-primary" id="syncCheckPullReplace">Pull (Replace)</button>
+                <button class="btn btn-secondary" id="syncCheckNo">
+                    <i class="bi bi-x-circle"></i>
+                    No
+                </button>
+                <button class="btn btn-primary" id="syncCheckPush">
+                    <i class="bi bi-cloud-upload"></i>
+                    Push
+                </button>
+                <button class="btn btn-accent" id="syncCheckPullMerge">
+                    <i class="bi bi-cloud-download"></i>
+                    Pull (Merge)
+                </button>
+                <button class="btn btn-danger" id="syncCheckPullReplace">
+                    <i class="bi bi-cloud-download-fill"></i>
+                    Pull (Replace)
+                </button>
             </div>
         </div>
     </div>

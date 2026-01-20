@@ -2043,6 +2043,30 @@ body {
     display: inline-block;
 }
 
+/* Sync Check Modal specific styling */
+#syncCheckActions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#syncCheckActions .btn {
+    flex: 0 1 auto;
+    min-width: 100px;
+}
+
+@media (max-width: 600px) {
+    #syncCheckActions {
+        flex-direction: column;
+    }
+    
+    #syncCheckActions .btn {
+        width: 100%;
+    }
+}
+
 #panel-sync .form-group input {
     font-family: 'Consolas', 'Monaco', monospace;
 }
