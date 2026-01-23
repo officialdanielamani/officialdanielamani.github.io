@@ -93,8 +93,17 @@ function formatDateShort(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
     const day = d.getDate();
-    const month = d.toLocaleDateString('en-GB', { month: 'short' });
-    return `${day} ${month}`;
+    const month = d.getMonth() + 1; // 0-indexed
+    const year = d.getFullYear().toString().slice(-2); // Last 2 digits
+    return `${day}/${month}/${year}`;
+}
+function formatDateForInput(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 function formatDateLong(dateStr) {
     if (!dateStr) return '';
@@ -207,6 +216,41 @@ function checkProjectAutoMove() {
             delete project.completedAt;
             needsUpdate = true;
         }
+    }
+    
+    if (needsUpdate) {
+        saveProjects(projects);
+    }
+}
+
+// Auto-move specific project based on task completion
+function autoMoveProject(projectId) {
+    const settings = getSettings();
+    if (!settings.autoMoveProject) return;
+    
+    const projects = getProjects();
+    const tasks = getTasks();
+    const columns = getColumns();
+    const firstColumn = columns[0].id;
+    const lastColumn = columns[columns.length - 1].id;
+    
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+    
+    const projectTasks = tasks.filter(t => t.projectId === projectId);
+    const hasIncomplete = projectTasks.some(t => !t.completed);
+    const allComplete = projectTasks.length > 0 && projectTasks.every(t => t.completed);
+    
+    let needsUpdate = false;
+    if (allComplete && project.status !== lastColumn) {
+        project.status = lastColumn;
+        project.completedAt = new Date().toISOString();
+        needsUpdate = true;
+    }
+    else if (hasIncomplete && project.status === lastColumn) {
+        project.status = firstColumn;
+        delete project.completedAt;
+        needsUpdate = true;
     }
     
     if (needsUpdate) {

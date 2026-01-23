@@ -368,7 +368,7 @@ function createProjectCard(project, tasks, categories) {
             <div class="card-meta-row">
                 ${categoryName ? `<div class="card-category" style="color: ${categoryColor}; border-color: ${categoryColor};">${escapeHtml(categoryName)}</div>` : '<div></div>'}
                 <div class="card-meta-right">
-                    <span class="card-progress">${completedTasks}/${totalTasks} Done</span>
+                    <span class="card-progress"><i class="bi bi-check-circle"></i> ${completedTasks}/${totalTasks}</span>
                     ${project.dueDate ? `<span class="card-due-date">${formatDateShort(project.dueDate)}</span>` : ''}
                     ${totalTasks > 0 ? `
                         <button class="btn-toggle-tasks-icon" onclick="event.stopPropagation(); toggleCardTasks(this)" title="Show/Hide tasks">
