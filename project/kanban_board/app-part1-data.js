@@ -419,3 +419,33 @@ function sortProjects(projects) {
         return a.title.localeCompare(b.title);
     });
 }
+
+// Task Sorting
+function sortTasksByDueDate(tasks) {
+    return tasks.sort((a, b) => {
+        // Completed tasks go to the end
+        if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+        }
+        
+        // Then by due date (earlier first, null last)
+        if (a.dueDate && b.dueDate) {
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        
+        // Finally by title alphabetically
+        return a.title.localeCompare(b.title);
+    });
+}
+
+// Check if overdue
+function isOverdue(dateStr) {
+    if (!dateStr) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(dateStr);
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate < today;
+}
