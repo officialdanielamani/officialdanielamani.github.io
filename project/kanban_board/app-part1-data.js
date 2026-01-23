@@ -89,6 +89,13 @@ function formatDate(dateStr) {
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-GB');
 }
+function formatDateShort(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = d.getDate();
+    const month = d.toLocaleDateString('en-GB', { month: 'short' });
+    return `${day} ${month}`;
+}
 function formatDateLong(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -448,4 +455,18 @@ function isOverdue(dateStr) {
     const dueDate = new Date(dateStr);
     dueDate.setHours(0, 0, 0, 0);
     return dueDate < today;
+}
+
+// Check if due soon (within warning days)
+function isDueSoon(dateStr, warningDays) {
+    if (!dateStr) return false;
+    const days = getDaysUntil(dateStr);
+    return days > 0 && days <= warningDays;
+}
+
+// Check if starting soon
+function isStartingSoon(dateStr, warningDays) {
+    if (!dateStr) return false;
+    const days = getDaysUntil(dateStr);
+    return days >= 0 && days <= warningDays;
 }
