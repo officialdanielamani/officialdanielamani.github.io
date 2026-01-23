@@ -389,3 +389,33 @@ function validateDates(startDate, dueDate) {
     const due = new Date(dueDate);
     return start <= due;
 }
+
+// Project Sorting
+function sortProjects(projects) {
+    const columns = getColumns();
+    const columnOrder = columns.map(c => c.id);
+    
+    return projects.sort((a, b) => {
+        // First sort by column/status order
+        const aColIndex = columnOrder.indexOf(a.status);
+        const bColIndex = columnOrder.indexOf(b.status);
+        if (aColIndex !== bColIndex) {
+            return aColIndex - bColIndex;
+        }
+        
+        // Within same column, sort by priority (higher first)
+        if (a.priority !== b.priority) {
+            return b.priority - a.priority;
+        }
+        
+        // Then by due date (earlier first, null last)
+        if (a.dueDate && b.dueDate) {
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        
+        // Finally by title alphabetically
+        return a.title.localeCompare(b.title);
+    });
+}
