@@ -128,6 +128,8 @@ function saveSyncConfig(config) {
 
 function getAllKanbanData() {
     const settings = getSettings();
+    // Use the actual last save time from localStorage, not current time
+    const lastSave = localStorage.getItem('kanban_lastSave');
     // Include lastModified but not syncTimestamp (caller sets syncTimestamp)
     return {
         projects: getProjects(),
@@ -136,7 +138,7 @@ function getAllKanbanData() {
         keyPersons: getKeyPersons(),
         settings: settings,
         columns: getColumns(),
-        lastModified: settings.lastModified || new Date().toISOString()
+        lastModified: lastSave || settings.lastModified || new Date(0).toISOString()
     };
 }
 
