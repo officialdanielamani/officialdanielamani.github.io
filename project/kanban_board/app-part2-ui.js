@@ -16,7 +16,8 @@ async function initializeDefaultData() {
                     localStorage.getItem(STORAGE_KEYS.KEY_PERSONS) ||
                     localStorage.getItem(STORAGE_KEYS.PROJECTS) ||
                     localStorage.getItem(STORAGE_KEYS.TASKS) ||
-                    localStorage.getItem(STORAGE_KEYS.COLUMNS);
+                    localStorage.getItem(STORAGE_KEYS.COLUMNS) ||
+                    localStorage.getItem(STORAGE_KEYS.BOARDS);
     
     console.log('Initializing data, hasData:', !!hasData);
     
@@ -28,6 +29,12 @@ async function initializeDefaultData() {
             if (response.ok) {
                 const baseData = await response.json();
                 console.log('Loaded base.json:', baseData);
+                
+                // Handle boards data if present
+                if (baseData.boardsData && typeof setAllBoardsData === 'function') {
+                    setAllBoardsData(baseData.boardsData);
+                }
+                
                 if (baseData.categories) saveCategories(baseData.categories);
                 if (baseData.keyPersons) saveKeyPersons(baseData.keyPersons);
                 if (baseData.projects) saveProjects(baseData.projects);

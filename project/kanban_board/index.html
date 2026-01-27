@@ -36,6 +36,9 @@
             </div>
         </header>
 
+        <!-- Board Tabs -->
+        <div id="boardTabs" class="board-tabs"></div>
+
         <!-- Warning Banners -->
         <div class="overdue-banner" id="overdueBanner" style="display: none;">
             <i class="bi bi-exclamation-triangle" style="font-size: 20px;"></i>
@@ -239,6 +242,7 @@
             <div class="modal-body">
                 <div class="settings-tabs">
                     <button class="settings-tab active" data-tab="general">General</button>
+                    <button class="settings-tab" data-tab="boards">Boards</button>
                     <button class="settings-tab" data-tab="kanban">Kanban</button>
                     <button class="settings-tab" data-tab="categories">Categories</button>
                     <button class="settings-tab" data-tab="keypersons">Key Persons</button>
@@ -282,6 +286,25 @@
                     </div>
                 </div>
                 
+                <!-- Boards Tab -->
+                <div class="settings-panel" id="panel-boards">
+                    <div class="form-group">
+                        <label>Manage Kanban Boards</label>
+                        <small style="display: block; margin-bottom: 12px;">
+                            Create multiple boards to organize different projects or workflows. 
+                            Each board has its own columns, projects, and tasks.
+                            Drag to reorder boards.
+                        </small>
+                    </div>
+                    <div class="manager-section">
+                        <div class="manager-input">
+                            <input type="text" id="newBoardNameSettings" placeholder="New board name" maxlength="32">
+                            <button class="btn btn-primary btn-sm" id="addBoardSettings">Add Board</button>
+                        </div>
+                        <ul class="board-list-settings" id="boardListSettings"></ul>
+                    </div>
+                </div>
+                
                 <!-- Kanban Tab -->
                 <div class="settings-panel" id="panel-kanban">
                     <div class="form-group">
@@ -310,8 +333,11 @@
                     <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
                     
                     <div class="form-group">
-                        <label>Kanban Columns (Min: 2, Max: 12)</label>
-                        <small style="display: block; margin-bottom: 12px;">Drag to reorder. First column acts as "Start", last column acts as "Done".</small>
+                        <label>Kanban Columns for Current Board (Min: 2, Max: 12)</label>
+                        <small style="display: block; margin-bottom: 12px;">
+                            These columns apply to the currently active board. Each board can have its own columns.
+                            Drag to reorder. First column acts as "Start", last column acts as "Done".
+                        </small>
                         <div style="display: grid; gap: 12px; margin-bottom: 12px;">
                             <input type="text" id="newColumnName" placeholder="Column name" maxlength="32">
                             <div>
@@ -790,12 +816,84 @@
         </div>
     </div>
 
+    <!-- New Board Modal -->
+    <div class="modal" id="newBoardModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Create New Board</h2>
+                <button class="btn-close" id="closeNewBoardModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newBoardName">Board Name *</label>
+                    <input type="text" id="newBoardName" placeholder="Enter board name" maxlength="32" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelNewBoard">Cancel</button>
+                <button class="btn btn-primary" id="saveNewBoard">Create Board</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Board Modal -->
+    <div class="modal" id="renameBoardModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Rename Board</h2>
+                <button class="btn-close" id="closeRenameBoardModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="renameBoardId">
+                <div class="form-group">
+                    <label for="renameBoardName">Board Name *</label>
+                    <input type="text" id="renameBoardName" placeholder="Enter board name" maxlength="32" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelRenameBoard">Cancel</button>
+                <button class="btn btn-primary" id="saveRenameBoard">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Board Modal -->
+    <div class="modal" id="deleteBoardModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Delete Board</h2>
+                <button class="btn-close" id="closeDeleteBoardModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="deleteBoardId">
+                <p style="margin-bottom: 16px; color: var(--danger); font-weight: 500;">
+                    <i class="bi bi-exclamation-triangle"></i> This action cannot be undone!
+                </p>
+                <div id="deleteBoardStats"></div>
+                <p style="margin-bottom: 8px;">
+                    To confirm, please type the board name: <strong id="deleteBoardName"></strong>
+                </p>
+                <div class="form-group">
+                    <input type="text" id="deleteBoardConfirmInput" placeholder="Type board name here" maxlength="32">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBoard">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBoard" disabled>Delete Board</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script src="icons.js"></script>
     <script src="app-part1-data.js"></script>
     <script src="app-part2-ui.js"></script>
+    <script src="app-part5-boards.js"></script>
     <script src="app-part3-events.js"></script>
     <script src="app-part4-sync.js"></script>
 </body>

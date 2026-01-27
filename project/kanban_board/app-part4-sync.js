@@ -130,8 +130,15 @@ function getAllKanbanData() {
     const settings = getSettings();
     // Use the actual last save time from localStorage, not current time
     const lastSave = localStorage.getItem('kanban_lastSave');
+    
+    // Get boards data if available
+    let boardsData = null;
+    if (typeof getAllBoardsData === 'function') {
+        boardsData = getAllBoardsData();
+    }
+    
     // Include lastModified but not syncTimestamp (caller sets syncTimestamp)
-    return {
+    const data = {
         projects: getProjects(),
         tasks: getTasks(),
         categories: getCategories(),
@@ -140,9 +147,21 @@ function getAllKanbanData() {
         columns: getColumns(),
         lastModified: lastSave || settings.lastModified || new Date(0).toISOString()
     };
+    
+    // Include boards data if available
+    if (boardsData) {
+        data.boardsData = boardsData;
+    }
+    
+    return data;
 }
 
 function setAllKanbanData(data) {
+    // Handle boards data first if present
+    if (data.boardsData && typeof setAllBoardsData === 'function') {
+        setAllBoardsData(data.boardsData);
+    }
+    
     if (data.projects) saveProjects(data.projects);
     if (data.tasks) saveTasks(data.tasks);
     if (data.categories) saveCategories(data.categories);
@@ -155,9 +174,21 @@ function setAllKanbanData(data) {
         saveSettings({ ...currentSettings, syncTimestamp: data.syncTimestamp });
     }
     if (data.columns) saveColumns(data.columns);
+    
+    // Re-render boards if available
+    if (typeof renderBoardTabs === 'function') {
+        renderBoardTabs();
+    }
 }
 
 function mergeKanbanData(data) {
+    // Handle boards data first if present
+    if (data.boardsData && typeof setAllBoardsData === 'function') {
+        // For merge, we do a simple replacement of boards data
+        // More sophisticated merge could be added later
+        setAllBoardsData(data.boardsData);
+    }
+    
     if (data.projects) {
         const existing = getProjects();
         const merged = [...existing];
@@ -188,6 +219,11 @@ function mergeKanbanData(data) {
         saveSettings({ ...currentSettings, syncTimestamp: data.syncTimestamp });
     }
     if (data.columns) saveColumns(data.columns);
+    
+    // Re-render boards if available
+    if (typeof renderBoardTabs === 'function') {
+        renderBoardTabs();
+    }
 }
 
 async function gistRequest(method, gistId, token, content = null, fileName = 'kanban-sync.json') {

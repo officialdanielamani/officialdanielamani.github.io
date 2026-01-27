@@ -2098,3 +2098,348 @@ body {
 .btn.flash-green {
     animation: flashGreen 1s ease-in-out 5 !important;
 }
+
+/* ============================================
+   Multi-Board Styles
+   ============================================ */
+
+/* Board Tabs Container */
+.board-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.board-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.board-tabs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.board-tabs::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+}
+
+/* Board Tab */
+.board-tab {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.board-tab:hover {
+    background: var(--bg-secondary);
+}
+
+.board-tab.active {
+    background: var(--accent);
+    color: white;
+}
+
+.board-tab.active .board-tab-menu {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.board-tab.active .board-tab-menu:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.board-tab-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.board-tab-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.board-tab:hover .board-tab-menu,
+.board-tab.active .board-tab-menu {
+    opacity: 1;
+}
+
+.board-tab-menu:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Add Board Button */
+.board-tab-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px dashed var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.board-tab-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+}
+
+/* Board Context Menu */
+.board-context-menu {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px var(--shadow-lg);
+    padding: 4px;
+    min-width: 150px;
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: left;
+    transition: all 0.15s ease;
+}
+
+.context-menu-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.context-menu-item.danger {
+    color: var(--danger);
+}
+
+.context-menu-item.danger:hover {
+    background: var(--danger-light);
+}
+
+.context-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.context-menu-item:disabled:hover {
+    background: transparent;
+}
+
+.board-context-menu hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0;
+}
+
+/* Board List in Settings */
+.board-list-settings {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.board-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.board-list-item:hover {
+    border-color: var(--accent);
+}
+
+.board-list-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.board-list-item.drag-over-top {
+    border-top: 2px solid var(--accent);
+}
+
+.board-list-item.drag-over-bottom {
+    border-bottom: 2px solid var(--accent);
+}
+
+.board-list-drag-handle {
+    cursor: grab;
+    color: var(--text-muted);
+    padding: 4px;
+}
+
+.board-list-drag-handle:active {
+    cursor: grabbing;
+}
+
+.board-list-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.board-list-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.board-list-active-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    background: var(--accent);
+    color: white;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.board-list-stats {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+}
+
+.board-list-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.board-list-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.board-list-actions button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.board-list-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.board-list-actions .btn-delete-board:hover:not(:disabled) {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* Responsive adjustments for board tabs */
+@media (max-width: 768px) {
+    .board-tabs {
+        max-width: calc(100vw - 250px);
+        margin-left: 8px;
+    }
+    
+    .board-tab-name {
+        max-width: 80px;
+    }
+    
+    .header-left {
+        flex-wrap: wrap;
+    }
+    
+    .header-doc-info {
+        width: 100%;
+        margin-top: 4px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .board-tabs {
+        max-width: calc(100vw - 150px);
+    }
+    
+    .board-tab-name {
+        max-width: 60px;
+        font-size: 0.8rem;
+    }
+    
+    .board-tab {
+        padding: 4px 8px;
+    }
+}
+
+/* Settings Boards Panel */
+#panel-boards .form-group {
+    margin-bottom: 16px;
+}
+
+#panel-boards .manager-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+#panel-boards .manager-input input {
+    flex: 1;
+}
+
+/* Delete Board Modal Warning */
+#deleteBoardStats {
+    background: var(--danger-light);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    color: var(--danger);
+}
+
+#deleteBoardStats ul {
+    margin: 8px 0 0 20px;
+    color: var(--text-primary);
+}

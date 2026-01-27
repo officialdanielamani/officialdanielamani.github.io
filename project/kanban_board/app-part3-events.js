@@ -64,8 +64,15 @@ function setupDateValidation(startDateId, dueDateId) {
 // Export Data
 function exportData() {
     const settings = getSettings();
+    
+    // Get boards data if available
+    let boardsData = null;
+    if (typeof getAllBoardsData === 'function') {
+        boardsData = getAllBoardsData();
+    }
+    
     const data = {
-        version: '1.0',
+        version: '1.1',
         exportDate: new Date().toISOString(),
         documentInfo: {
             name: settings.docName,
@@ -76,8 +83,14 @@ function exportData() {
         tasks: getTasks(),
         categories: getCategories(),
         keyPersons: getKeyPersons(),
+        columns: getColumns(),
         settings: settings
     };
+    
+    // Include boards data if available
+    if (boardsData) {
+        data.boardsData = boardsData;
+    }
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob), a = document.createElement('a');
@@ -93,6 +106,11 @@ function importData(file, merge = true) {
     reader.onload = e => {
         try {
             const data = JSON.parse(e.target.result);
+            
+            // Handle boards data if present
+            if (data.boardsData && typeof setAllBoardsData === 'function') {
+                setAllBoardsData(data.boardsData);
+            }
             
             if (merge) {
                 if (data.projects) {
@@ -116,7 +134,7 @@ function importData(file, merge = true) {
                     saveTasks(merged);
                 }
             } else {
-                Object.values(STORAGE_KEYS).forEach(k => { if (k !== STORAGE_KEYS.SETTINGS && k !== STORAGE_KEYS.SYNC_CONFIG) localStorage.removeItem(k); });
+                Object.values(STORAGE_KEYS).forEach(k => { if (k !== STORAGE_KEYS.SETTINGS && k !== STORAGE_KEYS.SYNC_CONFIG && k !== STORAGE_KEYS.BOARDS && k !== STORAGE_KEYS.ACTIVE_BOARD) localStorage.removeItem(k); });
                 if (data.projects) saveProjects(data.projects);
                 if (data.tasks) saveTasks(data.tasks);
             }
@@ -127,9 +145,15 @@ function importData(file, merge = true) {
                 saveCategories(all);
             }
             if (data.keyPersons) { const ex = getKeyPersons(); saveKeyPersons([...ex, ...data.keyPersons.filter(k => !ex.includes(k))]); }
+            if (data.columns) saveColumns(data.columns);
             if (data.settings) {
                 const currentSettings = getSettings();
                 saveSettings({ ...currentSettings, ...data.settings });
+            }
+            
+            // Re-render boards if available
+            if (typeof renderBoardTabs === 'function') {
+                renderBoardTabs();
             }
             
             renderKanbanBoard(); renderCategoryList(); renderKeyPersonList(); updateCategoryDropdowns(); updateKeyPersonDropdowns();
@@ -186,6 +210,9 @@ function setupEventListeners() {
         renderCategoryList(); 
         renderKeyPersonList();
         renderColumnList();
+        if (typeof renderBoardListInSettings === 'function') {
+            renderBoardListInSettings();
+        }
         updateStorageInfo();
         openModal('settingsModal'); 
     });
@@ -621,6 +648,11 @@ function updateLastSave() {
 async function init() {
     // Initialize default data on first run
     await initializeDefaultData();
+    
+    // Initialize boards system
+    if (typeof initializeBoards === 'function') {
+        initializeBoards();
+    }
     
     // Load settings
     const s = getSettings();

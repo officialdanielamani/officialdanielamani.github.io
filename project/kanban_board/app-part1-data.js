@@ -10,7 +10,9 @@ const STORAGE_KEYS = {
     KEY_PERSONS: 'kanban_keypersons',
     SETTINGS: 'kanban_settings',
     COLUMNS: 'kanban_columns',
-    SYNC_CONFIG: 'kanban_sync_config'
+    SYNC_CONFIG: 'kanban_sync_config',
+    BOARDS: 'kanban_boards',
+    ACTIVE_BOARD: 'kanban_active_board'
 };
 
 // Temporary storage for tasks being added/edited in project modal
@@ -69,18 +71,58 @@ function saveData(key, data) {
     }
 }
 
-function getProjects() { return loadData(STORAGE_KEYS.PROJECTS) || []; }
-function getTasks() { return loadData(STORAGE_KEYS.TASKS) || []; }
+function getProjects() { 
+    // Check if board system is initialized
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        return getBoardProjects(boardId);
+    }
+    return loadData(STORAGE_KEYS.PROJECTS) || []; 
+}
+function getTasks() { 
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        return getBoardTasks(boardId);
+    }
+    return loadData(STORAGE_KEYS.TASKS) || []; 
+}
 function getCategories() { return loadData(STORAGE_KEYS.CATEGORIES) || []; }
 function getKeyPersons() { return loadData(STORAGE_KEYS.KEY_PERSONS) || []; }
 function getSettings() { return { ...DEFAULT_SETTINGS, ...(loadData(STORAGE_KEYS.SETTINGS) || {}) }; }
-function getColumns() { return loadData(STORAGE_KEYS.COLUMNS) || DEFAULT_COLUMNS; }
-function saveProjects(p) { saveData(STORAGE_KEYS.PROJECTS, p); }
-function saveTasks(t) { saveData(STORAGE_KEYS.TASKS, t); }
+function getColumns() { 
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        return getBoardColumns(boardId);
+    }
+    return loadData(STORAGE_KEYS.COLUMNS) || DEFAULT_COLUMNS; 
+}
+function saveProjects(p) { 
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        saveBoardProjects(boardId, p);
+        return;
+    }
+    saveData(STORAGE_KEYS.PROJECTS, p); 
+}
+function saveTasks(t) { 
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        saveBoardTasks(boardId, t);
+        return;
+    }
+    saveData(STORAGE_KEYS.TASKS, t); 
+}
 function saveCategories(c) { saveData(STORAGE_KEYS.CATEGORIES, c); }
 function saveKeyPersons(k) { saveData(STORAGE_KEYS.KEY_PERSONS, k); }
 function saveSettings(s) { saveData(STORAGE_KEYS.SETTINGS, s); }
-function saveColumns(c) { saveData(STORAGE_KEYS.COLUMNS, c); }
+function saveColumns(c) { 
+    if (typeof getActiveBoardId === 'function') {
+        const boardId = getActiveBoardId();
+        saveBoardColumns(boardId, c);
+        return;
+    }
+    saveData(STORAGE_KEYS.COLUMNS, c); 
+}
 function generateId() { return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
 
 // Date Utilities
